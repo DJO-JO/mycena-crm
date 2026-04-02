@@ -28,12 +28,9 @@
     }
   }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); font-size: 14px; min-height: 100vh; }
-
-  /* Auth screen */
   .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .auth-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: 16px; padding: 36px; width: 100%; max-width: 400px; }
   .auth-logo { width: 40px; height: 40px; border-radius: 10px; background: var(--purple); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-  .auth-logo svg { width: 20px; height: 20px; }
   .auth-title { font-size: 18px; font-weight: 500; text-align: center; margin-bottom: 6px; }
   .auth-sub { font-size: 13px; color: var(--text2); text-align: center; margin-bottom: 28px; }
   .auth-field { margin-bottom: 14px; }
@@ -44,13 +41,10 @@
   .auth-btn:hover { opacity: 0.9; }
   .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .auth-error { font-size: 12px; color: #E24B4A; padding: 8px 12px; background: var(--red-bg); border-radius: var(--radius); margin-bottom: 14px; }
-
-  /* App */
   .app { max-width: 1400px; margin: 0 auto; padding: 20px; }
   .header { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 14px; }
   .header-left { display: flex; align-items: center; gap: 10px; }
   .logo { width: 28px; height: 28px; border-radius: 7px; background: var(--purple); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .logo svg { width: 14px; height: 14px; }
   .header-title { font-size: 15px; font-weight: 500; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--green-bg); color: var(--green-text); font-weight: 500; }
   .user-email { font-size: 11px; color: var(--text3); }
@@ -61,20 +55,17 @@
   .btn-primary:hover { opacity: 0.9; background: var(--purple); }
   .btn-sm { padding: 4px 10px; font-size: 11px; }
   .btn-ghost { background: none; border-color: transparent; color: var(--text2); }
-  .btn-ghost:hover { background: var(--bg2); border-color: var(--border); }
-  .metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+  .btn-ghost:hover { background: var(--bg2); }
+  .metrics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
   .metric { background: var(--bg2); border-radius: var(--radius); padding: 10px 14px; }
   .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
-  .metric-value { font-size: 22px; font-weight: 500; }
+  .metric-value { font-size: 20px; font-weight: 500; }
   .metric-value.alert { color: #E24B4A; }
-  .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-  input[type=text], input[type=number], input[type=email], input[type=password], select, textarea {
+  input[type=text], input[type=number], input[type=email], input[type=password], input[type=date], select, textarea {
     font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2);
     background: var(--bg); color: var(--text); font-family: inherit; width: 100%;
   }
   input:focus, select:focus, textarea:focus { outline: 2px solid var(--purple); outline-offset: 1px; }
-  .search { width: 220px; }
-  .view-btn.active { background: var(--bg3); }
   .pipeline { overflow-x: auto; padding-bottom: 8px; }
   .pipeline-inner { display: flex; gap: 10px; min-width: max-content; }
   .column { width: 190px; flex-shrink: 0; }
@@ -87,9 +78,13 @@
   .deal-card:hover { border-color: var(--border2); }
   .deal-card-company { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
   .deal-card-contact { font-size: 11px; color: var(--text2); margin-bottom: 6px; }
-  .deal-card-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .deal-card-bottom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
   .deal-card-value { font-size: 11px; font-weight: 500; }
   .risk-badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+  .bant-bar-wrap { margin-top: 5px; }
+  .bant-bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .bant-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .bant-score-label { font-size: 10px; color: var(--text3); margin-top: 2px; display: flex; justify-content: space-between; }
   .idle-warn { font-size: 10px; color: #E24B4A; margin-top: 4px; }
   .empty-col { font-size: 11px; color: var(--text3); padding: 10px; text-align: center; background: var(--bg2); border-radius: var(--radius); }
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
@@ -99,7 +94,6 @@
   .deal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
   .deal-name { font-size: 16px; font-weight: 500; }
   .deal-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .deal-value-display { font-size: 15px; font-weight: 500; text-align: right; }
   .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--bg2); color: var(--text2); }
   .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
@@ -111,13 +105,11 @@
   .agent-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 12px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg2); cursor: pointer; margin-bottom: 7px; text-align: left; font-family: inherit; color: var(--text); transition: background 0.15s; }
   .agent-btn:hover:not(:disabled) { background: var(--bg3); }
   .agent-btn:disabled { cursor: wait; background: var(--purple-bg); }
-  .agent-btn-name { font-size: 12px; font-weight: 500; }
-  .agent-btn-desc { font-size: 11px; color: var(--text2); }
   .agent-run { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--purple-bg); color: var(--purple-text); font-weight: 500; }
   .agent-output { border: 0.5px solid var(--purple); border-radius: var(--radius-lg); padding: 14px; margin-top: 10px; }
   .agent-output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .agent-output-name { font-size: 12px; font-weight: 500; color: var(--purple); }
-  .agent-output-text { font-size: 12px; line-height: 1.7; white-space: pre-wrap; max-height: 360px; overflow-y: auto; }
+  .agent-output-text { font-size: 12px; line-height: 1.7; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
   .list-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .list-table th { padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); border-bottom: 0.5px solid var(--border); }
   .list-table td { padding: 8px 12px; border-bottom: 0.5px solid var(--border); }
@@ -129,17 +121,32 @@
   .form-actions { display: flex; gap: 8px; margin-top: 14px; }
   .error-bar { font-size: 12px; color: #E24B4A; padding: 8px 12px; background: var(--red-bg); border-radius: var(--radius); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
   .saving { font-size: 11px; color: var(--text3); }
-  .back-btn { margin-bottom: 14px; }
   .hint { font-size: 11px; color: var(--text3); margin-top: 6px; }
-  textarea { height: 70px; resize: vertical; }
-  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  textarea { height: 60px; resize: vertical; }
+
+  /* BANT */
+  .bant-section { margin-bottom: 10px; }
+  .bant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .bant-total { display: flex; align-items: center; gap: 8px; }
+  .bant-total-score { font-size: 22px; font-weight: 500; }
+  .bant-total-label { font-size: 11px; color: var(--text2); line-height: 1.3; }
+  .bant-row { display: grid; grid-template-columns: 90px 1fr 180px; gap: 8px; align-items: start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); }
+  .bant-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .bant-letter { display: flex; align-items: center; gap: 6px; }
+  .bant-letter-badge { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .bant-letter-name { font-size: 12px; font-weight: 500; }
+  .bant-dots { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
+  .bant-dot { width: 20px; height: 20px; border-radius: 4px; border: 0.5px solid var(--border2); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; }
+  .bant-score-wrap { display: flex; flex-direction: column; gap: 4px; }
+  .close-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); }
+  .weighted-value { font-size: 13px; font-weight: 500; color: var(--purple); }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading { display: flex; align-items: center; gap: 10px; padding: 40px; justify-content: center; color: var(--text2); font-size: 13px; }
 </style>
 </head>
 <body>
 <div id="root"></div>
-
 <script>
 const PROXY = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 
@@ -162,41 +169,48 @@ const LADDERS = ["1 — Out of control","2 — Aware but undefended","3 — Part
 const RISKS = ["GREEN","AMBER","RED"];
 const SOURCES = ["Outbound-email","LinkedIn-ad","Inbound","Referral","Roundtable","Event"];
 const TIERS = ["1","2","3"];
+const QUARTERS = ["Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026"];
+
+const BANT = [
+  { key:"budget",    label:"Budget",    color:"#7F77DD", bg:"#EEEDFE", desc:"Has confirmed budget or budget process" },
+  { key:"authority", label:"Authority", color:"#378ADD", bg:"#E6F1FB", desc:"Decision-maker or clear path to them" },
+  { key:"need",      label:"Need",      color:"#1D9E75", bg:"#E1F5EE", desc:"Problem is confirmed and urgent" },
+  { key:"timeline",  label:"Timeline",  color:"#EF9F27", bg:"#FAEEDA", desc:"Clear timeframe to purchase" },
+];
+
+const SCORE_LABELS = ["Unknown","Weak","Moderate","Confirmed"];
+const SCORE_COLORS = ["#B4B2A9","#E24B4A","#EF9F27","#1D9E75"];
+
+const bantTotal = d => (d.bant_budget_score||0)+(d.bant_authority_score||0)+(d.bant_need_score||0)+(d.bant_timeline_score||0);
+const bantPct   = d => Math.round((bantTotal(d)/12)*100);
+const bantColor = pct => pct >= 75 ? "#1D9E75" : pct >= 40 ? "#EF9F27" : "#E24B4A";
+const weightedValue = d => Math.round((d.deal_value||0) * (bantPct(d)/100));
 
 const riskBg  = r => r==="GREEN"?"var(--green-bg)":r==="AMBER"?"var(--amber-bg)":"var(--red-bg)";
 const riskTxt = r => r==="GREEN"?"var(--green-text)":r==="AMBER"?"var(--amber-text)":"var(--red-text)";
 const fmt = n => (n!=null&&n!=="") ? "£"+(n>=1e6?(n/1e6).toFixed(1)+"M":n>=1000?(n/1000).toFixed(0)+"k":n) : "—";
 const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-// ── Session storage ──────────────────────────────────────────────
 const SESSION_KEY = "mc_session";
-function getSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; }
-}
+function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } }
 function setSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
 function clearSession() { localStorage.removeItem(SESSION_KEY); }
 
-// ── State ────────────────────────────────────────────────────────
 let state = {
   session: getSession(),
-  authEmail: "", authPassword: "", authError: "", authLoading: false,
-  deals: [], view: "pipeline", activeDeal: null, showNew: false,
-  search: "", error: "", saving: false,
-  agentRunning: null, agentOutput: null, newActivity: "",
+  authEmail:"", authPassword:"", authError:"", authLoading:false,
+  deals:[], view:"pipeline", activeDeal:null, showNew:false,
+  search:"", error:"", saving:false,
+  agentRunning:null, agentOutput:null, newActivity:"",
   newDeal: blankDeal(),
 };
 
 function blankDeal() {
-  return { company:"", contact_name:"", title:"CISO", sector:"Financial services", headcount:"500–2k", stage:"Identified", control_ladder:"1 — Out of control", risk:"GREEN", deal_value:"", exposure_figure:"", icp_tier:"1", source:"Outbound-email", days_since_activity:0, last_activity:"Deal created", notes:"" };
+  return { company:"", contact_name:"", title:"CISO", sector:"Financial services", headcount:"500–2k", stage:"Identified", control_ladder:"1 — Out of control", risk:"GREEN", deal_value:"", exposure_figure:"", icp_tier:"1", source:"Outbound-email", days_since_activity:0, last_activity:"Deal created", notes:"", bant_budget_score:0, bant_budget_notes:"", bant_authority_score:0, bant_authority_notes:"", bant_need_score:0, bant_need_notes:"", bant_timeline_score:0, bant_timeline_notes:"", expected_close_date:"", close_quarter:"" };
 }
 
-// ── API ──────────────────────────────────────────────────────────
 async function authFetch(body) {
-  const res = await fetch(`${PROXY}/auth/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  const res = await fetch(`${PROXY}/auth/token`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error_description || data.msg || "Invalid email or password");
   return data;
@@ -205,106 +219,84 @@ async function authFetch(body) {
 async function db(path, opts={}) {
   const token = state.session?.access_token;
   const res = await fetch(`${PROXY}/${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "Prefer": opts.prefer || "return=representation",
-      ...(token ? { "X-Auth-Token": token } : {}),
-    },
+    headers: { "Content-Type":"application/json", "Prefer":opts.prefer||"return=representation", ...(token?{"X-Auth-Token":token}:{}) },
     ...opts,
   });
   if (!res.ok) {
-    if (res.status === 401) { signOut(); return; }
-    const e = await res.json().catch(() => ({}));
-    throw new Error(e.message || "Request failed");
+    if (res.status===401) { signOut(); return; }
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e.message||"Request failed");
   }
-  if (res.status === 204) return null;
+  if (res.status===204) return null;
   return res.json();
 }
 
-// ── Auth actions ─────────────────────────────────────────────────
 async function signIn() {
-  state.authLoading = true; state.authError = ""; render();
+  state.authLoading=true; state.authError=""; render();
   try {
-    const data = await authFetch({ email: state.authEmail, password: state.authPassword });
-    setSession(data);
-    state.session = data;
-    state.authLoading = false;
+    const data = await authFetch({ email:state.authEmail, password:state.authPassword });
+    setSession(data); state.session=data; state.authLoading=false;
     await load();
-  } catch(e) {
-    state.authError = e.message;
-    state.authLoading = false;
-    render();
-  }
+  } catch(e) { state.authError=e.message; state.authLoading=false; render(); }
 }
 
-function signOut() {
-  clearSession();
-  state.session = null;
-  state.deals = [];
-  state.activeDeal = null;
-  render();
-}
+function signOut() { clearSession(); state.session=null; state.deals=[]; state.activeDeal=null; render(); }
 
-// ── Data actions ─────────────────────────────────────────────────
 async function load() {
   try {
     const data = await db("deals?order=created_at.desc&limit=200", { prefer:"" });
-    state.deals = data || [];
-    state.error = "";
-  } catch(e) { state.error = e.message; }
+    state.deals=data||[]; state.error="";
+  } catch(e) { state.error=e.message; }
   render();
 }
 
 async function saveDeal(id, fields) {
-  state.saving = true; render();
+  state.saving=true; render();
   try {
-    await db(`deals?id=eq.${id}`, { method:"PATCH", body: JSON.stringify(fields) });
-    state.deals = state.deals.map(d => d.id===id ? {...d,...fields} : d);
-  } catch(e) { state.error = e.message; }
-  state.saving = false; render();
+    await db(`deals?id=eq.${id}`, { method:"PATCH", body:JSON.stringify(fields) });
+    state.deals=state.deals.map(d=>d.id===id?{...d,...fields}:d);
+  } catch(e) { state.error=e.message; }
+  state.saving=false; render();
 }
 
 async function createDeal() {
-  const d = { ...state.newDeal, deal_value: parseFloat(state.newDeal.deal_value)||0, exposure_figure: state.newDeal.exposure_figure ? parseFloat(state.newDeal.exposure_figure) : null, days_since_activity: 0 };
+  const d = { ...state.newDeal, deal_value:parseFloat(state.newDeal.deal_value)||0, exposure_figure:state.newDeal.exposure_figure?parseFloat(state.newDeal.exposure_figure):null, days_since_activity:0 };
   try {
-    const res = await db("deals", { method:"POST", body: JSON.stringify(d) });
-    state.deals = [res[0], ...state.deals];
-    state.showNew = false; state.newDeal = blankDeal(); state.error = "";
-  } catch(e) { state.error = e.message; }
+    const res = await db("deals", { method:"POST", body:JSON.stringify(d) });
+    state.deals=[res[0],...state.deals]; state.showNew=false; state.newDeal=blankDeal(); state.error="";
+  } catch(e) { state.error=e.message; }
   render();
 }
 
 async function logActivity(id) {
-  const a = state.newActivity.trim();
-  if (!a) return;
-  await saveDeal(id, { last_activity: a, days_since_activity: 0 });
-  state.newActivity = ""; render();
+  const a=state.newActivity.trim(); if(!a) return;
+  await saveDeal(id,{last_activity:a,days_since_activity:0});
+  state.newActivity=""; render();
 }
 
 async function runAgent(name, deal) {
-  state.agentRunning = name; state.agentOutput = null; render();
+  state.agentRunning=name; state.agentOutput=null; render();
+  const bScore = bantTotal(deal);
   const prompts = {
-    "Research brief": `You are MyCena Sales Research Agent 08. Produce a concise pre-call brief:\nCompany: ${deal.company}\nSector: ${deal.sector}\nContact: ${deal.contact_name}, ${deal.title}\nHeadcount: ${deal.headcount}\nControl Ladder: ${deal.control_ladder}\nNotes: ${deal.notes||"none"}\n\n1) Most relevant recent sector breach and why it matters\n2) Control Ladder assessment and call implication\n3) Most likely objection and response\n4) Best opening line. Be specific, concise, no jargon.`,
-    "Follow-up email": `You are MyCena Post-Call Follow-Up Agent 09. Write a follow-up email:\nCompany: ${deal.company}\nContact: ${deal.contact_name}, ${deal.title}\nStage: ${deal.stage}\nExposure: ${deal.exposure_figure?fmt(deal.exposure_figure):"not yet calculated"}\nLast activity: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\nPersonalised follow-up under 200 words. Reference something specific. State next step. Calm authority tone.`,
-    "Deal diagnosis": `You are MyCena Deal Intelligence Agent 10. Diagnose:\nCompany: ${deal.company}\nStage: ${deal.stage}\nRisk: ${deal.risk}\nDays since activity: ${deal.days_since_activity||0}\nLast: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\n1) Why at risk 2) Most likely stall reason 3) One specific re-engagement action with opening line.`,
+    "Research brief": `You are MyCena Sales Research Agent 08. Pre-call brief:\nCompany: ${deal.company}\nSector: ${deal.sector}\nContact: ${deal.contact_name}, ${deal.title}\nHeadcount: ${deal.headcount}\nControl Ladder: ${deal.control_ladder}\nBANT Score: ${bScore}/12 (Budget:${deal.bant_budget_score} Authority:${deal.bant_authority_score} Need:${deal.bant_need_score} Timeline:${deal.bant_timeline_score})\nNotes: ${deal.notes||"none"}\n\n1) Most relevant sector breach and why it matters\n2) Control Ladder assessment\n3) BANT gap — which letter is weakest and how to address it on this call\n4) Most likely objection and response\n5) Best opening line. Be specific, no jargon.`,
+    "Follow-up email": `You are MyCena Post-Call Follow-Up Agent 09. Follow-up email:\nCompany: ${deal.company}\nContact: ${deal.contact_name}, ${deal.title}\nStage: ${deal.stage}\nExposure: ${deal.exposure_figure?fmt(deal.exposure_figure):"not yet calculated"}\nBANT: ${bScore}/12\nExpected close: ${deal.close_quarter||deal.expected_close_date||"not set"}\nLast activity: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\nPersonalised follow-up under 200 words. Reference something specific. State next step clearly. Calm authority tone.`,
+    "Deal diagnosis": `You are MyCena Deal Intelligence Agent 10. Diagnose:\nCompany: ${deal.company}\nStage: ${deal.stage}\nRisk: ${deal.risk}\nBANT Score: ${bScore}/12 (Budget:${deal.bant_budget_score} Authority:${deal.bant_authority_score} Need:${deal.bant_need_score} Timeline:${deal.bant_timeline_score})\nExpected close: ${deal.close_quarter||deal.expected_close_date||"not set"}\nDays since activity: ${deal.days_since_activity||0}\nLast: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\n1) Why this deal is at risk\n2) Weakest BANT letter and what to do about it\n3) One specific re-engagement action with opening line.`,
   };
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompts[name]}] })
-    });
+    const res = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompts[name]}] }) });
     const data = await res.json();
-    state.agentOutput = { name, text: data.content?.[0]?.text || "No output." };
-  } catch(e) { state.agentOutput = { name, text:"Agent unavailable." }; }
-  state.agentRunning = null; render();
+    state.agentOutput={ name, text:data.content?.[0]?.text||"No output." };
+  } catch(e) { state.agentOutput={ name, text:"Agent unavailable." }; }
+  state.agentRunning=null; render();
 }
 
-// ── Render ───────────────────────────────────────────────────────
 function metrics() {
   const active = state.deals.filter(d=>!["Closed won","Closed lost","Nurture"].includes(d.stage));
+  const weighted = active.reduce((s,d)=>s+weightedValue(d),0);
   return {
     active: active.length,
     pipeline: active.reduce((s,d)=>s+(d.deal_value||0),0),
+    weighted,
     won: state.deals.filter(d=>d.stage==="Closed won").reduce((s,d)=>s+(d.deal_value||0),0),
     assessments: state.deals.filter(d=>["Assessment booked","Assessment delivered"].includes(d.stage)).length,
     atRisk: state.deals.filter(d=>d.risk==="RED"||(d.risk==="AMBER"&&(d.days_since_activity||0)>10)).length,
@@ -312,53 +304,107 @@ function metrics() {
 }
 
 function filtered() {
-  if (!state.search) return state.deals;
-  const q = state.search.toLowerCase();
-  return state.deals.filter(d => d.company?.toLowerCase().includes(q)||d.contact_name?.toLowerCase().includes(q));
+  if(!state.search) return state.deals;
+  const q=state.search.toLowerCase();
+  return state.deals.filter(d=>d.company?.toLowerCase().includes(q)||d.contact_name?.toLowerCase().includes(q));
 }
 
-function sel() { return state.activeDeal ? state.deals.find(d=>d.id===state.activeDeal) : null; }
-function selectOpts(arr, val) { return arr.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(o)}</option>`).join(""); }
+function sel() { return state.activeDeal?state.deals.find(d=>d.id===state.activeDeal):null; }
+function selectOpts(arr,val) { return arr.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(o)}</option>`).join(""); }
+
+function bantScoreDots(deal, key, color) {
+  const cur = deal[`bant_${key}_score`]||0;
+  return [1,2,3].map(v => {
+    const active = cur >= v;
+    const c = active ? SCORE_COLORS[v] : "var(--bg3)";
+    const tc = active ? "white" : "var(--text3)";
+    return `<div class="bant-dot" style="background:${c};color:${tc};border-color:${active?c:"var(--border2)"}" onclick="setBant('${deal.id}','bant_${key}_score',${cur===v?0:v})">${v}</div>`;
+  }).join("");
+}
+
+function bantSectionHtml(deal) {
+  const total = bantTotal(deal);
+  const pct = bantPct(deal);
+  const wv = weightedValue(deal);
+  const barColor = bantColor(pct);
+
+  return `
+    <div class="card bant-section">
+      <div class="bant-header">
+        <div class="card-title" style="margin:0">BANT qualification</div>
+        <div class="bant-total">
+          <div class="bant-total-score" style="color:${barColor}">${total}<span style="font-size:13px;color:var(--text3)">/12</span></div>
+          <div class="bant-total-label">
+            ${pct}% qualified<br>
+            <span style="color:var(--purple);font-weight:500">${fmt(wv)} weighted</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.3s"></div>
+        </div>
+      </div>
+
+      ${BANT.map(b => `
+        <div class="bant-row">
+          <div>
+            <div class="bant-letter">
+              <div class="bant-letter-badge" style="background:${b.bg};color:${b.color}">${b.label[0]}</div>
+              <div>
+                <div class="bant-letter-name">${b.label}</div>
+                <div class="bant-dots" style="margin-top:4px">${bantScoreDots(deal,b.key,b.color)}</div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:${SCORE_COLORS[deal[`bant_${b.key}_score`]||0]};margin-top:4px;margin-left:30px">${SCORE_LABELS[deal[`bant_${b.key}_score`]||0]}</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:3px">${b.desc}</div>
+            <textarea placeholder="Notes on ${b.label.toLowerCase()}..." onblur="saveDeal('${deal.id}',{'bant_${b.key}_notes':this.value})" style="height:50px;font-size:12px">${esc(deal[`bant_${b.key}_notes`]||"")}</textarea>
+          </div>
+          <div></div>
+        </div>
+      `).join("")}
+
+      <div class="close-date-row">
+        <div class="field">
+          <label class="field-label">Expected close date</label>
+          <input type="date" value="${deal.expected_close_date||""}" onblur="saveDeal('${deal.id}',{expected_close_date:this.value||null})">
+        </div>
+        <div class="field">
+          <label class="field-label">Close quarter</label>
+          <select onchange="saveDeal('${deal.id}',{close_quarter:this.value})">${selectOpts(["","Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026"],deal.close_quarter||"")}</select>
+        </div>
+      </div>
+    </div>`;
+}
 
 function render() {
   const root = document.getElementById("root");
 
-  // ── Login screen ──
   if (!state.session) {
     root.innerHTML = `
       <div class="auth-wrap">
         <div class="auth-card">
-          <div class="auth-logo">
-            <svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg>
-          </div>
+          <div class="auth-logo"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg></div>
           <div class="auth-title">MyCena CRM</div>
           <div class="auth-sub">Sign in to your account</div>
-          ${state.authError ? `<div class="auth-error">${esc(state.authError)}</div>` : ""}
-          <div class="auth-field">
-            <label class="auth-label">Email</label>
-            <input class="auth-input" type="email" placeholder="you@mycena.com" value="${esc(state.authEmail)}"
-              oninput="state.authEmail=this.value"
-              onkeydown="if(event.key==='Enter')signIn()">
-          </div>
-          <div class="auth-field">
-            <label class="auth-label">Password</label>
-            <input class="auth-input" type="password" placeholder="••••••••" value="${esc(state.authPassword)}"
-              oninput="state.authPassword=this.value"
-              onkeydown="if(event.key==='Enter')signIn()">
-          </div>
-          <button class="auth-btn" onclick="signIn()" ${state.authLoading?"disabled":""}>
-            ${state.authLoading ? "Signing in..." : "Sign in →"}
-          </button>
+          ${state.authError?`<div class="auth-error">${esc(state.authError)}</div>`:""}
+          <div class="auth-field"><label class="auth-label">Email</label>
+            <input class="auth-input" type="email" placeholder="you@mycena.com" value="${esc(state.authEmail)}" oninput="state.authEmail=this.value" onkeydown="if(event.key==='Enter')signIn()"></div>
+          <div class="auth-field"><label class="auth-label">Password</label>
+            <input class="auth-input" type="password" placeholder="••••••••" value="${esc(state.authPassword)}" oninput="state.authPassword=this.value" onkeydown="if(event.key==='Enter')signIn()"></div>
+          <button class="auth-btn" onclick="signIn()" ${state.authLoading?"disabled":""}>${state.authLoading?"Signing in...":"Sign in →"}</button>
         </div>
       </div>`;
     return;
   }
 
-  // ── Main CRM ──
   const M = metrics();
   const deal = sel();
   const deals = filtered();
-  const userEmail = state.session.user?.email || "";
+  const userEmail = state.session.user?.email||"";
 
   const header = `
     <div class="header">
@@ -366,16 +412,16 @@ function render() {
         <div class="logo"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg></div>
         <span class="header-title">MyCena CRM</span>
         <span class="badge">Supabase live</span>
-        ${state.saving ? '<span class="saving">Saving...</span>' : ""}
+        ${state.saving?'<span class="saving">Saving...</span>':""}
       </div>
       <div class="header-right">
         <span class="user-email">${esc(userEmail)}</span>
-        ${!deal ? `
+        ${!deal?`
           <button class="btn view-btn ${state.view==="pipeline"?"active":""}" onclick="setView('pipeline')">Pipeline</button>
           <button class="btn view-btn ${state.view==="list"?"active":""}" onclick="setView('list')">List</button>
-        ` : ""}
+        `:""}
         <button class="btn btn-primary" onclick="toggleNew()">+ New deal</button>
-        <button class="btn" onclick="load()" title="Refresh">↺</button>
+        <button class="btn" onclick="load()">↺</button>
         <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
       </div>
     </div>`;
@@ -385,71 +431,66 @@ function render() {
       ${[
         {l:"Active deals", v:M.active},
         {l:"Pipeline", v:fmt(M.pipeline)},
+        {l:"Weighted pipeline", v:fmt(M.weighted)},
         {l:"Closed won", v:fmt(M.won)},
         {l:"Assessments", v:M.assessments},
         {l:"At risk", v:M.atRisk, alert:M.atRisk>0},
       ].map(m=>`<div class="metric"><div class="metric-label">${m.l}</div><div class="metric-value ${m.alert?"alert":""}">${m.v}</div></div>`).join("")}
     </div>`;
 
-  const errorHtml = state.error ? `<div class="error-bar"><span>${esc(state.error)}</span><button class="btn btn-sm" onclick="clearError()">✕</button></div>` : "";
+  const errorHtml = state.error?`<div class="error-bar"><span>${esc(state.error)}</span><button class="btn btn-sm" onclick="clearError()">✕</button></div>`:"";
 
-  const newDealForm = state.showNew ? `
+  const newDealForm = state.showNew?`
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;margin-bottom:14px">
         <span class="card-title" style="margin:0">New deal</span>
         <button class="btn btn-sm" onclick="toggleNew()">✕</button>
       </div>
       <div class="form-grid">
-        ${["company","contact_name","title"].map(f=>`
-          <div class="field"><label class="field-label">${f.replace("_"," ")}</label>
-          <input type="text" value="${esc(state.newDeal[f])}" oninput="updateNew('${f}',this.value)"></div>
-        `).join("")}
-        ${[["sector",SECTORS],["headcount",HEADBANDS],["stage",STAGES.map(s=>s.id)],["control_ladder",LADDERS],["source",SOURCES],["icp_tier",TIERS],["risk",RISKS]].map(([f,opts])=>`
-          <div class="field"><label class="field-label">${f.replace("_"," ")}</label>
-          <select onchange="updateNew('${f}',this.value)">${selectOpts(opts,state.newDeal[f])}</select></div>
-        `).join("")}
-        <div class="field"><label class="field-label">Deal value (£)</label>
-        <input type="number" value="${state.newDeal.deal_value}" oninput="updateNew('deal_value',this.value)"></div>
+        ${["company","contact_name","title"].map(f=>`<div class="field"><label class="field-label">${f.replace("_"," ")}</label><input type="text" value="${esc(state.newDeal[f])}" oninput="updateNew('${f}',this.value)"></div>`).join("")}
+        ${[["sector",SECTORS],["headcount",HEADBANDS],["stage",STAGES.map(s=>s.id)],["control_ladder",LADDERS],["source",SOURCES],["icp_tier",TIERS],["risk",RISKS]].map(([f,opts])=>`<div class="field"><label class="field-label">${f.replace("_"," ")}</label><select onchange="updateNew('${f}',this.value)">${selectOpts(opts,state.newDeal[f])}</select></div>`).join("")}
+        <div class="field"><label class="field-label">Deal value (£)</label><input type="number" value="${state.newDeal.deal_value}" oninput="updateNew('deal_value',this.value)"></div>
+        <div class="field"><label class="field-label">Close quarter</label><select onchange="updateNew('close_quarter',this.value)">${selectOpts(["","Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026"],state.newDeal.close_quarter)}</select></div>
       </div>
-      <div class="field" style="margin-top:10px"><label class="field-label">Notes</label>
-      <textarea oninput="updateNew('notes',this.value)">${esc(state.newDeal.notes)}</textarea></div>
+      <div class="field" style="margin-top:10px"><label class="field-label">Notes</label><textarea oninput="updateNew('notes',this.value)">${esc(state.newDeal.notes)}</textarea></div>
       <div class="form-actions">
         <button class="btn btn-primary" onclick="createDeal()">Save to Supabase</button>
         <button class="btn" onclick="toggleNew()">Cancel</button>
       </div>
-    </div>` : "";
+    </div>`:"";
 
   let main = "";
 
   if (deal) {
+    const total = bantTotal(deal);
+    const pct = bantPct(deal);
+    const wv = weightedValue(deal);
     main = `
-      <button class="btn back-btn" onclick="goBack()">← Back</button>
+      <button class="btn" style="margin-bottom:14px" onclick="goBack()">← Back</button>
       <div class="detail-grid">
-        <div class="detail-left">
-          <div class="card">
+        <div>
+          <div class="card" style="margin-bottom:10px">
             <div class="deal-header">
-              <div><div class="deal-name">${esc(deal.company)}</div>
-              <div class="deal-sub">${esc(deal.contact_name)} · ${esc(deal.title)}</div></div>
-              <div><div class="deal-value-display">${fmt(deal.deal_value)}</div>
-              <span class="risk-badge" style="background:${riskBg(deal.risk)};color:${riskTxt(deal.risk)}">${deal.risk}</span></div>
+              <div><div class="deal-name">${esc(deal.company)}</div><div style="font-size:12px;color:var(--text2)">${esc(deal.contact_name)} · ${esc(deal.title)}</div></div>
+              <div style="text-align:right">
+                <div style="font-size:14px;font-weight:500">${fmt(deal.deal_value)}</div>
+                <div style="font-size:11px;color:var(--purple);font-weight:500">${fmt(wv)} weighted</div>
+                <span class="risk-badge" style="background:${riskBg(deal.risk)};color:${riskTxt(deal.risk)}">${deal.risk}</span>
+              </div>
             </div>
             <div class="tags">
-              ${[deal.sector,deal.headcount,"Tier "+deal.icp_tier,deal.source].map(t=>`<span class="tag">${esc(t)}</span>`).join("")}
+              ${[deal.sector,deal.headcount,"Tier "+deal.icp_tier,deal.source,deal.close_quarter||""].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}
             </div>
             <div class="field-grid">
-              ${[["stage",STAGES.map(s=>s.id)],["control_ladder",LADDERS],["risk",RISKS]].map(([f,opts])=>`
-                <div class="field"><label class="field-label">${f.replace("_"," ")}</label>
-                <select onchange="saveField('${deal.id}','${f}',this.value)">${selectOpts(opts,deal[f])}</select></div>
-              `).join("")}
-              <div class="field"><label class="field-label">Exposure figure (£)</label>
-              <input type="number" value="${deal.exposure_figure||""}" onblur="saveField('${deal.id}','exposure_figure',parseFloat(this.value)||null)" placeholder="0"></div>
-              <div class="field"><label class="field-label">Deal value (£)</label>
-              <input type="number" value="${deal.deal_value||""}" onblur="saveField('${deal.id}','deal_value',parseFloat(this.value)||0)"></div>
+              ${[["stage",STAGES.map(s=>s.id)],["control_ladder",LADDERS],["risk",RISKS]].map(([f,opts])=>`<div class="field"><label class="field-label">${f.replace("_"," ")}</label><select onchange="saveDeal('${deal.id}',{'${f}':this.value})">${selectOpts(opts,deal[f])}</select></div>`).join("")}
+              <div class="field"><label class="field-label">Exposure figure (£)</label><input type="number" value="${deal.exposure_figure||""}" onblur="saveDeal('${deal.id}',{exposure_figure:parseFloat(this.value)||null})" placeholder="0"></div>
             </div>
-            <div class="field"><label class="field-label">Notes</label>
-            <textarea onblur="saveField('${deal.id}','notes',this.value)">${esc(deal.notes||"")}</textarea></div>
-            <div class="hint">Changes save to Supabase on blur.</div>
+            <div class="field"><label class="field-label">Notes</label><textarea onblur="saveDeal('${deal.id}',{notes:this.value})">${esc(deal.notes||"")}</textarea></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px">Changes save automatically on blur.</div>
           </div>
+
+          ${bantSectionHtml(deal)}
+
           <div class="card">
             <div class="card-title">Activity log</div>
             <div class="activity-last">
@@ -457,68 +498,61 @@ function render() {
               ${(deal.days_since_activity||0)>0?`<span style="color:${(deal.days_since_activity||0)>10?"#E24B4A":"var(--text3)"};font-size:11px;margin-left:6px">· ${deal.days_since_activity}d ago</span>`:""}
             </div>
             <div class="activity-input">
-              <input type="text" placeholder="Log activity and press Enter..." value="${esc(state.newActivity)}"
-                oninput="state.newActivity=this.value"
-                onkeydown="if(event.key==='Enter')logActivity('${deal.id}')">
+              <input type="text" placeholder="Log activity and press Enter..." value="${esc(state.newActivity)}" oninput="state.newActivity=this.value" onkeydown="if(event.key==='Enter')logActivity('${deal.id}')">
               <button class="btn" onclick="logActivity('${deal.id}')">Log</button>
             </div>
           </div>
         </div>
-        <div class="detail-right">
-          <div class="card">
+
+        <div>
+          <div class="card" style="margin-bottom:10px">
             <div class="card-title">Run agent</div>
-            ${[
-              {name:"Research brief",num:"08",desc:"Pre-call intelligence"},
-              {name:"Follow-up email",num:"09",desc:"Post-call email"},
-              {name:"Deal diagnosis",num:"10",desc:"Risk + re-engagement"},
-            ].map(a=>`
+            ${[{name:"Research brief",num:"08",desc:"Pre-call intelligence + BANT gaps"},{name:"Follow-up email",num:"09",desc:"Post-call email"},{name:"Deal diagnosis",num:"10",desc:"Risk + BANT + re-engagement"}].map(a=>`
               <button class="agent-btn" onclick="runAgent('${a.name}',${JSON.stringify(deal).replace(/"/g,'&quot;')})" ${state.agentRunning?"disabled":""}>
-                <div><div class="agent-btn-name">${state.agentRunning===a.name?"Running...":a.name}</div>
-                <div class="agent-btn-desc">Agent ${a.num} · ${a.desc}</div></div>
+                <div><div style="font-size:12px;font-weight:500">${state.agentRunning===a.name?"Running...":a.name}</div><div style="font-size:11px;color:var(--text2)">Agent ${a.num} · ${a.desc}</div></div>
                 <span class="agent-run">${state.agentRunning===a.name?"...":"Run →"}</span>
-              </button>
-            `).join("")}
+              </button>`).join("")}
           </div>
           ${state.agentOutput?`
             <div class="agent-output">
-              <div class="agent-output-header">
-                <span class="agent-output-name">${esc(state.agentOutput.name)}</span>
-                <button class="btn btn-sm" onclick="clearAgent()">✕</button>
-              </div>
+              <div class="agent-output-header"><span class="agent-output-name">${esc(state.agentOutput.name)}</span><button class="btn btn-sm" onclick="clearAgent()">✕</button></div>
               <div class="agent-output-text">${esc(state.agentOutput.text)}</div>
-            </div>
-          `:""}
+            </div>`:""}
         </div>
       </div>`;
 
   } else if (state.view==="pipeline") {
     main = `
-      <div class="toolbar">
-        <input type="text" class="search" placeholder="Search..." value="${esc(state.search)}" oninput="setSearch(this.value)">
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="text" style="width:220px" placeholder="Search..." value="${esc(state.search)}" oninput="setSearch(this.value)">
       </div>
       <div class="pipeline"><div class="pipeline-inner">
         ${PIPE_STAGES.map(stage=>{
-          const sd = deals.filter(d=>d.stage===stage.id);
-          const val = sd.reduce((s,d)=>s+(d.deal_value||0),0);
+          const sd=filtered().filter(d=>d.stage===stage.id);
+          const val=sd.reduce((s,d)=>s+(d.deal_value||0),0);
           return `
             <div class="column">
-              <div class="col-header">
-                <span class="col-title">${stage.id}</span>
-                <span class="col-count">${sd.length} · ${fmt(val)}</span>
-              </div>
+              <div class="col-header"><span class="col-title">${stage.id}</span><span class="col-count">${sd.length} · ${fmt(val)}</span></div>
               <div class="col-bar" style="background:${stage.color}"></div>
               <div class="col-cards">
-                ${sd.length===0?'<div class="empty-col">Empty</div>':sd.map(d=>`
-                  <div class="deal-card" onclick="openDeal('${d.id}')">
-                    <div class="deal-card-company">${esc(d.company)}</div>
-                    <div class="deal-card-contact">${esc(d.contact_name)}</div>
-                    <div class="deal-card-bottom">
-                      <span class="deal-card-value">${fmt(d.deal_value)}</span>
-                      <span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span>
-                    </div>
-                    ${(d.days_since_activity||0)>10?`<div class="idle-warn">${d.days_since_activity}d no activity</div>`:""}
-                  </div>
-                `).join("")}
+                ${sd.length===0?'<div class="empty-col">Empty</div>':sd.map(d=>{
+                  const pct=bantPct(d); const bc=bantColor(pct);
+                  return `
+                    <div class="deal-card" onclick="openDeal('${d.id}')">
+                      <div class="deal-card-company">${esc(d.company)}</div>
+                      <div class="deal-card-contact">${esc(d.contact_name)}</div>
+                      <div class="deal-card-bottom">
+                        <span class="deal-card-value">${fmt(d.deal_value)}</span>
+                        <span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span>
+                      </div>
+                      <div class="bant-bar-wrap">
+                        <div class="bant-bar-track"><div class="bant-bar-fill" style="width:${pct}%;background:${bc}"></div></div>
+                        <div class="bant-score-label"><span>BANT ${bantTotal(d)}/12</span><span style="color:${bc}">${pct}%</span></div>
+                      </div>
+                      ${d.close_quarter?`<div style="font-size:10px;color:var(--text3);margin-top:3px">${esc(d.close_quarter)}</div>`:""}
+                      ${(d.days_since_activity||0)>10?`<div class="idle-warn">${d.days_since_activity}d no activity</div>`:""}
+                    </div>`;
+                }).join("")}
               </div>
             </div>`;
         }).join("")}
@@ -526,26 +560,32 @@ function render() {
 
   } else {
     main = `
-      <div class="toolbar">
-        <input type="text" class="search" placeholder="Search..." value="${esc(state.search)}" oninput="setSearch(this.value)">
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="text" style="width:220px" placeholder="Search..." value="${esc(state.search)}" oninput="setSearch(this.value)">
       </div>
       <div class="card" style="padding:0;overflow:hidden">
         <table class="list-table">
-          <thead><tr>
-            ${["Company","Contact","Stage","Ladder","Value","Risk","Days idle"].map(h=>`<th>${h}</th>`).join("")}
-          </tr></thead>
+          <thead><tr>${["Company","Contact","Stage","BANT","Weighted value","Close","Risk","Days idle"].map(h=>`<th>${h}</th>`).join("")}</tr></thead>
           <tbody>
-            ${deals.map(d=>`
-              <tr onclick="openDeal('${d.id}')">
-                <td><strong>${esc(d.company)}</strong></td>
-                <td style="color:var(--text2)">${esc(d.contact_name)}</td>
-                <td><span class="stage-pill">${esc(d.stage)}</span></td>
-                <td style="color:var(--text2)">Stage ${(d.control_ladder||"1").charAt(0)}</td>
-                <td><strong>${fmt(d.deal_value)}</strong></td>
-                <td><span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span></td>
-                <td style="color:${(d.days_since_activity||0)>10?"#E24B4A":"var(--text2)"}">${d.days_since_activity||0}d</td>
-              </tr>
-            `).join("")}
+            ${filtered().map(d=>{
+              const pct=bantPct(d); const bc=bantColor(pct);
+              return `
+                <tr onclick="openDeal('${d.id}')">
+                  <td><strong>${esc(d.company)}</strong></td>
+                  <td style="color:var(--text2)">${esc(d.contact_name)}</td>
+                  <td><span class="stage-pill">${esc(d.stage)}</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:48px;height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${bc};border-radius:2px"></div></div>
+                      <span style="font-size:11px;color:${bc};font-weight:500">${bantTotal(d)}/12</span>
+                    </div>
+                  </td>
+                  <td style="font-weight:500;color:var(--purple)">${fmt(weightedValue(d))}</td>
+                  <td style="color:var(--text2)">${esc(d.close_quarter||"—")}</td>
+                  <td><span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span></td>
+                  <td style="color:${(d.days_since_activity||0)>10?"#E24B4A":"var(--text2)"}">${d.days_since_activity||0}d</td>
+                </tr>`;
+            }).join("")}
           </tbody>
         </table>
       </div>`;
@@ -554,7 +594,6 @@ function render() {
   root.innerHTML = `<div class="app">${header}${metricsHtml}${errorHtml}${newDealForm}${main}</div>`;
 }
 
-// ── Event handlers ───────────────────────────────────────────────
 function setView(v) { state.view=v; render(); }
 function toggleNew() { state.showNew=!state.showNew; render(); }
 function clearError() { state.error=""; render(); }
@@ -563,9 +602,8 @@ function setSearch(v) { state.search=v; render(); }
 function openDeal(id) { state.activeDeal=id; state.agentOutput=null; render(); }
 function goBack() { state.activeDeal=null; state.agentOutput=null; render(); }
 function updateNew(f,v) { state.newDeal[f]=v; }
-function saveField(id,f,v) { saveDeal(id,{[f]:v}); }
+function setBant(id,field,val) { saveDeal(id,{[field]:val}); }
 
-// ── Boot ─────────────────────────────────────────────────────────
 if (state.session) { load(); } else { render(); }
 </script>
 </body>
