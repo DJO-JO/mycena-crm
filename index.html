@@ -191,14 +191,14 @@ function blankDeal() {
 }
 
 // ── API ──────────────────────────────────────────────────────────
-async function authFetch(path, opts={}) {
-  const res = await fetch(`${PROXY}/auth/${path}`, {
-    method: opts.method || "POST",
+async function authFetch(body) {
+  const res = await fetch(`${PROXY}/auth/token`, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: opts.body,
+    body: JSON.stringify(body),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error_description || data.msg || "Auth error");
+  if (!res.ok) throw new Error(data.error_description || data.msg || "Invalid email or password");
   return data;
 }
 
@@ -225,9 +225,7 @@ async function db(path, opts={}) {
 async function signIn() {
   state.authLoading = true; state.authError = ""; render();
   try {
-    const data = await authFetch("token?grant_type=password", {
-      body: JSON.stringify({ email: state.authEmail, password: state.authPassword }),
-    });
+    const data = await authFetch({ email: state.authEmail, password: state.authPassword });
     setSession(data);
     state.session = data;
     state.authLoading = false;
