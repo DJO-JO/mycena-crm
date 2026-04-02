@@ -28,6 +28,24 @@
     }
   }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); font-size: 14px; min-height: 100vh; }
+
+  /* Auth screen */
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .auth-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: 16px; padding: 36px; width: 100%; max-width: 400px; }
+  .auth-logo { width: 40px; height: 40px; border-radius: 10px; background: var(--purple); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+  .auth-logo svg { width: 20px; height: 20px; }
+  .auth-title { font-size: 18px; font-weight: 500; text-align: center; margin-bottom: 6px; }
+  .auth-sub { font-size: 13px; color: var(--text2); text-align: center; margin-bottom: 28px; }
+  .auth-field { margin-bottom: 14px; }
+  .auth-label { font-size: 12px; color: var(--text2); margin-bottom: 5px; display: block; }
+  .auth-input { width: 100%; font-size: 14px; padding: 10px 12px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: inherit; }
+  .auth-input:focus { outline: 2px solid var(--purple); outline-offset: 1px; }
+  .auth-btn { width: 100%; padding: 11px; background: var(--purple); color: white; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 6px; transition: opacity 0.15s; }
+  .auth-btn:hover { opacity: 0.9; }
+  .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .auth-error { font-size: 12px; color: #E24B4A; padding: 8px 12px; background: var(--red-bg); border-radius: var(--radius); margin-bottom: 14px; }
+
+  /* App */
   .app { max-width: 1400px; margin: 0 auto; padding: 20px; }
   .header { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 14px; }
   .header-left { display: flex; align-items: center; gap: 10px; }
@@ -35,26 +53,27 @@
   .logo svg { width: 14px; height: 14px; }
   .header-title { font-size: 15px; font-weight: 500; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--green-bg); color: var(--green-text); font-weight: 500; }
-  .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
+  .user-email { font-size: 11px; color: var(--text3); }
   .header-right { display: flex; gap: 6px; align-items: center; }
   .btn { font-size: 12px; padding: 7px 14px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.15s; }
   .btn:hover { background: var(--bg3); }
   .btn-primary { background: var(--purple); color: white; border-color: var(--purple); }
   .btn-primary:hover { opacity: 0.9; background: var(--purple); }
   .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-ghost { background: none; border-color: transparent; color: var(--text2); }
+  .btn-ghost:hover { background: var(--bg2); border-color: var(--border); }
   .metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
   .metric { background: var(--bg2); border-radius: var(--radius); padding: 10px 14px; }
   .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
   .metric-value { font-size: 22px; font-weight: 500; }
   .metric-value.alert { color: #E24B4A; }
   .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-  input[type=text], input[type=number], select, textarea {
+  input[type=text], input[type=number], input[type=email], input[type=password], select, textarea {
     font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2);
     background: var(--bg); color: var(--text); font-family: inherit; width: 100%;
   }
   input:focus, select:focus, textarea:focus { outline: 2px solid var(--purple); outline-offset: 1px; }
   .search { width: 220px; }
-  .view-btn { padding: 7px 14px; }
   .view-btn.active { background: var(--bg3); }
   .pipeline { overflow-x: auto; padding-bottom: 8px; }
   .pipeline-inner { display: flex; gap: 10px; min-width: max-content; }
@@ -77,7 +96,6 @@
   .card + .card { margin-top: 10px; }
   .card-title { font-size: 13px; font-weight: 500; margin-bottom: 12px; }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .detail-left, .detail-right { display: flex; flex-direction: column; gap: 10px; }
   .deal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
   .deal-name { font-size: 16px; font-weight: 500; }
   .deal-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
@@ -109,7 +127,7 @@
   .stage-pill { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--bg2); color: var(--text2); }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .form-actions { display: flex; gap: 8px; margin-top: 14px; }
-  .error { font-size: 12px; color: #E24B4A; padding: 8px 12px; background: var(--red-bg); border-radius: var(--radius); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .error-bar { font-size: 12px; color: #E24B4A; padding: 8px 12px; background: var(--red-bg); border-radius: var(--radius); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
   .saving { font-size: 11px; color: var(--text3); }
   .back-btn { margin-bottom: 14px; }
   .hint { font-size: 11px; color: var(--text3); margin-top: 6px; }
@@ -120,9 +138,7 @@
 </style>
 </head>
 <body>
-<div class="app" id="app">
-  <div class="loading"><div class="spinner"></div> Connecting to Supabase...</div>
-</div>
+<div id="root"></div>
 
 <script>
 const PROXY = "https://mycena-crm-proxy.julia-aa4.workers.dev";
@@ -152,26 +168,90 @@ const riskTxt = r => r==="GREEN"?"var(--green-text)":r==="AMBER"?"var(--amber-te
 const fmt = n => (n!=null&&n!=="") ? "£"+(n>=1e6?(n/1e6).toFixed(1)+"M":n>=1000?(n/1000).toFixed(0)+"k":n) : "—";
 const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-let state = { deals:[], view:"pipeline", activeDeal:null, showNew:false, search:"", error:"", saving:false, agentRunning:null, agentOutput:null, newActivity:"", newDeal: blankDeal() };
+// ── Session storage ──────────────────────────────────────────────
+const SESSION_KEY = "mc_session";
+function getSession() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; }
+}
+function setSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+// ── State ────────────────────────────────────────────────────────
+let state = {
+  session: getSession(),
+  authEmail: "", authPassword: "", authError: "", authLoading: false,
+  deals: [], view: "pipeline", activeDeal: null, showNew: false,
+  search: "", error: "", saving: false,
+  agentRunning: null, agentOutput: null, newActivity: "",
+  newDeal: blankDeal(),
+};
 
 function blankDeal() {
   return { company:"", contact_name:"", title:"CISO", sector:"Financial services", headcount:"500–2k", stage:"Identified", control_ladder:"1 — Out of control", risk:"GREEN", deal_value:"", exposure_figure:"", icp_tier:"1", source:"Outbound-email", days_since_activity:0, last_activity:"Deal created", notes:"" };
 }
 
-async function db(path, opts={}) {
-  const res = await fetch(`${PROXY}/${path}`, {
-    headers: { "Content-Type":"application/json", "Prefer": opts.prefer||"return=representation" },
-    ...opts
+// ── API ──────────────────────────────────────────────────────────
+async function authFetch(path, opts={}) {
+  const res = await fetch(`${PROXY}/auth/${path}`, {
+    method: opts.method || "POST",
+    headers: { "Content-Type": "application/json" },
+    body: opts.body,
   });
-  if (!res.ok) { const e = await res.json().catch(()=>{}); throw new Error((e&&e.message)||"Request failed"); }
-  if (res.status===204) return null;
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || "Auth error");
+  return data;
+}
+
+async function db(path, opts={}) {
+  const token = state.session?.access_token;
+  const res = await fetch(`${PROXY}/${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Prefer": opts.prefer || "return=representation",
+      ...(token ? { "X-Auth-Token": token } : {}),
+    },
+    ...opts,
+  });
+  if (!res.ok) {
+    if (res.status === 401) { signOut(); return; }
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.message || "Request failed");
+  }
+  if (res.status === 204) return null;
   return res.json();
 }
 
+// ── Auth actions ─────────────────────────────────────────────────
+async function signIn() {
+  state.authLoading = true; state.authError = ""; render();
+  try {
+    const data = await authFetch("token?grant_type=password", {
+      body: JSON.stringify({ email: state.authEmail, password: state.authPassword }),
+    });
+    setSession(data);
+    state.session = data;
+    state.authLoading = false;
+    await load();
+  } catch(e) {
+    state.authError = e.message;
+    state.authLoading = false;
+    render();
+  }
+}
+
+function signOut() {
+  clearSession();
+  state.session = null;
+  state.deals = [];
+  state.activeDeal = null;
+  render();
+}
+
+// ── Data actions ─────────────────────────────────────────────────
 async function load() {
   try {
     const data = await db("deals?order=created_at.desc&limit=200", { prefer:"" });
-    state.deals = data||[];
+    state.deals = data || [];
     state.error = "";
   } catch(e) { state.error = e.message; }
   render();
@@ -180,17 +260,16 @@ async function load() {
 async function saveDeal(id, fields) {
   state.saving = true; render();
   try {
-    await db(`deals?id=eq.${id}`, { method:"PATCH", body:JSON.stringify(fields) });
+    await db(`deals?id=eq.${id}`, { method:"PATCH", body: JSON.stringify(fields) });
     state.deals = state.deals.map(d => d.id===id ? {...d,...fields} : d);
-    state.error = "";
   } catch(e) { state.error = e.message; }
   state.saving = false; render();
 }
 
 async function createDeal() {
-  const d = { ...state.newDeal, deal_value:parseFloat(state.newDeal.deal_value)||0, exposure_figure:state.newDeal.exposure_figure?parseFloat(state.newDeal.exposure_figure):null, days_since_activity:0 };
+  const d = { ...state.newDeal, deal_value: parseFloat(state.newDeal.deal_value)||0, exposure_figure: state.newDeal.exposure_figure ? parseFloat(state.newDeal.exposure_figure) : null, days_since_activity: 0 };
   try {
-    const res = await db("deals", { method:"POST", body:JSON.stringify(d) });
+    const res = await db("deals", { method:"POST", body: JSON.stringify(d) });
     state.deals = [res[0], ...state.deals];
     state.showNew = false; state.newDeal = blankDeal(); state.error = "";
   } catch(e) { state.error = e.message; }
@@ -200,7 +279,7 @@ async function createDeal() {
 async function logActivity(id) {
   const a = state.newActivity.trim();
   if (!a) return;
-  await saveDeal(id, { last_activity:a, days_since_activity:0 });
+  await saveDeal(id, { last_activity: a, days_since_activity: 0 });
   state.newActivity = ""; render();
 }
 
@@ -214,14 +293,15 @@ async function runAgent(name, deal) {
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompts[name]}] })
+      body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompts[name]}] })
     });
     const data = await res.json();
-    state.agentOutput = { name, text:data.content?.[0]?.text||"No output." };
+    state.agentOutput = { name, text: data.content?.[0]?.text || "No output." };
   } catch(e) { state.agentOutput = { name, text:"Agent unavailable." }; }
   state.agentRunning = null; render();
 }
 
+// ── Render ───────────────────────────────────────────────────────
 function metrics() {
   const active = state.deals.filter(d=>!["Closed won","Closed lost","Nurture"].includes(d.stage));
   return {
@@ -240,16 +320,47 @@ function filtered() {
 }
 
 function sel() { return state.activeDeal ? state.deals.find(d=>d.id===state.activeDeal) : null; }
-
-function selectOpts(arr, val) {
-  return arr.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(o)}</option>`).join("");
-}
+function selectOpts(arr, val) { return arr.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(o)}</option>`).join(""); }
 
 function render() {
-  const app = document.getElementById("app");
+  const root = document.getElementById("root");
+
+  // ── Login screen ──
+  if (!state.session) {
+    root.innerHTML = `
+      <div class="auth-wrap">
+        <div class="auth-card">
+          <div class="auth-logo">
+            <svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg>
+          </div>
+          <div class="auth-title">MyCena CRM</div>
+          <div class="auth-sub">Sign in to your account</div>
+          ${state.authError ? `<div class="auth-error">${esc(state.authError)}</div>` : ""}
+          <div class="auth-field">
+            <label class="auth-label">Email</label>
+            <input class="auth-input" type="email" placeholder="you@mycena.com" value="${esc(state.authEmail)}"
+              oninput="state.authEmail=this.value"
+              onkeydown="if(event.key==='Enter')signIn()">
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Password</label>
+            <input class="auth-input" type="password" placeholder="••••••••" value="${esc(state.authPassword)}"
+              oninput="state.authPassword=this.value"
+              onkeydown="if(event.key==='Enter')signIn()">
+          </div>
+          <button class="auth-btn" onclick="signIn()" ${state.authLoading?"disabled":""}>
+            ${state.authLoading ? "Signing in..." : "Sign in →"}
+          </button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // ── Main CRM ──
   const M = metrics();
   const deal = sel();
   const deals = filtered();
+  const userEmail = state.session.user?.email || "";
 
   const header = `
     <div class="header">
@@ -257,15 +368,17 @@ function render() {
         <div class="logo"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg></div>
         <span class="header-title">MyCena CRM</span>
         <span class="badge">Supabase live</span>
-        ${state.saving?'<span class="saving">Saving...</span>':""}
+        ${state.saving ? '<span class="saving">Saving...</span>' : ""}
       </div>
       <div class="header-right">
-        ${!deal?`
+        <span class="user-email">${esc(userEmail)}</span>
+        ${!deal ? `
           <button class="btn view-btn ${state.view==="pipeline"?"active":""}" onclick="setView('pipeline')">Pipeline</button>
           <button class="btn view-btn ${state.view==="list"?"active":""}" onclick="setView('list')">List</button>
-        `:""}
+        ` : ""}
         <button class="btn btn-primary" onclick="toggleNew()">+ New deal</button>
         <button class="btn" onclick="load()" title="Refresh">↺</button>
+        <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
       </div>
     </div>`;
 
@@ -280,7 +393,7 @@ function render() {
       ].map(m=>`<div class="metric"><div class="metric-label">${m.l}</div><div class="metric-value ${m.alert?"alert":""}">${m.v}</div></div>`).join("")}
     </div>`;
 
-  const errorHtml = state.error ? `<div class="error"><span>${esc(state.error)}</span><button class="btn btn-sm" onclick="clearError()">✕</button></div>` : "";
+  const errorHtml = state.error ? `<div class="error-bar"><span>${esc(state.error)}</span><button class="btn btn-sm" onclick="clearError()">✕</button></div>` : "";
 
   const newDealForm = state.showNew ? `
     <div class="card" style="margin-bottom:14px">
@@ -346,7 +459,7 @@ function render() {
               ${(deal.days_since_activity||0)>0?`<span style="color:${(deal.days_since_activity||0)>10?"#E24B4A":"var(--text3)"};font-size:11px;margin-left:6px">· ${deal.days_since_activity}d ago</span>`:""}
             </div>
             <div class="activity-input">
-              <input type="text" id="activity-input" placeholder="Log activity and press Enter..." value="${esc(state.newActivity)}"
+              <input type="text" placeholder="Log activity and press Enter..." value="${esc(state.newActivity)}"
                 oninput="state.newActivity=this.value"
                 onkeydown="if(event.key==='Enter')logActivity('${deal.id}')">
               <button class="btn" onclick="logActivity('${deal.id}')">Log</button>
@@ -357,9 +470,9 @@ function render() {
           <div class="card">
             <div class="card-title">Run agent</div>
             ${[
-              {name:"Research brief", num:"08", desc:"Pre-call intelligence"},
-              {name:"Follow-up email", num:"09", desc:"Post-call email"},
-              {name:"Deal diagnosis", num:"10", desc:"Risk + re-engagement"},
+              {name:"Research brief",num:"08",desc:"Pre-call intelligence"},
+              {name:"Follow-up email",num:"09",desc:"Post-call email"},
+              {name:"Deal diagnosis",num:"10",desc:"Risk + re-engagement"},
             ].map(a=>`
               <button class="agent-btn" onclick="runAgent('${a.name}',${JSON.stringify(deal).replace(/"/g,'&quot;')})" ${state.agentRunning?"disabled":""}>
                 <div><div class="agent-btn-name">${state.agentRunning===a.name?"Running...":a.name}</div>
@@ -385,35 +498,33 @@ function render() {
       <div class="toolbar">
         <input type="text" class="search" placeholder="Search..." value="${esc(state.search)}" oninput="setSearch(this.value)">
       </div>
-      <div class="pipeline">
-        <div class="pipeline-inner">
-          ${PIPE_STAGES.map(stage=>{
-            const sd = deals.filter(d=>d.stage===stage.id);
-            const val = sd.reduce((s,d)=>s+(d.deal_value||0),0);
-            return `
-              <div class="column">
-                <div class="col-header">
-                  <span class="col-title">${stage.id}</span>
-                  <span class="col-count">${sd.length} · ${fmt(val)}</span>
-                </div>
-                <div class="col-bar" style="background:${stage.color}"></div>
-                <div class="col-cards">
-                  ${sd.length===0?'<div class="empty-col">Empty</div>':sd.map(d=>`
-                    <div class="deal-card" onclick="openDeal('${d.id}')">
-                      <div class="deal-card-company">${esc(d.company)}</div>
-                      <div class="deal-card-contact">${esc(d.contact_name)}</div>
-                      <div class="deal-card-bottom">
-                        <span class="deal-card-value">${fmt(d.deal_value)}</span>
-                        <span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span>
-                      </div>
-                      ${(d.days_since_activity||0)>10?`<div class="idle-warn">${d.days_since_activity}d no activity</div>`:""}
+      <div class="pipeline"><div class="pipeline-inner">
+        ${PIPE_STAGES.map(stage=>{
+          const sd = deals.filter(d=>d.stage===stage.id);
+          const val = sd.reduce((s,d)=>s+(d.deal_value||0),0);
+          return `
+            <div class="column">
+              <div class="col-header">
+                <span class="col-title">${stage.id}</span>
+                <span class="col-count">${sd.length} · ${fmt(val)}</span>
+              </div>
+              <div class="col-bar" style="background:${stage.color}"></div>
+              <div class="col-cards">
+                ${sd.length===0?'<div class="empty-col">Empty</div>':sd.map(d=>`
+                  <div class="deal-card" onclick="openDeal('${d.id}')">
+                    <div class="deal-card-company">${esc(d.company)}</div>
+                    <div class="deal-card-contact">${esc(d.contact_name)}</div>
+                    <div class="deal-card-bottom">
+                      <span class="deal-card-value">${fmt(d.deal_value)}</span>
+                      <span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span>
                     </div>
-                  `).join("")}
-                </div>
-              </div>`;
-          }).join("")}
-        </div>
-      </div>`;
+                    ${(d.days_since_activity||0)>10?`<div class="idle-warn">${d.days_since_activity}d no activity</div>`:""}
+                  </div>
+                `).join("")}
+              </div>
+            </div>`;
+        }).join("")}
+      </div></div>`;
 
   } else {
     main = `
@@ -442,10 +553,10 @@ function render() {
       </div>`;
   }
 
-  app.innerHTML = header + metricsHtml + errorHtml + newDealForm + main;
+  root.innerHTML = `<div class="app">${header}${metricsHtml}${errorHtml}${newDealForm}${main}</div>`;
 }
 
-// Event handlers
+// ── Event handlers ───────────────────────────────────────────────
 function setView(v) { state.view=v; render(); }
 function toggleNew() { state.showNew=!state.showNew; render(); }
 function clearError() { state.error=""; render(); }
@@ -456,7 +567,8 @@ function goBack() { state.activeDeal=null; state.agentOutput=null; render(); }
 function updateNew(f,v) { state.newDeal[f]=v; }
 function saveField(id,f,v) { saveDeal(id,{[f]:v}); }
 
-load();
+// ── Boot ─────────────────────────────────────────────────────────
+if (state.session) { load(); } else { render(); }
 </script>
 </body>
 </html>
