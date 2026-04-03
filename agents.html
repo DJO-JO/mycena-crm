@@ -150,7 +150,7 @@ const BRAND_RULES = `Non-negotiable rules:
 const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const sel = (arr, val) => arr.map(o=>`<option value="${esc(o)}"${o===val?" selected":""}>${esc(o)}</option>`).join("");
 
-let state = { view:"console", agent:"01", lang:"English", phases:{}, outputs:{}, errors:{}, library:[], libSearch:"", libExpanded:{}, libLoading:false };
+let state = { view:"console", agent:"01", lang:"English", phases:{}, outputs:{}, errors:{}, library:[], libSearch:"", libExpanded:{}, libLoading:false, intelligence:[], intelLoading:false, intelSearch:"", loadedContext:{} };
 
 async function callClaude(userPrompt, systemPrompt) {
   const body = { model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:userPrompt}] };
@@ -204,7 +204,8 @@ const ASSETS_05 = ["Board presentation deck","CFO one-pager","Objection handling
 const MODE_COLORS_07 = {"Deal health check":"#378ADD","Brand drift audit":"#D4537E","Content gap audit":"#639922","Conversion analysis":"#EF9F27","Agent improvement brief":"#7F77DD"};
 
 // ── prompt builders ──────────────────────────────────────────────────────────
-async function buildPrompts(id) {
+async function buildPrompts(id, sharedContext="") {
+  const intelBlock = sharedContext ? `\n\n--- SHARED INTELLIGENCE FROM OTHER AGENTS ---\n${sharedContext}\n---\n` : "";
   const s = agentState[id]; const lang = state.lang;
 
   if (id==="01") {
@@ -277,7 +278,7 @@ ICP dimensions to maintain (Tier 1/2/3 rankings):
 - Third-party vendor count as leading indicator of credential sprawl
 - Trigger events: sector breach, new CISO appointment, M&A activity, regulatory enforcement
 
-${BRAND_RULES}
+${BRAND_RULES}${intelBlock}
 
 ${crmData}
 ${s.campaignContext?`\nCAMPAIGN CONTEXT:\n${s.campaignContext}`:""}
@@ -310,7 +311,7 @@ Respond in ${state.lang}.`;
 
     const sys = `You are the Ads Testing Agent for MyCena. You generate ad variants and test briefs for paid media on LinkedIn and Google Ads.
 
-${BRAND_RULES}
+${BRAND_RULES}${intelBlock}
 
 Your absolute rules:
 - Every ad points to one CTA only: Book the Board-Level Risk Assessment. Never "learn more", "explore", "download"
@@ -435,12 +436,28 @@ Brief: ${s.brief||"Use your judgement."}`;
 
 // ── run agent ────────────────────────────────────────────────────────────────
 async function runAgent(id) {
-  state.phases[id] = "Briefing context agents..."; state.errors[id] = ""; render();
+  const s = agentState[id];
+  const sector = s.sector||"";
+  const role   = s.role||"";
+  state.phases[id] = "Loading shared intelligence..."; state.errors[id]=""; render();
   try {
-    const {sys,user} = await buildPrompts(id);
+    // Load context from other agents
+    const {context, contributors} = await loadIntelContext(id, sector);
+    state.loadedContext[id] = contributors;
+    state.phases[id] = contributors.length
+      ? `Context from ${contributors.length} agent${contributors.length>1?"s":""}...`
+      : "Briefing context agents...";
+    render();
+
+    const {sys, user} = await buildPrompts(id, context);
     state.phases[id] = "Generating output..."; render();
     const result = await callClaude(user, sys);
     state.outputs[id] = result;
+
+    // Auto-save intelligence
+    state.phases[id] = "Saving intelligence..."; render();
+    await saveIntelligence(id, sector, role, result);
+
   } catch(e) { state.outputs[id] = "Agent unavailable — check connection."; }
   state.phases[id] = null; render();
 }
@@ -613,6 +630,12 @@ function renderPanel(id) {
     textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${showDeal?"e.g. CISO engaged but quiet after board deck — CFO meeting next week...":"e.g. Check for IAM/PAM framing drift..."}" oninput="setField('07','brief',this.value)">${esc(s.brief)}</textarea>`);
   }
 
+  const contributors = state.loadedContext[id]||[];
+  const contextBadge = contributors.length ? `
+    <div style="font-size:11px;padding:6px 10px;border-radius:6px;background:var(--purple-bg);color:var(--purple-text);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+      <span style="font-weight:500">Context loaded from:</span> ${contributors.map(c=>`<span style="padding:1px 6px;border-radius:3px;background:var(--bg3)">${esc(c)}</span>`).join(" ")}
+    </div>` : "";
+
   const outputHtml = output ? `
     <div class="output" style="border:0.5px solid ${hexToMuted(color)}">
       <div class="output-header">
@@ -623,6 +646,7 @@ function renderPanel(id) {
           <button class="btn-sm" onclick="clearOutput('${id}')">✕</button>
         </div>
       </div>
+      ${contextBadge}
       <div class="output-text">${esc(output)}</div>
     </div>` : "";
 
@@ -654,6 +678,44 @@ function hexToMuted(hex) {
 }
 
 // ── main render ──────────────────────────────────────────────────────────────
+function renderIntelligence() {
+  const INTEL_COLORS = {
+    "icp_update":"#1D9E75","brand_rules":"#7F77DD","campaign_pattern":"#EF9F27",
+    "data_proof":"#888780","performance":"#378ADD","ads_pattern":"#D85A30",
+    "pr_context":"#D4537E","sales_context":"#639922","general":"#888780"
+  };
+  const q = state.intelSearch.toLowerCase();
+  const items = state.intelligence.filter(c =>
+    !q || c.agent_label?.toLowerCase().includes(q) || c.intel_type?.toLowerCase().includes(q) ||
+    c.sector?.toLowerCase().includes(q) || c.summary?.toLowerCase().includes(q)
+  );
+  if (!items.length) return `<div class="lib-empty">${state.intelSearch?"No results found.":"No intelligence saved yet. Run any agent to start building the shared context store."}</div>`;
+  return items.map(c => {
+    const color = INTEL_COLORS[c.intel_type]||"#888780";
+    const date  = new Date(c.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    const expanded = state.libExpanded["i_"+c.id];
+    return `
+      <div class="lib-card">
+        <div class="lib-card-header">
+          <div>
+            <span style="font-size:12px;font-weight:500;color:${color}">Agent ${c.agent_id} — ${esc(c.agent_label)}</span>
+            <span class="lib-date" style="margin-left:8px">${date}</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" onclick="toggleExpand('i_${c.id}')">${expanded?"Collapse":"Expand"}</button>
+            <button class="btn-sm" style="color:#E24B4A" onclick="deleteIntel('${c.id}')">Delete</button>
+          </div>
+        </div>
+        <div class="lib-card-meta">
+          <span class="lib-tag" style="background:${color}20;color:${color}">${esc(c.intel_type.replace("_"," "))}</span>
+          ${c.sector?`<span class="lib-tag">${esc(c.sector)}</span>`:""}
+          ${c.role?`<span class="lib-tag">${esc(c.role)}</span>`:""}
+        </div>
+        <div class="${expanded?"lib-card-full":"lib-card-preview"}">${esc(expanded?(c.full_output||c.summary):c.summary.slice(0,200)+(c.summary.length>200?"...":""))}</div>
+      </div>`;
+  }).join("");
+}
+
 function renderLibrary() {
   const q = state.libSearch.toLowerCase();
   const items = state.library.filter(c =>
@@ -707,6 +769,7 @@ function render() {
         <div style="display:flex;gap:6px">
           <button class="btn-sm" style="${state.view==="console"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='console';render()">Console</button>
           <button class="btn-sm" style="${state.view==="library"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='library';loadLibrary()">Library</button>
+          <button class="btn-sm" style="${state.view==="intelligence"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='intelligence';loadIntelligenceStore()">Intelligence</button>
         </div>
         <div class="lang-wrap">
           <label>Language</label>
