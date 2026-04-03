@@ -365,7 +365,7 @@ async function callClaude(prompt) {
 let batchState = null; // { total, done, current, errors, running }
 
 async function runAgent08Batch() {
-  const deals = state.deals.filter(d => !["Closed won","Closed lost"].includes(d.stage));
+  const deals = state.deals.filter(d => !["Closed won","Closed lost"].includes(d.stage) && !(d.notes||"").startsWith("[Agent 08 —"));
   if (!deals.length) return;
   batchState = { total: deals.length, done: 0, current: null, errors: [], running: true };
   renderBatchModal();
