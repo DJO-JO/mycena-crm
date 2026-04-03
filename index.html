@@ -361,7 +361,72 @@ async function callClaude(prompt) {
   return data.content?.[0]?.text || "No output.";
 }
 
-// Quick-run Agent 08 from pipeline card
+// ── Batch Agent 08 ────────────────────────────────────────────────────────────
+let batchState = null; // { total, done, current, errors, running }
+
+async function runAgent08Batch() {
+  const deals = state.deals.filter(d => !["Closed won","Closed lost"].includes(d.stage));
+  if (!deals.length) return;
+  batchState = { total: deals.length, done: 0, current: null, errors: [], running: true };
+  renderBatchModal();
+
+  for (const deal of deals) {
+    if (!batchState.running) break;
+    batchState.current = deal.company;
+    renderBatchModal();
+    try {
+      const text = await callClaude(buildAgent08Prompt(deal));
+      const ts = new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+      const newNotes = `[Agent 08 — ${ts}]\n${text}`;
+      await saveDeal(deal.id, { notes: newNotes });
+    } catch(e) {
+      batchState.errors.push(`${deal.company}: ${e.message}`);
+    }
+    batchState.done++;
+    renderBatchModal();
+    // 1.5s delay between calls
+    if (batchState.done < deals.length) await new Promise(r => setTimeout(r, 1500));
+  }
+  batchState.running = false;
+  batchState.current = null;
+  renderBatchModal();
+}
+
+function stopBatch() { if (batchState) batchState.running = false; }
+function closeBatchModal() { batchState = null; render(); }
+
+function renderBatchModal() {
+  const mr = document.getElementById("modal-root");
+  if (!batchState) { render(); return; }
+  const { total, done, current, errors, running } = batchState;
+  const pct = Math.round((done / total) * 100);
+  const finished = !running && current === null;
+  mr.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-header">
+          <span class="modal-title">Agent 08 — Batch run</span>
+          ${finished ? `<button class="btn btn-sm" onclick="closeBatchModal()">✕</button>` : ""}
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">
+            <span>${finished ? "Complete" : current ? `Researching ${esc(current)}...` : "Starting..."}</span>
+            <span>${done} / ${total}</span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:var(--purple);border-radius:3px;transition:width 0.4s"></div>
+          </div>
+        </div>
+        ${errors.length ? `<div style="font-size:11px;color:#E24B4A;background:var(--red-bg);padding:8px 10px;border-radius:var(--radius);margin-bottom:10px">${errors.map(e=>esc(e)).join("<br>")}</div>` : ""}
+        ${finished
+          ? `<div class="agent-saved-note" style="margin-bottom:12px">✓ ${done - errors.length} briefs saved to notes</div>
+             <button class="btn btn-primary" onclick="closeBatchModal()">Done</button>`
+          : `<button class="btn" onclick="stopBatch()">Stop</button>`}
+      </div>
+    </div>`;
+}
+
+// ── Quick-run Agent 08 from pipeline card ─────────────────────────────────────
 async function quickRunAgent08(dealId, evt) {
   evt.stopPropagation(); // don't open deal detail
   const deal = state.deals.find(d=>d.id===dealId);
@@ -547,6 +612,7 @@ function render() {
         ${!window.ANTHROPIC_KEY
           ? `<button class="btn btn-sm" onclick="promptApiKey()" style="color:#E24B4A;border-color:#E24B4A">⚠ Add API key</button>`
           : `<button class="btn btn-sm" onclick="promptApiKey()" title="API key set — click to rotate">🔑 API key</button>`}
+        <button class="btn btn-sm" onclick="runAgent08Batch()" style="background:var(--purple-bg);color:var(--purple-text);border-color:var(--purple)" title="Run Agent 08 on all active prospects">08 ▶▶ All</button>
         ${!deal?`
           <button class="btn ${state.view==="pipeline"?"btn-primary":""}" onclick="setView('pipeline')">Pipeline</button>
           <button class="btn ${state.view==="list"?"btn-primary":""}" onclick="setView('list')">List</button>`:""}
