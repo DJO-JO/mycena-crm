@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCena Agent Console</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeede8;
+    --text: #1a1a18; --text2: #6b6b66; --text3: #9b9b96;
+    --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+    --purple: #7F77DD; --purple-bg: #EEEDFE; --purple-text: #26215C;
+    --green-bg: #E1F5EE; --green-text: #04342C;
+    --red-bg: #FCEBEB; --red-text: #501313;
+    --radius: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --bg2: #242422; --bg3: #2c2c2a;
+      --text: #e8e6de; --text2: #9b9996; --text3: #6b6b66;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.18);
+      --purple-bg: #26215C; --purple-text: #CECBF6;
+      --green-bg: #04342C; --green-text: #9FE1CB;
+      --red-bg: #501313; --red-text: #F09595;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); font-size: 14px; min-height: 100vh; }
+  .app { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+  /* header */
+  .header { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 14px; }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .logo { width: 28px; height: 28px; border-radius: 7px; background: var(--purple); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--green-bg); color: var(--green-text); font-weight: 500; }
+
+  /* nav */
+  .agent-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .nav-btn { display: flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg2); cursor: pointer; font-family: inherit; color: var(--text); transition: all 0.15s; }
+  .nav-btn.active { border-color: var(--active-color); background: var(--active-muted); }
+  .nav-num { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: var(--bg3); color: var(--text2); font-weight: 500; }
+  .nav-btn.active .nav-num { color: white; background: var(--active-color); }
+  .nav-label { font-size: 12px; font-weight: 500; }
+  .nav-btn.active .nav-label { color: var(--active-color); }
+  .nav-desc { font-size: 10px; color: var(--text3); }
+
+  /* panel */
+  .panel { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+  .panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 0.5px solid var(--border); }
+  .panel-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .panel-title { font-size: 13px; font-weight: 500; }
+  .panel-desc { font-size: 11px; color: var(--text3); }
+
+  /* form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .field { display: flex; flex-direction: column; gap: 3px; }
+  .field-label { font-size: 11px; color: var(--text2); }
+  .field-opt { color: var(--text3); }
+  input, select, textarea { font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: inherit; width: 100%; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--purple); outline-offset: 1px; }
+  textarea { resize: vertical; height: 70px; }
+  .full { grid-column: 1 / -1; }
+
+  /* mode pills */
+  .mode-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pill { font-size: 12px; padding: 5px 11px; border-radius: 6px; border: 0.5px solid var(--border2); background: var(--bg2); cursor: pointer; font-family: inherit; color: var(--text); transition: background 0.15s; }
+  .pill.active { color: white; border-color: transparent; }
+
+  /* run button */
+  .run-btn { font-size: 13px; padding: 8px 20px; border-radius: var(--radius); border: none; color: white; cursor: pointer; font-family: inherit; font-weight: 500; transition: opacity 0.15s; }
+  .run-btn:disabled { cursor: wait; opacity: 0.7; }
+
+  /* output */
+  .output { margin-top: 16px; background: var(--bg); border-radius: var(--radius-lg); padding: 16px; }
+  .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .output-label { font-size: 12px; font-weight: 500; }
+  .output-meta { font-size: 11px; color: var(--text3); margin-left: 8px; }
+  .output-text { font-size: 13px; line-height: 1.7; white-space: pre-wrap; max-height: 480px; overflow-y: auto; }
+  .output-actions { display: flex; gap: 6px; }
+
+  /* small btns */
+  .btn-sm { font-size: 11px; padding: 3px 9px; border-radius: 5px; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text2); cursor: pointer; font-family: inherit; }
+  .btn-sm:hover { background: var(--bg3); }
+
+  /* error */
+  .error { font-size: 12px; color: #E24B4A; margin-bottom: 10px; }
+
+  /* alert box */
+  .alert-box { font-size: 12px; padding: 8px 12px; border-radius: 7px; margin-bottom: 10px; border-left: 3px solid #E24B4A; background: var(--red-bg); color: var(--red-text); grid-column: 1/-1; }
+
+  /* lang selector */
+  .lang-wrap { display: flex; align-items: center; gap: 8px; }
+  .lang-wrap label { font-size: 11px; color: var(--text2); white-space: nowrap; }
+  .lang-wrap select { width: auto; font-size: 12px; padding: 5px 8px; }
+
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const PROXY = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
+
+const LANGUAGES = ["English","French","German","Spanish","Italian","Portuguese","Dutch","Polish","Swedish","Norwegian"];
+const ROLES     = ["CISO","CTO","Risk & Compliance","CFO","Board member","IT Director","IT Manager"];
+const SECTORS   = ["Financial services","BPO","MSP","Critical infrastructure","Healthcare","Government/Defence","Retail","Manufacturing","Professional services","Logistics","Technology","Other"];
+const LADDER    = ["1 — Out of control","2 — Aware but undefended","3 — Partial control","4 — Full control"];
+const HEADCOUNTS= ["<500","500–2k","2k–10k","10k+"];
+const STAGES_CRM= ["Identified","Contacted","Engaged","Assessment booked","Assessment delivered","Internal selling","Commercial","Closed won","Closed lost","Nurture"];
+const RISKS     = ["GREEN","AMBER","RED"];
+
+const AGENTS = [
+  { id:"01", label:"Brand Strategy",      color:"#7F77DD", muted:"#EEEDFE", desc:"Brand voice & positioning" },
+  { id:"02", label:"Content",             color:"#378ADD", muted:"#E6F1FB", desc:"Whitepapers & long-form" },
+  { id:"03", label:"Campaign",            color:"#EF9F27", muted:"#FAEEDA", desc:"Ads, emails & landing pages" },
+  { id:"04", label:"PR & Media",          color:"#D4537E", muted:"#FBEAF0", desc:"Press & reactive" },
+  { id:"05", label:"Sales Enablement",    color:"#639922", muted:"#EAF3DE", desc:"Decks, objections & battlecards" },
+  { id:"06", label:"Data & Intelligence", color:"#888780", muted:"#F1EFE8", desc:"Exposure figures & proof" },
+  { id:"07", label:"Performance",         color:"#7F77DD", muted:"#EEEDFE", desc:"Drift, deal health & gaps" },
+];
+
+const BRAND_RULES = `Non-negotiable rules:
+- Central argument: architectural, not incremental. Every security tool operates AFTER authentication. MyCena operates AT the credential layer.
+- Physical key analogy: "You wouldn't give every employee a master key to every room in your building. But that is exactly what most organisations do with digital credentials."
+- Never use: solution, robust, seamless, industry-leading, cutting-edge, best-in-class
+- Never describe MyCena as IAM, PAM, SSO, or MFA
+- Use named real incidents (SolarWinds, Colonial Pipeline, Kaseya, M&S, Jaguar) — never hypotheticals
+- Only CTA: Board-Level Risk Assessment
+- Four-level persuasion: 1) Emotional truth 2) Structural diagnosis 3) Proof 4) Solution`;
+
+const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const sel = (arr, val) => arr.map(o=>`<option value="${esc(o)}"${o===val?" selected":""}>${esc(o)}</option>`).join("");
+
+let state = { agent:"01", lang:"English", phases:{}, outputs:{}, errors:{} };
+
+async function callClaude(userPrompt, systemPrompt) {
+  const body = { model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:userPrompt}] };
+  if (systemPrompt) body.system = systemPrompt;
+  const res = await fetch(PROXY, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  const data = await res.json();
+  return data.content?.[0]?.text || "";
+}
+
+const p05ctx = (role,sector,extra="") =>
+`You are MyCena's Sales Enablement Agent. Reason from first principles.
+Role: ${role} | Sector: ${sector}${extra}
+Return: 1) Primary motivation 2) Internal pressures 3) How they buy 4) Top 2 objections + responses 5) Single most important thing MyCena must demonstrate. Be specific.`;
+
+const p06ctx = (sector,headcount="",ladder="",incident="") =>
+`You are MyCena's Data & Intelligence Agent. Reason from first principles.
+Sector: ${sector}${headcount?` | Headcount: ${headcount}`:""}${ladder?` | Ladder: ${ladder}`:""}${incident?`\nIncident: ${incident}`:""}
+Return: 1) Most relevant named incident + cost 2) Regulatory pressure 3) Credential failure mode 4) Proof data to shift belief 5) Native sector language. Real figures only.`;
+
+// ── per-agent state ──────────────────────────────────────────────────────────
+const agentState = {
+  "01":{ mode:"Generation", ctype:"Campaign brief", role:"CISO", sector:"Financial services", topic:"", review:"" },
+  "02":{ role:"CISO", sector:"Financial services", ctype:"Whitepaper", ladder:"2 — Aware but undefended", angle:"" },
+  "03":{ role:"CISO", sector:"Financial services", channel:"LinkedIn ad", campaign:"Always-on brand", ladder:"2 — Aware but undefended", brief:"" },
+  "04":{ mode:"Reactive — breach response", sector:"Financial services", assetType:"Full reactive pack", pressTarget:"Security press", incident:"", brief:"" },
+  "05":{ role:"CISO", sector:"Financial services", assetType:"Board presentation deck", ladder:"2 — Aware but undefended", headcount:"500–2k", dealValue:"", exposure:"", brief:"" },
+  "06":{ mode:"Exposure calculation", sector:"Financial services", headcount:"500–2k", dealValue:"", exposure:"", ticketVol:"", hourlyRate:"", incident:"", brief:"" },
+  "07":{ mode:"Deal health check", sector:"Financial services", role:"CISO", dealStage:"Engaged", ladder:"2 — Aware but undefended", risk:"AMBER", daysIdle:"", lastAct:"", content:"", brief:"" },
+};
+
+const ASSET_MAP_04 = {
+  "Reactive — breach response":["Full reactive pack","Incident summary card","CEO quote only","Social post"],
+  "Proactive — media asset":["Press release","Award submission","Analyst briefing","Journalist pitch — security press","Journalist pitch — business press"],
+  "Executive prep":["Interview Q&A prep","Key message brief","On-record statement"],
+};
+const MODES_06 = ["Exposure calculation","Sector threat profile","Incident deep-dive","Proof data pack","Regulatory briefing"];
+const MODES_07 = ["Deal health check","Brand drift audit","Content gap audit","Conversion analysis","Agent improvement brief"];
+const CTYPES_01 = ["Campaign brief","Messaging framework","Audience narrative","Website copy","Email","LinkedIn post","Press release"];
+const CTYPES_02 = ["Whitepaper","Breach anatomy article","CISO board brief template","Analyst-facing narrative","Executive opinion piece","LinkedIn long-form","Case study narrative","Regulatory briefing"];
+const CHANNELS_03 = ["LinkedIn ad","Cold email — first touch","Email nurture sequence","Landing page","Retargeting ad","Event follow-up","LinkedIn long-form post"];
+const CAMPAIGNS_03 = ["Always-on brand","Incident reactive","Sector-specific","Control Ladder nurture","Assessment conversion","Closed-lost re-engagement"];
+const ASSETS_05 = ["Board presentation deck","CFO one-pager","Objection handling guide","Competitive battlecard","Champion toolkit","Internal business case","Executive summary","Procurement / security questionnaire responses"];
+const MODE_COLORS_07 = {"Deal health check":"#378ADD","Brand drift audit":"#D4537E","Content gap audit":"#639922","Conversion analysis":"#EF9F27","Agent improvement brief":"#7F77DD"};
+
+// ── prompt builders ──────────────────────────────────────────────────────────
+async function buildPrompts(id) {
+  const s = agentState[id]; const lang = state.lang;
+
+  if (id==="01") {
+    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector)), callClaude(p06ctx(s.sector))]);
+    const sys = `You are the Brand Strategy Agent for MyCena.\n${BRAND_RULES}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nWhen reviewing: Voice/Proof/Audience/Control Ladder check then verdict: APPROVED / APPROVED WITH EDITS / REQUIRES REVISION.\nRespond in ${lang}.`;
+    const user = s.mode==="Generation" ? `Mode: Generation\nContent type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nTopic: ${s.topic||"Use judgement."}` : `Mode: Review\nAudience: ${s.role}\nSector: ${s.sector}\nContent:\n${s.review}`;
+    return {sys,user};
+  }
+  if (id==="02") {
+    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector)), callClaude(p06ctx(s.sector,"",s.ladder))]);
+    const sys = `You are the Content & Thought Leadership Agent for MyCena.\n${BRAND_RULES}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nNever open with "In today's rapidly evolving threat landscape." Checklist: named incident + cost / physical key analogy / single audience / Ladder stage / no hypotheticals / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`;
+    const user = `Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nAngle: ${s.angle||"Use judgement."}`;
+    return {sys,user};
+  }
+  if (id==="03") {
+    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector)), callClaude(p06ctx(s.sector,"",s.ladder))]);
+    const sys = `You are the Campaign & Demand Generation Agent for MyCena.\n${BRAND_RULES}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nChannel rules: LinkedIn — stop scroll, never open with question. Cold email 1 — never mention product. Landing pages — headline = problem, sub = structural gap, one named incident, CTA = book assessment. Never "learn more"/"explore"/"find out how". Email nurture 5 stages: problem → incident pattern → structural diagnosis → proof → conversion.\nRespond in ${lang}.`;
+    const user = `Channel: ${s.channel}\nCampaign: ${s.campaign}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nBrief: ${s.brief||"Use judgement."}`;
+    return {sys,user};
+  }
+  if (id==="04") {
+    const modeColor = s.mode==="Reactive — breach response"?"#E24B4A":s.mode==="Proactive — media asset"?"#1D9E75":"#7F77DD";
+    const [c5,c6] = await Promise.all([
+      callClaude(`You are MyCena's media relations specialist. What does ${s.pressTarget} want from a cybersecurity story? What makes a MyCena CEO quote independently quotable? What kills credibility with this audience?`),
+      callClaude(p06ctx(s.sector,"","",s.incident))
+    ]);
+    const sys = `You are the PR & Media Agent for MyCena.\n${BRAND_RULES}\nMEDIA BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nRules: Security press = technical pattern first. Business press = financial/human consequence first. Never same pitch to both. CEO quotes must survive removal from context — no passive voice. Flag if credential involvement unconfirmed. Reactive pack = incident summary card + pattern match + cost projection + structural fix statement + CEO quote.\nRespond in ${lang}.`;
+    const user = `Mode: ${s.mode}\nAsset: ${s.assetType}\nSector: ${s.sector}\nPress target: ${s.pressTarget}\n${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Use judgement."}`;
+    return {sys,user};
+  }
+  if (id==="05") {
+    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector,`\nAsset: ${s.assetType} | Ladder: ${s.ladder}`)), callClaude(p06ctx(s.sector,s.headcount))]);
+    const sys = `You are the Sales Enablement Agent for MyCena.\n${BRAND_RULES}\nBUYING SITUATION:\n${c5}\nDATA INTELLIGENCE:\n${c6}\nRules: Board deck opens with named sector incident — never company overview. CFO one-pager leads with exposure figure: monthly cost + SLA risk = annual exposure, MyCena cost, net saving, payback period. Objections: (1) Already have Okta/Azure AD → MyCena fills the gap they don't cover. (2) No IT resource → overlay, 4 weeks. (3) No breach yet → Colonial Pipeline hadn't either. (4) Board won't prioritise → M&S lost £300M in 5 weeks. Never position against Okta/Azure AD — real displacement is the spreadsheet and manual checklist.\nRespond in ${lang}.`;
+    const user = `Asset: ${s.assetType}\nRole: ${s.role}\nSector: ${s.sector}\nLadder: ${s.ladder}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Exposure: £${s.exposure}\n`:""}Brief: ${s.brief||"Use judgement."}`;
+    return {sys,user};
+  }
+  if (id==="06") {
+    const ctx = await callClaude(`Operational context for ${s.sector}, headcount ${s.headcount}: typical IT helpdesk structure, credential ticket volume, SLA/contractual framework, regulatory environment, common credential failure mode, what good governance looks like vs industry average. Be specific.`);
+    const sys = `You are the Data & Intelligence Agent for MyCena — the proof layer.\nOPERATIONAL CONTEXT:\n${ctx}\nRules: Primary sources only (IBM, Verizon DBIR, Ponemon, official filings). Distinguish mean/median/max cost. Flag sources >3 years. Flag all estimates. Core figures: avg breach $4.88M (IBM 2024), 80%+ credential-involved (Verizon DBIR), 194 days avg detection (IBM 2024), Colonial Pipeline $4.4M, M&S £300M+ (Q1 2025), SolarWinds $100M+. Exposure: monthly tickets × £25 + SLA risk + staff downtime = annual exposure.\nRespond in ${lang}.`;
+    const user = `Mode: ${s.mode}\nSector: ${s.sector}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Known exposure: £${s.exposure}\n`:""}${s.ticketVol?`Monthly tickets: ${s.ticketVol}\n`:""}${s.hourlyRate?`Hourly rate: £${s.hourlyRate}\n`:""}${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Produce most useful output for this mode."}`;
+    return {sys,user};
+  }
+  if (id==="07") {
+    const ctx = await callClaude(`Performance context: ${s.mode} for ${s.sector}, ${s.role}, deal stage ${s.dealStage}, ladder ${s.ladder}. Normal velocity, common stall points, on-brand vs drifting execution, which agent (01-06) helps most right now and why?`);
+    const sys = `You are the Performance & Optimisation Agent for MyCena. Diagnose and improve — do not create campaigns.\nPERFORMANCE CONTEXT:\n${ctx}\nBrand drift scoring (0-10): Problem clarity (0-2) + Named proof (0-2) + Audience specificity (0-2) + Ladder coherence (0-2) + CTA integrity (0-2). 9-10=on-brand, 7-8=minor drift, 5-6=significant, <5=systematic — flag to human.\nDeal health: stage velocity, risk signals, stall reason, re-engagement action with opening line, which agent helps most.\nDrift audits: score each dimension, flag specific passages, verdict APPROVED/APPROVED WITH EDITS/REQUIRES REVISION, exact rewrite instructions.\nRespond in ${lang}.`;
+    const user = `Mode: ${s.mode}\nSector: ${s.sector}\nRole: ${s.role}\nLadder: ${s.ladder}\n${s.dealStage?`Deal stage: ${s.dealStage}\n`:""}${s.risk?`Risk: ${s.risk}\n`:""}${s.daysIdle?`Days idle: ${s.daysIdle}\n`:""}${s.lastAct?`Last activity: ${s.lastAct}\n`:""}${s.content?`Content:\n${s.content}\n`:""}Brief: ${s.brief||"Use judgement."}`;
+    return {sys,user};
+  }
+}
+
+// ── run agent ────────────────────────────────────────────────────────────────
+async function runAgent(id) {
+  state.phases[id] = "Briefing context agents..."; state.errors[id] = ""; render();
+  try {
+    const {sys,user} = await buildPrompts(id);
+    state.phases[id] = "Generating output..."; render();
+    const result = await callClaude(user, sys);
+    state.outputs[id] = result;
+  } catch(e) { state.outputs[id] = "Agent unavailable — check connection."; }
+  state.phases[id] = null; render();
+}
+
+function clearOutput(id) { state.outputs[id] = null; render(); }
+function copyOutput(id) { navigator.clipboard?.writeText(state.outputs[id]||""); }
+
+// ── field change helpers ─────────────────────────────────────────────────────
+function setField(id, field, value) {
+  agentState[id][field] = value;
+  if (id==="04" && field==="mode") agentState[id].assetType = ASSET_MAP_04[value][0];
+  render();
+}
+
+// ── panel renderers ──────────────────────────────────────────────────────────
+function renderPanel(id) {
+  const s = agentState[id];
+  const ag = AGENTS.find(a=>a.id===id);
+  const phase = state.phases[id];
+  const output = state.outputs[id];
+  const running = !!phase;
+  const color = id==="07" ? (MODE_COLORS_07[s.mode]||ag.color) : id==="04" ? (s.mode==="Reactive — breach response"?"#E24B4A":s.mode==="Proactive — media asset"?"#1D9E75":"#7F77DD") : ag.color;
+
+  let modesHtml = "";
+  let fieldsHtml = "";
+  let textareaHtml = "";
+
+  if (id==="01") {
+    modesHtml = pills(["Generation","Review"], s.mode, id, "mode", color);
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Role</label><select onchange="setField('01','role',this.value)">${sel(ROLES,s.role)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('01','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      ${s.mode==="Generation"?`<div class="field"><label class="field-label">Content type</label><select onchange="setField('01','ctype',this.value)">${sel(CTYPES_01,s.ctype)}</select></div>`:""}
+    `;
+    textareaHtml = s.mode==="Generation"
+      ? field("Topic / brief","<textarea placeholder=\"e.g. LinkedIn post for BPO IT Directors — focus on SLA risk...\" oninput=\"setField('01','topic',this.value)\">${s.topic}</textarea>".replace("${s.topic}",esc(s.topic)))
+      : field("Content to review",`<textarea style="height:110px" placeholder="Paste copy to audit against brand rules..." oninput="setField('01','review',this.value)">${esc(s.review)}</textarea>`);
+  }
+
+  if (id==="02") {
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Audience role</label><select onchange="setField('02','role',this.value)">${sel(ROLES,s.role)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('02','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Content type</label><select onchange="setField('02','ctype',this.value)">${sel(CTYPES_02,s.ctype)}</select></div>
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('02','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
+    `;
+    textareaHtml = field("Angle / focus <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Anchor on Kaseya — third-party access as the entry point..." oninput="setField('02','angle',this.value)">${esc(s.angle)}</textarea>`);
+  }
+
+  if (id==="03") {
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Audience role</label><select onchange="setField('03','role',this.value)">${sel(ROLES,s.role)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('03','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Channel</label><select onchange="setField('03','channel',this.value)">${sel(CHANNELS_03,s.channel)}</select></div>
+      <div class="field"><label class="field-label">Campaign type</label><select onchange="setField('03','campaign',this.value)">${sel(CAMPAIGNS_03,s.campaign)}</select></div>
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('03','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
+    `;
+    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Reactive LinkedIn ad after M&S breach — target retail CISOs..." oninput="setField('03','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+
+  if (id==="04") {
+    const assetOpts = ASSET_MAP_04[s.mode]||[];
+    modesHtml = pills(Object.keys(ASSET_MAP_04), s.mode, id, "mode", color);
+    fieldsHtml = `
+      ${s.mode==="Reactive — breach response"?`<div class="alert-box">Reactive mode — paste incident below. Agent flags if credential involvement unconfirmed.</div>`:""}
+      <div class="field"><label class="field-label">Asset type</label><select onchange="setField('04','assetType',this.value)">${sel(assetOpts,s.assetType)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('04','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Press target</label><select onchange="setField('04','pressTarget',this.value)">${sel(["Security press","Business press (FT/BBC/Times)","Trade press","Both"],s.pressTarget)}</select></div>
+      ${s.mode==="Reactive — breach response"?`<div class="field full"><label class="field-label">Incident / news hook</label><textarea style="height:60px" placeholder="e.g. Major UK retailer hit by ransomware..." oninput="setField('04','incident',this.value)">${esc(s.incident)}</textarea></div>`:""}
+    `;
+    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CEO interview on Sky News — focus on what boards should ask..." oninput="setField('04','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+
+  if (id==="05") {
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Primary role</label><select onchange="setField('05','role',this.value)">${sel(ROLES,s.role)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('05','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Asset type</label><select onchange="setField('05','assetType',this.value)">${sel(ASSETS_05,s.assetType)}</select></div>
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('05','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
+      <div class="field"><label class="field-label">Headcount</label><select onchange="setField('05','headcount',this.value)">${sel(HEADCOUNTS,s.headcount)}</select></div>
+      <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.dealValue)}" placeholder="e.g. 85000" oninput="setField('05','dealValue',this.value)"></div>
+      <div class="field"><label class="field-label">Exposure figure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('05','exposure',this.value)"></div>
+    `;
+    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CISO on board but CFO blocked it — build ROI case for sceptical CFO..." oninput="setField('05','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+
+  if (id==="06") {
+    modesHtml = pills(MODES_06, s.mode, id, "mode", color);
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('06','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Headcount</label><select onchange="setField('06','headcount',this.value)">${sel(HEADCOUNTS,s.headcount)}</select></div>
+      ${s.mode==="Exposure calculation"?`
+        <div class="field"><label class="field-label">Monthly credential tickets <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.ticketVol)}" placeholder="e.g. 320" oninput="setField('06','ticketVol',this.value)"></div>
+        <div class="field"><label class="field-label">Staff hourly rate (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.hourlyRate)}" placeholder="e.g. 35" oninput="setField('06','hourlyRate',this.value)"></div>
+      `:""}
+      ${s.mode==="Incident deep-dive"?`<div class="field full"><label class="field-label">Incident to analyse</label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S May 2025, Colonial Pipeline..." oninput="setField('06','incident',this.value)"></div>`:""}
+      <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.dealValue)}" placeholder="e.g. 85000" oninput="setField('06','dealValue',this.value)"></div>
+      <div class="field"><label class="field-label">Known exposure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('06','exposure',this.value)"></div>
+    `;
+    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Need exposure figure to anchor CFO one-pager..." oninput="setField('06','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+
+  if (id==="07") {
+    const showDeal = ["Deal health check","Conversion analysis"].includes(s.mode);
+    const showContent = ["Brand drift audit","Agent improvement brief"].includes(s.mode);
+    modesHtml = pills(MODES_07, s.mode, id, "mode", color);
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('07','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Buyer role</label><select onchange="setField('07','role',this.value)">${sel(ROLES,s.role)}</select></div>
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('07','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
+      ${showDeal?`
+        <div class="field"><label class="field-label">Deal stage</label><select onchange="setField('07','dealStage',this.value)">${sel(STAGES_CRM,s.dealStage)}</select></div>
+        <div class="field"><label class="field-label">Risk rating</label><select onchange="setField('07','risk',this.value)">${sel(RISKS,s.risk)}</select></div>
+        <div class="field"><label class="field-label">Days since last activity</label><input type="number" value="${esc(s.daysIdle)}" placeholder="e.g. 14" oninput="setField('07','daysIdle',this.value)"></div>
+        <div class="field"><label class="field-label">Last activity <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.lastAct)}" placeholder="e.g. Sent CFO one-pager" oninput="setField('07','lastAct',this.value)"></div>
+      `:""}
+      ${showContent?`<div class="field full"><label class="field-label">${s.mode==="Brand drift audit"?"Content to audit":"Agent output to improve"}</label><textarea style="height:100px" placeholder="${s.mode==="Brand drift audit"?"Paste copy to score against MyCena brand rules...":"Paste agent output to diagnose and improve..."}" oninput="setField('07','content',this.value)">${esc(s.content)}</textarea></div>`:""}
+    `;
+    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${showDeal?"e.g. CISO engaged but quiet after board deck — CFO meeting next week...":"e.g. Check for IAM/PAM framing drift..."}" oninput="setField('07','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+
+  const outputHtml = output ? `
+    <div class="output" style="border:0.5px solid ${hexToMuted(color)}">
+      <div class="output-header">
+        <div><span class="output-label" style="color:${color}">Agent ${id} output</span><span class="output-meta">${esc(agentState[id].sector||"")} · ${esc(state.lang)}</span></div>
+        <div class="output-actions">
+          <button class="btn-sm" onclick="copyOutput('${id}')">Copy</button>
+          <button class="btn-sm" onclick="clearOutput('${id}')">✕</button>
+        </div>
+      </div>
+      <div class="output-text">${esc(output)}</div>
+    </div>` : "";
+
+  return `
+    <div class="panel-header">
+      <div class="panel-dot" style="background:${color}"></div>
+      <span class="panel-title">Agent ${id} — ${ag.label}</span>
+      <span class="panel-desc">${ag.desc}</span>
+    </div>
+    ${modesHtml}
+    <div class="form-grid">${fieldsHtml}</div>
+    ${textareaHtml}
+    <button class="run-btn" style="background:${color}" onclick="runAgent('${id}')" ${running?"disabled":""}>
+      ${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}
+    </button>
+    ${outputHtml}
+  `;
+}
+
+function pills(arr, active, id, field, color) {
+  return `<div class="mode-pills">${arr.map(m=>`<button class="pill${m===active?" active":""}" style="${m===active?`background:${color};`:""}" onclick="setField('${id}','${field}',this.textContent.trim())">${esc(m)}</button>`).join("")}</div>`;
+}
+function field(labelHtml, inputHtml) {
+  return `<div class="field" style="margin-bottom:12px"><label class="field-label">${labelHtml}</label>${inputHtml}</div>`;
+}
+function hexToMuted(hex) {
+  const map={"#7F77DD":"#CECBF6","#378ADD":"#B5D4F4","#EF9F27":"#FAC775","#D4537E":"#F4C0D1","#639922":"#C0DD97","#888780":"#D3D1C7","#E24B4A":"#F7C1C1","#1D9E75":"#9FE1CB"};
+  return map[hex]||"#D3D1C7";
+}
+
+// ── main render ──────────────────────────────────────────────────────────────
+function render() {
+  const ag = AGENTS.find(a=>a.id===state.agent);
+  document.getElementById("app").innerHTML = `
+    <div class="header">
+      <div class="header-left">
+        <div class="logo"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg></div>
+        <span style="font-size:15px;font-weight:500">MyCena Agent Console</span>
+        <span class="badge">7 agents</span>
+      </div>
+      <div class="lang-wrap">
+        <label>Language</label>
+        <select onchange="state.lang=this.value;render()">${sel(LANGUAGES,state.lang)}</select>
+      </div>
+    </div>
+    <div class="agent-nav">
+      ${AGENTS.map(a=>`
+        <button class="nav-btn${state.agent===a.id?" active":""}" style="--active-color:${a.color};--active-muted:${a.muted}" onclick="state.agent='${a.id}';render()">
+          <span class="nav-num">${a.id}</span>
+          <div>
+            <div class="nav-label">${esc(a.label)}</div>
+            <div class="nav-desc">${esc(a.desc)}</div>
+          </div>
+        </button>`).join("")}
+    </div>
+    <div class="panel">${renderPanel(state.agent)}</div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
