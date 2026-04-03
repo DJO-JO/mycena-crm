@@ -317,7 +317,7 @@ function signOut() { clearSession(); state.session=null; state.deals=[]; state.a
 
 async function load() {
   try {
-    const data = await db("deals?order=created_at.desc&limit=200", { prefer:"" });
+    const data = await db("deals?order=created_at.desc&limit=500", { prefer:"" });
     state.deals=data||[]; state.error="";
   } catch(e) { state.error=e.message; }
   render();
