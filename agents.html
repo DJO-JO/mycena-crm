@@ -95,13 +95,28 @@
 
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* library */
+  .lib-toolbar { display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+  .lib-search { font-size:13px; padding:7px 10px; border-radius:var(--radius); border:0.5px solid var(--border2); background:var(--bg); color:var(--text); font-family:inherit; width:220px; }
+  .lib-empty { font-size:13px; color:var(--text3); padding:40px; text-align:center; }
+  .lib-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:14px; margin-bottom:8px; }
+  .lib-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+  .lib-card-meta { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+  .lib-tag { font-size:11px; padding:2px 7px; border-radius:4px; background:var(--bg2); color:var(--text2); }
+  .lib-card-preview { font-size:12px; color:var(--text2); line-height:1.6; max-height:60px; overflow:hidden; white-space:pre-wrap; }
+  .lib-card-full { font-size:12px; line-height:1.7; white-space:pre-wrap; margin-top:8px; padding-top:8px; border-top:0.5px solid var(--border); }
+  .lib-date { font-size:11px; color:var(--text3); }
+  .saved-toast { position:fixed; bottom:20px; right:20px; background:#1D9E75; color:white; font-size:12px; padding:8px 14px; border-radius:var(--radius); font-family:inherit; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+  .saved-toast.show { opacity:1; }
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
 
 <script>
-const PROXY = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
+const PROXY     = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
+const SUPABASE  = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 
 const LANGUAGES = ["English","French","German","Spanish","Italian","Portuguese","Dutch","Polish","Swedish","Norwegian"];
 const ROLES     = ["CISO","CTO","Risk & Compliance","CFO","Board member","IT Director","IT Manager"];
@@ -133,7 +148,7 @@ const BRAND_RULES = `Non-negotiable rules:
 const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const sel = (arr, val) => arr.map(o=>`<option value="${esc(o)}"${o===val?" selected":""}>${esc(o)}</option>`).join("");
 
-let state = { agent:"01", lang:"English", phases:{}, outputs:{}, errors:{} };
+let state = { view:"console", agent:"01", lang:"English", phases:{}, outputs:{}, errors:{}, library:[], libSearch:"", libExpanded:{}, libLoading:false };
 
 async function callClaude(userPrompt, systemPrompt) {
   const body = { model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:userPrompt}] };
@@ -241,6 +256,57 @@ async function runAgent(id) {
   } catch(e) { state.outputs[id] = "Agent unavailable — check connection."; }
   state.phases[id] = null; render();
 }
+
+async function saveOutput(id) {
+  const s = agentState[id];
+  const ag = AGENTS.find(a=>a.id===id);
+  const payload = {
+    agent_id:    id,
+    agent_label: ag.label,
+    sector:      s.sector||"",
+    role:        s.role||"",
+    language:    state.lang,
+    mode:        s.mode||"",
+    asset_type:  s.assetType||s.ctype||s.channel||"",
+    brief:       s.brief||s.topic||s.angle||"",
+    output:      state.outputs[id]||""
+  };
+  try {
+    await fetch(`${SUPABASE}/content`, {
+      method:"POST", headers:{"Content-Type":"application/json","Prefer":"return=minimal"},
+      body:JSON.stringify(payload)
+    });
+    showToast("Saved to library");
+  } catch(e) { showToast("Save failed — check connection"); }
+}
+
+function showToast(msg) {
+  let t = document.getElementById("toast");
+  if (!t) { t = document.createElement("div"); t.id="toast"; t.className="saved-toast"; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2500);
+}
+
+async function loadLibrary() {
+  state.libLoading = true; render();
+  try {
+    const res = await fetch(`${SUPABASE}/content?order=created_at.desc&limit=200`, {
+      headers:{"Content-Type":"application/json","Prefer":"return=representation"}
+    });
+    state.library = await res.json();
+  } catch(e) { state.library = []; }
+  state.libLoading = false; render();
+}
+
+async function deleteContent(id) {
+  await fetch(`${SUPABASE}/content?id=eq.${id}`, { method:"DELETE", headers:{"Content-Type":"application/json"} });
+  state.library = state.library.filter(c=>c.id!==id);
+  render();
+}
+
+function toggleExpand(id) { state.libExpanded[id]=!state.libExpanded[id]; render(); }
+function setLibSearch(v) { state.libSearch=v; render(); }
 
 function clearOutput(id) { state.outputs[id] = null; render(); }
 function copyOutput(id) { navigator.clipboard?.writeText(state.outputs[id]||""); }
@@ -364,6 +430,7 @@ function renderPanel(id) {
       <div class="output-header">
         <div><span class="output-label" style="color:${color}">Agent ${id} output</span><span class="output-meta">${esc(agentState[id].sector||"")} · ${esc(state.lang)}</span></div>
         <div class="output-actions">
+          <button class="btn-sm" onclick="saveOutput('${id}')">Save to library</button>
           <button class="btn-sm" onclick="copyOutput('${id}')">Copy</button>
           <button class="btn-sm" onclick="clearOutput('${id}')">✕</button>
         </div>
@@ -399,6 +466,46 @@ function hexToMuted(hex) {
 }
 
 // ── main render ──────────────────────────────────────────────────────────────
+function renderLibrary() {
+  const q = state.libSearch.toLowerCase();
+  const items = state.library.filter(c =>
+    !q || c.agent_label?.toLowerCase().includes(q) || c.sector?.toLowerCase().includes(q) ||
+    c.role?.toLowerCase().includes(q) || c.output?.toLowerCase().includes(q) || c.asset_type?.toLowerCase().includes(q)
+  );
+  if (state.libLoading) return `<div class="lib-empty">Loading library...</div>`;
+  if (!items.length) return `<div class="lib-empty">${state.libSearch?"No results found.":"No saved content yet. Run an agent and click Save to library."}</div>`;
+  return items.map(c => {
+    const expanded = state.libExpanded[c.id];
+    const ag = AGENTS.find(a=>a.id===c.agent_id);
+    const color = ag?.color||"#888780";
+    const date = new Date(c.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    return `
+      <div class="lib-card">
+        <div class="lib-card-header">
+          <div>
+            <span style="font-size:12px;font-weight:500;color:${color}">Agent ${c.agent_id} — ${esc(c.agent_label)}</span>
+            <span class="lib-date" style="margin-left:8px">${date}</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" onclick="navigator.clipboard?.writeText(${JSON.stringify(c.output||'').replace(/"/g,'&quot;')})">Copy</button>
+            <button class="btn-sm" onclick="toggleExpand('${c.id}')">${expanded?"Collapse":"Expand"}</button>
+            <button class="btn-sm" style="color:#E24B4A" onclick="deleteContent('${c.id}')">Delete</button>
+          </div>
+        </div>
+        <div class="lib-card-meta">
+          ${c.sector?`<span class="lib-tag">${esc(c.sector)}</span>`:""}
+          ${c.role?`<span class="lib-tag">${esc(c.role)}</span>`:""}
+          ${c.asset_type?`<span class="lib-tag">${esc(c.asset_type)}</span>`:""}
+          ${c.language?`<span class="lib-tag">${esc(c.language)}</span>`:""}
+          ${c.mode?`<span class="lib-tag">${esc(c.mode)}</span>`:""}
+        </div>
+        ${expanded
+          ? `<div class="lib-card-full">${esc(c.output||"")}</div>`
+          : `<div class="lib-card-preview">${esc((c.output||"").slice(0,200))}${(c.output||"").length>200?"...":""}</div>`}
+      </div>`;
+  }).join("");
+}
+
 function render() {
   const ag = AGENTS.find(a=>a.id===state.agent);
   document.getElementById("app").innerHTML = `
@@ -408,22 +515,43 @@ function render() {
         <span style="font-size:15px;font-weight:500">MyCena Agent Console</span>
         <span class="badge">7 agents</span>
       </div>
-      <div class="lang-wrap">
-        <label>Language</label>
-        <select onchange="state.lang=this.value;render()">${sel(LANGUAGES,state.lang)}</select>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm" style="${state.view==="console"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='console';render()">Console</button>
+          <button class="btn-sm" style="${state.view==="library"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='library';loadLibrary()">Library</button>
+        </div>
+        <div class="lang-wrap">
+          <label>Language</label>
+          <select onchange="state.lang=this.value;render()">${sel(LANGUAGES,state.lang)}</select>
+        </div>
       </div>
     </div>
-    <div class="agent-nav">
-      ${AGENTS.map(a=>`
-        <button class="nav-btn${state.agent===a.id?" active":""}" style="--active-color:${a.color};--active-muted:${a.muted}" onclick="state.agent='${a.id}';render()">
-          <span class="nav-num">${a.id}</span>
-          <div>
-            <div class="nav-label">${esc(a.label)}</div>
-            <div class="nav-desc">${esc(a.desc)}</div>
-          </div>
-        </button>`).join("")}
-    </div>
-    <div class="panel">${renderPanel(state.agent)}</div>
+    ${state.view==="console" ? `
+      <div class="agent-nav">
+        ${AGENTS.map(a=>`
+          <button class="nav-btn${state.agent===a.id?" active":""}" style="--active-color:${a.color};--active-muted:${a.muted}" onclick="state.agent='${a.id}';render()">
+            <span class="nav-num">${a.id}</span>
+            <div>
+              <div class="nav-label">${esc(a.label)}</div>
+              <div class="nav-desc">${esc(a.desc)}</div>
+            </div>
+          </button>`).join("")}
+      </div>
+      <div class="panel">${renderPanel(state.agent)}</div>
+    ` : `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot" style="background:var(--purple)"></div>
+          <span class="panel-title">Content library</span>
+          <span class="panel-desc">All saved agent outputs</span>
+        </div>
+        <div class="lib-toolbar">
+          <input class="lib-search" type="text" placeholder="Search by agent, sector, role, content..." value="${esc(state.libSearch)}" oninput="setLibSearch(this.value)">
+          <span style="font-size:11px;color:var(--text3)">${state.library.length} item${state.library.length!==1?"s":""}</span>
+        </div>
+        ${renderLibrary()}
+      </div>
+    `}
   `;
 }
 
