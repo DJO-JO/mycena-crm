@@ -56,6 +56,9 @@
   .btn-sm { padding: 4px 10px; font-size: 11px; }
   .btn-ghost { background: none; border-color: transparent; color: var(--text2); }
   .btn-ghost:hover { background: var(--bg2); }
+  .btn-agent08 { font-size: 10px; padding: 3px 8px; border-radius: 4px; background: var(--purple-bg); color: var(--purple-text); border: 0.5px solid var(--purple); cursor: pointer; font-family: inherit; font-weight: 500; transition: opacity 0.15s; white-space: nowrap; }
+  .btn-agent08:hover { opacity: 0.8; }
+  .btn-agent08:disabled { opacity: 0.5; cursor: wait; }
   .metrics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
   .metric { background: var(--bg2); border-radius: var(--radius); padding: 10px 14px; }
   .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
@@ -68,7 +71,7 @@
   input:focus, select:focus, textarea:focus { outline: 2px solid var(--purple); outline-offset: 1px; }
   .pipeline { overflow-x: auto; padding-bottom: 8px; }
   .pipeline-inner { display: flex; gap: 10px; min-width: max-content; }
-  .column { width: 190px; flex-shrink: 0; }
+  .column { width: 200px; flex-shrink: 0; }
   .col-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
   .col-title { font-size: 11px; font-weight: 500; color: var(--text2); }
   .col-count { font-size: 10px; color: var(--text3); }
@@ -109,7 +112,8 @@
   .agent-output { border: 0.5px solid var(--purple); border-radius: var(--radius-lg); padding: 14px; margin-top: 10px; }
   .agent-output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .agent-output-name { font-size: 12px; font-weight: 500; color: var(--purple); }
-  .agent-output-text { font-size: 12px; line-height: 1.7; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+  .agent-output-text { font-size: 12px; line-height: 1.7; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+  .agent-saved-note { font-size: 11px; color: var(--green-text); background: var(--green-bg); padding: 4px 10px; border-radius: 4px; margin-top: 8px; }
   .list-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .list-table th { padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); border-bottom: 0.5px solid var(--border); }
   .list-table td { padding: 8px 12px; border-bottom: 0.5px solid var(--border); }
@@ -123,8 +127,6 @@
   .saving { font-size: 11px; color: var(--text3); }
   .hint { font-size: 11px; color: var(--text3); margin-top: 6px; }
   textarea { height: 60px; resize: vertical; }
-
-  /* BANT */
   .bant-section { margin-bottom: 10px; }
   .bant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .bant-total { display: flex; align-items: center; gap: 8px; }
@@ -143,10 +145,19 @@
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading { display: flex; align-items: center; gap: 10px; padding: 40px; justify-content: center; color: var(--text2); font-size: 13px; }
+  /* Quick-run modal overlay */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: var(--bg); border-radius: var(--radius-lg); padding: 20px; width: 100%; max-width: 560px; border: 0.5px solid var(--border2); }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .modal-title { font-size: 14px; font-weight: 500; }
+  .modal-company { font-size: 12px; color: var(--purple); font-weight: 500; margin-bottom: 10px; }
+  .modal-output { font-size: 12px; line-height: 1.75; white-space: pre-wrap; max-height: 420px; overflow-y: auto; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px; background: var(--bg2); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
 </style>
 </head>
 <body>
 <div id="root"></div>
+<div id="modal-root"></div>
 <script>
 const PROXY = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 
@@ -169,7 +180,6 @@ const LADDERS = ["1 — Out of control","2 — Aware but undefended","3 — Part
 const RISKS = ["GREEN","AMBER","RED"];
 const SOURCES = ["Outbound-email","LinkedIn-ad","Inbound","Referral","Roundtable","Event"];
 const TIERS = ["1","2","3"];
-const QUARTERS = ["Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026"];
 
 const BANT = [
   { key:"budget",    label:"Budget",    color:"#7F77DD", bg:"#EEEDFE", desc:"Has confirmed budget or budget process" },
@@ -177,7 +187,6 @@ const BANT = [
   { key:"need",      label:"Need",      color:"#1D9E75", bg:"#E1F5EE", desc:"Problem is confirmed and urgent" },
   { key:"timeline",  label:"Timeline",  color:"#EF9F27", bg:"#FAEEDA", desc:"Clear timeframe to purchase" },
 ];
-
 const SCORE_LABELS = ["Unknown","Weak","Moderate","Confirmed"];
 const SCORE_COLORS = ["#B4B2A9","#E24B4A","#EF9F27","#1D9E75"];
 
@@ -196,6 +205,9 @@ function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY
 function setSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
 function clearSession() { localStorage.removeItem(SESSION_KEY); }
 
+// Load API key from localStorage on startup
+window.ANTHROPIC_KEY = localStorage.getItem("mc_anthropic_key") || "";
+
 let state = {
   session: getSession(),
   authEmail:"", authPassword:"", authError:"", authLoading:false,
@@ -203,12 +215,73 @@ let state = {
   search:"", error:"", saving:false,
   agentRunning:null, agentOutput:null, newActivity:"",
   newDeal: blankDeal(),
+  // Quick-run modal
+  modal: null, // { deal, running, output, saved }
 };
 
 function blankDeal() {
-  return { company:"", contact_name:"", title:"CISO", sector:"Financial services", headcount:"500–2k", stage:"Identified", control_ladder:"1 — Out of control", risk:"GREEN", deal_value:"", exposure_figure:"", icp_tier:"1", source:"Outbound-email", days_since_activity:0, last_activity:"Deal created", notes:"", bant_budget_score:0, bant_budget_notes:"", bant_authority_score:0, bant_authority_notes:"", bant_need_score:0, bant_need_notes:"", bant_timeline_score:0, bant_timeline_notes:"", expected_close_date:"", close_quarter:"" };
+  return { company:"", contact_name:"", title:"IT Manager", sector:"Financial services", headcount:"500–2k", stage:"Identified", control_ladder:"1 — Out of control", risk:"GREEN", deal_value:"", exposure_figure:"", icp_tier:"1", source:"Outbound-email", days_since_activity:0, last_activity:"Deal created", notes:"", bant_budget_score:0, bant_budget_notes:"", bant_authority_score:0, bant_authority_notes:"", bant_need_score:0, bant_need_notes:"", bant_timeline_score:0, bant_timeline_notes:"", expected_close_date:"", close_quarter:"" };
 }
 
+// ── Agent 08 full prompt ──────────────────────────────────────────────────────
+function buildAgent08Prompt(d) {
+  const bScore = bantTotal(d);
+  const bantBreakdown = `Budget:${d.bant_budget_score||0} Authority:${d.bant_authority_score||0} Need:${d.bant_need_score||0} Timeline:${d.bant_timeline_score||0}`;
+  const bantNotes = [
+    d.bant_budget_notes   ? `Budget notes: ${d.bant_budget_notes}`   : "",
+    d.bant_authority_notes? `Authority notes: ${d.bant_authority_notes}` : "",
+    d.bant_need_notes     ? `Need notes: ${d.bant_need_notes}`         : "",
+    d.bant_timeline_notes ? `Timeline notes: ${d.bant_timeline_notes}` : "",
+  ].filter(Boolean).join("\n");
+
+  return `You are MyCena Sales Research Agent 08. MyCena helps BPOs eliminate password-related IT support costs through zero-knowledge access management — agents never see or handle passwords, which slashes helpdesk ticket volume, reduces onboarding/offboarding friction, and removes shared credential risk across shifts.
+
+Your job: research this BPO prospect and write a personalised first-touch outreach message. Work through each section below.
+
+━━━ PROSPECT INPUTS ━━━
+Company: ${d.company}
+Contact: ${d.contact_name}, ${d.title}
+Sector: ${d.sector}
+Headcount: ${d.headcount}
+Region/source: ${d.source||"unknown"}
+Control Ladder: ${d.control_ladder}
+BANT Score: ${bScore}/12 (${bantBreakdown})
+${bantNotes ? bantNotes + "\n" : ""}Existing notes: ${d.notes||"none"}
+
+━━━ SECTION 2 — COMPANY RESEARCH ━━━
+Based on what you know about ${d.company}, provide:
+- What this BPO likely does (niche, client types)
+- Estimated agent/seat count given headcount band: ${d.headcount}
+- Likely tech stack signals for a BPO this size
+- Compliance exposure likely for their sector/region (e.g. PCI-DSS, POPIA, GDPR)
+- Any notable growth signals or market context
+
+━━━ SECTION 3 — PERSONA ASSESSMENT ━━━
+For a ${d.title} at a BPO of this size:
+- What do they own day-to-day (helpdesk, infrastructure, ops)?
+- What are their most likely password/access pain points?
+- What objection are they most likely to raise about a new access tool?
+
+━━━ SECTION 4 — MYCENA FIT ━━━
+Score this prospect 1–3 on each signal and give a priority rating:
+- Headcount / seat volume
+- Compliance pressure
+- Control Ladder position (${d.control_ladder})
+- BANT readiness (${bScore}/12)
+Recommended priority: Hot / Warm / Nurture — and why in one sentence.
+
+━━━ SECTION 5 — OUTREACH MESSAGE ━━━
+Write a LinkedIn DM (under 120 words). Rules:
+1. Open with something specific to ${d.company} or their sector — not a generic opener
+2. Name one pain a ${d.title} at a BPO typically feels around IT support costs or password resets
+3. Connect it to MyCena in one sentence — no jargon, no feature list
+4. Close with: "Worth a 15-min call this week?"
+Tone: peer-to-peer, direct, calm authority. No fluff.
+
+Format your response with clear section headers (Section 2, Section 3, etc.) so it's easy to scan.`;
+}
+
+// ── Auth & DB ─────────────────────────────────────────────────────────────────
 async function authFetch(body) {
   const res = await fetch(`${PROXY}/auth/token`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
   const data = await res.json();
@@ -274,29 +347,82 @@ async function logActivity(id) {
   state.newActivity=""; render();
 }
 
+// ── Agent runners ─────────────────────────────────────────────────────────────
+async function callClaude(prompt) {
+  const key = window.ANTHROPIC_KEY;
+  if (!key) throw new Error("No API key. Click '⚠ Add API key' in the header.");
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1500, messages:[{role:"user",content:prompt}] })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message||"API error");
+  return data.content?.[0]?.text || "No output.";
+}
+
+// Quick-run Agent 08 from pipeline card
+async function quickRunAgent08(dealId, evt) {
+  evt.stopPropagation(); // don't open deal detail
+  const deal = state.deals.find(d=>d.id===dealId);
+  if (!deal) return;
+  state.modal = { deal, running:true, output:null, saved:false };
+  render();
+  try {
+    const text = await callClaude(buildAgent08Prompt(deal));
+    state.modal = { deal, running:false, output:text, saved:false };
+  } catch(e) {
+    state.modal = { deal, running:false, output:`Error: ${e.message}`, saved:false };
+  }
+  render();
+}
+
+// Save Agent 08 output to notes field
+async function saveAgent08ToNotes() {
+  if (!state.modal?.output) return;
+  const { deal, output } = state.modal;
+  const ts = new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  const newNotes = `[Agent 08 — ${ts}]\n${output}`;
+  await saveDeal(deal.id, { notes: newNotes });
+  state.modal.saved = true;
+  render();
+}
+
+function closeModal() { state.modal = null; render(); }
+
+// Agent runner for deal detail panel (08 + 09 + 10)
 async function runAgent(name, deal) {
   state.agentRunning=name; state.agentOutput=null; render();
   const bScore = bantTotal(deal);
-  const prompts = {
-    "Research brief": `You are MyCena Sales Research Agent 08. Pre-call brief:\nCompany: ${deal.company}\nSector: ${deal.sector}\nContact: ${deal.contact_name}, ${deal.title}\nHeadcount: ${deal.headcount}\nControl Ladder: ${deal.control_ladder}\nBANT Score: ${bScore}/12 (Budget:${deal.bant_budget_score} Authority:${deal.bant_authority_score} Need:${deal.bant_need_score} Timeline:${deal.bant_timeline_score})\nNotes: ${deal.notes||"none"}\n\n1) Most relevant sector breach and why it matters\n2) Control Ladder assessment\n3) BANT gap — which letter is weakest and how to address it on this call\n4) Most likely objection and response\n5) Best opening line. Be specific, no jargon.`,
-    "Follow-up email": `You are MyCena Post-Call Follow-Up Agent 09. Follow-up email:\nCompany: ${deal.company}\nContact: ${deal.contact_name}, ${deal.title}\nStage: ${deal.stage}\nExposure: ${deal.exposure_figure?fmt(deal.exposure_figure):"not yet calculated"}\nBANT: ${bScore}/12\nExpected close: ${deal.close_quarter||deal.expected_close_date||"not set"}\nLast activity: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\nPersonalised follow-up under 200 words. Reference something specific. State next step clearly. Calm authority tone.`,
-    "Deal diagnosis": `You are MyCena Deal Intelligence Agent 10. Diagnose:\nCompany: ${deal.company}\nStage: ${deal.stage}\nRisk: ${deal.risk}\nBANT Score: ${bScore}/12 (Budget:${deal.bant_budget_score} Authority:${deal.bant_authority_score} Need:${deal.bant_need_score} Timeline:${deal.bant_timeline_score})\nExpected close: ${deal.close_quarter||deal.expected_close_date||"not set"}\nDays since activity: ${deal.days_since_activity||0}\nLast: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\n1) Why this deal is at risk\n2) Weakest BANT letter and what to do about it\n3) One specific re-engagement action with opening line.`,
-  };
+  let prompt;
+  if (name === "Research brief") {
+    prompt = buildAgent08Prompt(deal);
+  } else if (name === "Follow-up email") {
+    prompt = `You are MyCena Post-Call Follow-Up Agent 09. Follow-up email:\nCompany: ${deal.company}\nContact: ${deal.contact_name}, ${deal.title}\nStage: ${deal.stage}\nExposure: ${deal.exposure_figure?fmt(deal.exposure_figure):"not yet calculated"}\nBANT: ${bScore}/12\nExpected close: ${deal.close_quarter||deal.expected_close_date||"not set"}\nLast activity: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\nPersonalised follow-up under 200 words. Reference something specific. State next step clearly. Calm authority tone.`;
+  } else {
+    prompt = `You are MyCena Deal Intelligence Agent 10. Diagnose:\nCompany: ${deal.company}\nStage: ${deal.stage}\nRisk: ${deal.risk}\nBANT Score: ${bScore}/12 (Budget:${deal.bant_budget_score||0} Authority:${deal.bant_authority_score||0} Need:${deal.bant_need_score||0} Timeline:${deal.bant_timeline_score||0})\nExpected close: ${deal.close_quarter||deal.expected_close_date||"not set"}\nDays since activity: ${deal.days_since_activity||0}\nLast: ${deal.last_activity||""}\nNotes: ${deal.notes||""}\n\n1) Why this deal is at risk\n2) Weakest BANT letter and what to do about it\n3) One specific re-engagement action with opening line.`;
+  }
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompts[name]}] }) });
-    const data = await res.json();
-    state.agentOutput={ name, text:data.content?.[0]?.text||"No output." };
-  } catch(e) { state.agentOutput={ name, text:"Agent unavailable." }; }
+    const text = await callClaude(prompt);
+    state.agentOutput = { name, text };
+    // Auto-save Agent 08 output to notes
+    if (name === "Research brief") {
+      const ts = new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+      const newNotes = `[Agent 08 — ${ts}]\n${text}`;
+      await saveDeal(deal.id, { notes: newNotes });
+      state.agentOutput.savedToNotes = true;
+    }
+  } catch(e) { state.agentOutput={ name, text:`Agent unavailable: ${e.message}` }; }
   state.agentRunning=null; render();
 }
 
+// ── Metrics ───────────────────────────────────────────────────────────────────
 function metrics() {
   const active = state.deals.filter(d=>!["Closed won","Closed lost","Nurture"].includes(d.stage));
-  const weighted = active.reduce((s,d)=>s+weightedValue(d),0);
   return {
     active: active.length,
     pipeline: active.reduce((s,d)=>s+(d.deal_value||0),0),
-    weighted,
+    weighted: active.reduce((s,d)=>s+weightedValue(d),0),
     won: state.deals.filter(d=>d.stage==="Closed won").reduce((s,d)=>s+(d.deal_value||0),0),
     assessments: state.deals.filter(d=>["Assessment booked","Assessment delivered"].includes(d.stage)).length,
     atRisk: state.deals.filter(d=>d.risk==="RED"||(d.risk==="AMBER"&&(d.days_since_activity||0)>10)).length,
@@ -312,7 +438,7 @@ function filtered() {
 function sel() { return state.activeDeal?state.deals.find(d=>d.id===state.activeDeal):null; }
 function selectOpts(arr,val) { return arr.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(o)}</option>`).join(""); }
 
-function bantScoreDots(deal, key, color) {
+function bantScoreDots(deal, key) {
   const cur = deal[`bant_${key}_score`]||0;
   return [1,2,3].map(v => {
     const active = cur >= v;
@@ -323,39 +449,23 @@ function bantScoreDots(deal, key, color) {
 }
 
 function bantSectionHtml(deal) {
-  const total = bantTotal(deal);
-  const pct = bantPct(deal);
-  const wv = weightedValue(deal);
-  const barColor = bantColor(pct);
-
+  const total=bantTotal(deal), pct=bantPct(deal), wv=weightedValue(deal), barColor=bantColor(pct);
   return `
     <div class="card bant-section">
       <div class="bant-header">
         <div class="card-title" style="margin:0">BANT qualification</div>
         <div class="bant-total">
           <div class="bant-total-score" style="color:${barColor}">${total}<span style="font-size:13px;color:var(--text3)">/12</span></div>
-          <div class="bant-total-label">
-            ${pct}% qualified<br>
-            <span style="color:var(--purple);font-weight:500">${fmt(wv)} weighted</span>
-          </div>
+          <div class="bant-total-label">${pct}% qualified<br><span style="color:var(--purple);font-weight:500">${fmt(wv)} weighted</span></div>
         </div>
       </div>
-
-      <div style="margin-bottom:12px">
-        <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden">
-          <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.3s"></div>
-        </div>
-      </div>
-
-      ${BANT.map(b => `
+      <div style="margin-bottom:12px"><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.3s"></div></div></div>
+      ${BANT.map(b=>`
         <div class="bant-row">
           <div>
             <div class="bant-letter">
               <div class="bant-letter-badge" style="background:${b.bg};color:${b.color}">${b.label[0]}</div>
-              <div>
-                <div class="bant-letter-name">${b.label}</div>
-                <div class="bant-dots" style="margin-top:4px">${bantScoreDots(deal,b.key,b.color)}</div>
-              </div>
+              <div><div class="bant-letter-name">${b.label}</div><div class="bant-dots" style="margin-top:4px">${bantScoreDots(deal,b.key)}</div></div>
             </div>
             <div style="font-size:10px;color:${SCORE_COLORS[deal[`bant_${b.key}_score`]||0]};margin-top:4px;margin-left:30px">${SCORE_LABELS[deal[`bant_${b.key}_score`]||0]}</div>
           </div>
@@ -364,24 +474,45 @@ function bantSectionHtml(deal) {
             <textarea placeholder="Notes on ${b.label.toLowerCase()}..." onblur="saveDeal('${deal.id}',{'bant_${b.key}_notes':this.value})" style="height:50px;font-size:12px">${esc(deal[`bant_${b.key}_notes`]||"")}</textarea>
           </div>
           <div></div>
-        </div>
-      `).join("")}
-
+        </div>`).join("")}
       <div class="close-date-row">
-        <div class="field">
-          <label class="field-label">Expected close date</label>
-          <input type="date" value="${deal.expected_close_date||""}" onblur="saveDeal('${deal.id}',{expected_close_date:this.value||null})">
-        </div>
-        <div class="field">
-          <label class="field-label">Close quarter</label>
-          <select onchange="saveDeal('${deal.id}',{close_quarter:this.value})">${selectOpts(["","Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026"],deal.close_quarter||"")}</select>
-        </div>
+        <div class="field"><label class="field-label">Expected close date</label><input type="date" value="${deal.expected_close_date||""}" onblur="saveDeal('${deal.id}',{expected_close_date:this.value||null})"></div>
+        <div class="field"><label class="field-label">Close quarter</label><select onchange="saveDeal('${deal.id}',{close_quarter:this.value})">${selectOpts(["","Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026"],deal.close_quarter||"")}</select></div>
       </div>
     </div>`;
 }
 
+// ── Render ────────────────────────────────────────────────────────────────────
 function render() {
   const root = document.getElementById("root");
+  const modalRoot = document.getElementById("modal-root");
+
+  // Modal
+  if (state.modal) {
+    const m = state.modal;
+    modalRoot.innerHTML = `
+      <div class="modal-overlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+          <div class="modal-header">
+            <span class="modal-title">Agent 08 — Research Brief</span>
+            <button class="btn btn-sm" onclick="closeModal()">✕</button>
+          </div>
+          <div class="modal-company">🏢 ${esc(m.deal.company)} · ${esc(m.deal.contact_name)}, ${esc(m.deal.title)}</div>
+          ${m.running
+            ? `<div style="display:flex;align-items:center;gap:10px;padding:20px;color:var(--text2);font-size:13px"><div class="spinner"></div> Researching ${esc(m.deal.company)}...</div>`
+            : `<div class="modal-output">${esc(m.output)}</div>
+               <div class="modal-actions">
+                 ${m.saved
+                   ? `<span class="agent-saved-note">✓ Saved to notes</span>`
+                   : `<button class="btn btn-primary" onclick="saveAgent08ToNotes()">Save to notes</button>`}
+                 <button class="btn" onclick="closeModal()">Close</button>
+               </div>`
+          }
+        </div>
+      </div>`;
+  } else {
+    modalRoot.innerHTML = "";
+  }
 
   if (!state.session) {
     root.innerHTML = `
@@ -391,10 +522,8 @@ function render() {
           <div class="auth-title">MyCena CRM</div>
           <div class="auth-sub">Sign in to your account</div>
           ${state.authError?`<div class="auth-error">${esc(state.authError)}</div>`:""}
-          <div class="auth-field"><label class="auth-label">Email</label>
-            <input class="auth-input" type="email" placeholder="you@mycena.com" value="${esc(state.authEmail)}" oninput="state.authEmail=this.value" onkeydown="if(event.key==='Enter')signIn()"></div>
-          <div class="auth-field"><label class="auth-label">Password</label>
-            <input class="auth-input" type="password" placeholder="••••••••" value="${esc(state.authPassword)}" oninput="state.authPassword=this.value" onkeydown="if(event.key==='Enter')signIn()"></div>
+          <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" type="email" placeholder="you@mycena.com" value="${esc(state.authEmail)}" oninput="state.authEmail=this.value" onkeydown="if(event.key==='Enter')signIn()"></div>
+          <div class="auth-field"><label class="auth-label">Password</label><input class="auth-input" type="password" placeholder="••••••••" value="${esc(state.authPassword)}" oninput="state.authPassword=this.value" onkeydown="if(event.key==='Enter')signIn()"></div>
           <button class="auth-btn" onclick="signIn()" ${state.authLoading?"disabled":""}>${state.authLoading?"Signing in...":"Sign in →"}</button>
         </div>
       </div>`;
@@ -403,7 +532,6 @@ function render() {
 
   const M = metrics();
   const deal = sel();
-  const deals = filtered();
   const userEmail = state.session.user?.email||"";
 
   const header = `
@@ -412,15 +540,16 @@ function render() {
         <div class="logo"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg></div>
         <span class="header-title">MyCena CRM</span>
         <span class="badge">Supabase live</span>
-        ${state.saving?'        <span class="saving">Saving...</span>':""}
+        ${state.saving?'<span class="saving">Saving...</span>':""}
       </div>
       <div class="header-right">
         <span class="user-email">${esc(userEmail)}</span>
-        ${!window.ANTHROPIC_KEY ? `<button class="btn btn-sm" onclick="promptApiKey()" style="color:#E24B4A;border-color:#E24B4A">⚠ Add API key</button>` : `<button class="btn btn-sm" onclick="promptApiKey()" title="Anthropic API key set">🔑 API key</button>`}
+        ${!window.ANTHROPIC_KEY
+          ? `<button class="btn btn-sm" onclick="promptApiKey()" style="color:#E24B4A;border-color:#E24B4A">⚠ Add API key</button>`
+          : `<button class="btn btn-sm" onclick="promptApiKey()" title="API key set — click to rotate">🔑 API key</button>`}
         ${!deal?`
-          <button class="btn view-btn ${state.view==="pipeline"?"active":""}" onclick="setView('pipeline')">Pipeline</button>
-          <button class="btn view-btn ${state.view==="list"?"active":""}" onclick="setView('list')">List</button>
-        `:""}
+          <button class="btn ${state.view==="pipeline"?"btn-primary":""}" onclick="setView('pipeline')">Pipeline</button>
+          <button class="btn ${state.view==="list"?"btn-primary":""}" onclick="setView('list')">List</button>`:""}
         <button class="btn btn-primary" onclick="toggleNew()">+ New deal</button>
         <button class="btn" onclick="load()">↺</button>
         <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
@@ -430,12 +559,8 @@ function render() {
   const metricsHtml = `
     <div class="metrics">
       ${[
-        {l:"Active deals", v:M.active},
-        {l:"Pipeline", v:fmt(M.pipeline)},
-        {l:"Weighted pipeline", v:fmt(M.weighted)},
-        {l:"Closed won", v:fmt(M.won)},
-        {l:"Assessments", v:M.assessments},
-        {l:"At risk", v:M.atRisk, alert:M.atRisk>0},
+        {l:"Active deals",v:M.active},{l:"Pipeline",v:fmt(M.pipeline)},{l:"Weighted pipeline",v:fmt(M.weighted)},
+        {l:"Closed won",v:fmt(M.won)},{l:"Assessments",v:M.assessments},{l:"At risk",v:M.atRisk,alert:M.atRisk>0},
       ].map(m=>`<div class="metric"><div class="metric-label">${m.l}</div><div class="metric-value ${m.alert?"alert":""}">${m.v}</div></div>`).join("")}
     </div>`;
 
@@ -463,9 +588,8 @@ function render() {
   let main = "";
 
   if (deal) {
-    const total = bantTotal(deal);
-    const pct = bantPct(deal);
     const wv = weightedValue(deal);
+    const pct = bantPct(deal);
     main = `
       <button class="btn" style="margin-bottom:14px" onclick="goBack()">← Back</button>
       <div class="detail-grid">
@@ -479,9 +603,7 @@ function render() {
                 <span class="risk-badge" style="background:${riskBg(deal.risk)};color:${riskTxt(deal.risk)}">${deal.risk}</span>
               </div>
             </div>
-            <div class="tags">
-              ${[deal.sector,deal.headcount,"Tier "+deal.icp_tier,deal.source,deal.close_quarter||""].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}
-            </div>
+            <div class="tags">${[deal.sector,deal.headcount,"Tier "+deal.icp_tier,deal.source,deal.close_quarter||""].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>
             <div class="field-grid">
               ${[["stage",STAGES.map(s=>s.id)],["control_ladder",LADDERS],["risk",RISKS]].map(([f,opts])=>`<div class="field"><label class="field-label">${f.replace("_"," ")}</label><select onchange="saveDeal('${deal.id}',{'${f}':this.value})">${selectOpts(opts,deal[f])}</select></div>`).join("")}
               <div class="field"><label class="field-label">Exposure figure (£)</label><input type="number" value="${deal.exposure_figure||""}" onblur="saveDeal('${deal.id}',{exposure_figure:parseFloat(this.value)||null})" placeholder="0"></div>
@@ -489,9 +611,7 @@ function render() {
             <div class="field"><label class="field-label">Notes</label><textarea onblur="saveDeal('${deal.id}',{notes:this.value})">${esc(deal.notes||"")}</textarea></div>
             <div style="font-size:11px;color:var(--text3);margin-top:6px">Changes save automatically on blur.</div>
           </div>
-
           ${bantSectionHtml(deal)}
-
           <div class="card">
             <div class="card-title">Activity log</div>
             <div class="activity-last">
@@ -504,20 +624,30 @@ function render() {
             </div>
           </div>
         </div>
-
         <div>
           <div class="card" style="margin-bottom:10px">
             <div class="card-title">Run agent</div>
-            ${[{name:"Research brief",num:"08",desc:"Pre-call intelligence + BANT gaps"},{name:"Follow-up email",num:"09",desc:"Post-call email"},{name:"Deal diagnosis",num:"10",desc:"Risk + BANT + re-engagement"}].map(a=>`
+            ${[
+              {name:"Research brief",num:"08",desc:"Full prospect research + outreach message"},
+              {name:"Follow-up email",num:"09",desc:"Post-call email"},
+              {name:"Deal diagnosis",num:"10",desc:"Risk + BANT + re-engagement"}
+            ].map(a=>`
               <button class="agent-btn" onclick="runAgent('${a.name}',${JSON.stringify(deal).replace(/"/g,'&quot;')})" ${state.agentRunning?"disabled":""}>
-                <div><div style="font-size:12px;font-weight:500">${state.agentRunning===a.name?"Running...":a.name}</div><div style="font-size:11px;color:var(--text2)">Agent ${a.num} · ${a.desc}</div></div>
-                <span class="agent-run">${state.agentRunning===a.name?"...":"Run →"}</span>
+                <div>
+                  <div style="font-size:12px;font-weight:500">${state.agentRunning===a.name?"Running...":a.name}</div>
+                  <div style="font-size:11px;color:var(--text2)">Agent ${a.num} · ${a.desc}</div>
+                </div>
+                <span class="agent-run">${state.agentRunning===a.name?`<span class="spinner"></span>`:"Run →"}</span>
               </button>`).join("")}
           </div>
           ${state.agentOutput?`
             <div class="agent-output">
-              <div class="agent-output-header"><span class="agent-output-name">${esc(state.agentOutput.name)}</span><button class="btn btn-sm" onclick="clearAgent()">✕</button></div>
+              <div class="agent-output-header">
+                <span class="agent-output-name">${esc(state.agentOutput.name)}</span>
+                <button class="btn btn-sm" onclick="clearAgent()">✕</button>
+              </div>
               <div class="agent-output-text">${esc(state.agentOutput.text)}</div>
+              ${state.agentOutput.savedToNotes?`<div class="agent-saved-note">✓ Saved to notes field</div>`:""}
             </div>`:""}
         </div>
       </div>`;
@@ -537,10 +667,13 @@ function render() {
               <div class="col-bar" style="background:${stage.color}"></div>
               <div class="col-cards">
                 ${sd.length===0?'<div class="empty-col">Empty</div>':sd.map(d=>{
-                  const pct=bantPct(d); const bc=bantColor(pct);
+                  const pct=bantPct(d), bc=bantColor(pct);
                   return `
                     <div class="deal-card" onclick="openDeal('${d.id}')">
-                      <div class="deal-card-company">${esc(d.company)}</div>
+                      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px">
+                        <div class="deal-card-company">${esc(d.company)}</div>
+                        <button class="btn-agent08" onclick="quickRunAgent08('${d.id}',event)" ${state.modal?.running?"disabled":""}>08 ▶</button>
+                      </div>
                       <div class="deal-card-contact">${esc(d.contact_name)}</div>
                       <div class="deal-card-bottom">
                         <span class="deal-card-value">${fmt(d.deal_value)}</span>
@@ -566,25 +699,21 @@ function render() {
       </div>
       <div class="card" style="padding:0;overflow:hidden">
         <table class="list-table">
-          <thead><tr>${["Company","Contact","Stage","BANT","Weighted value","Close","Risk","Days idle"].map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+          <thead><tr>${["Company","Contact","Stage","BANT","Weighted value","Close","Risk","Days idle","Agent 08"].map(h=>`<th>${h}</th>`).join("")}</tr></thead>
           <tbody>
             ${filtered().map(d=>{
-              const pct=bantPct(d); const bc=bantColor(pct);
+              const pct=bantPct(d), bc=bantColor(pct);
               return `
                 <tr onclick="openDeal('${d.id}')">
                   <td><strong>${esc(d.company)}</strong></td>
                   <td style="color:var(--text2)">${esc(d.contact_name)}</td>
                   <td><span class="stage-pill">${esc(d.stage)}</span></td>
-                  <td>
-                    <div style="display:flex;align-items:center;gap:6px">
-                      <div style="width:48px;height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${bc};border-radius:2px"></div></div>
-                      <span style="font-size:11px;color:${bc};font-weight:500">${bantTotal(d)}/12</span>
-                    </div>
-                  </td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div style="width:48px;height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${bc};border-radius:2px"></div></div><span style="font-size:11px;color:${bc};font-weight:500">${bantTotal(d)}/12</span></div></td>
                   <td style="font-weight:500;color:var(--purple)">${fmt(weightedValue(d))}</td>
                   <td style="color:var(--text2)">${esc(d.close_quarter||"—")}</td>
                   <td><span class="risk-badge" style="background:${riskBg(d.risk)};color:${riskTxt(d.risk)}">${d.risk}</span></td>
                   <td style="color:${(d.days_since_activity||0)>10?"#E24B4A":"var(--text2)"}">${d.days_since_activity||0}d</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-agent08" onclick="quickRunAgent08('${d.id}',event)">08 ▶</button></td>
                 </tr>`;
             }).join("")}
           </tbody>
@@ -596,12 +725,8 @@ function render() {
 }
 
 function promptApiKey() {
-  const k = prompt("Enter your Anthropic API key (sk-ant-...):\n\nThis is stored only in your browser's localStorage — never sent anywhere except directly to Anthropic's API.", window.ANTHROPIC_KEY || "");
-  if (k !== null) {
-    window.ANTHROPIC_KEY = k.trim();
-    localStorage.setItem("mc_anthropic_key", k.trim());
-    render();
-  }
+  const k = prompt("Enter your Anthropic API key (sk-ant-...):\n\nStored only in your browser's localStorage — sent directly to Anthropic's API only.", window.ANTHROPIC_KEY||"");
+  if (k !== null) { window.ANTHROPIC_KEY=k.trim(); localStorage.setItem("mc_anthropic_key",k.trim()); render(); }
 }
 function setView(v) { state.view=v; render(); }
 function toggleNew() { state.showNew=!state.showNew; render(); }
