@@ -134,6 +134,8 @@ const AGENTS = [
   { id:"05", label:"Sales Enablement",    color:"#639922", muted:"#EAF3DE", desc:"Decks, objections & battlecards" },
   { id:"06", label:"Data & Intelligence", color:"#888780", muted:"#F1EFE8", desc:"Exposure figures & proof" },
   { id:"07", label:"Performance",         color:"#7F77DD", muted:"#EEEDFE", desc:"Drift, deal health & gaps" },
+  { id:"11", label:"ICP & Niche",         color:"#1D9E75", muted:"#E1F5EE", desc:"Targeting intelligence & segmentation" },
+  { id:"12", label:"Ads Testing",         color:"#D85A30", muted:"#FAECE7", desc:"Ad variants & test briefs" },
 ];
 
 const BRAND_RULES = `Non-negotiable rules:
@@ -177,6 +179,8 @@ const agentState = {
   "05":{ role:"CISO", sector:"Financial services", assetType:"Board presentation deck", ladder:"2 — Aware but undefended", headcount:"500–2k", dealValue:"", exposure:"", brief:"" },
   "06":{ mode:"Exposure calculation", sector:"Financial services", headcount:"500–2k", dealValue:"", exposure:"", ticketVol:"", hourlyRate:"", incident:"", brief:"" },
   "07":{ mode:"Deal health check", sector:"Financial services", role:"CISO", dealStage:"Engaged", ladder:"2 — Aware but undefended", risk:"AMBER", daysIdle:"", lastAct:"", content:"", brief:"" },
+  "11":{ mode:"Quarterly ICP report", sector:"Financial services", brief:"", campaignContext:"", adsContext:"" },
+  "12":{ mode:"Ad variants", platform:"LinkedIn", campaignType:"Conversion — bottom of funnel", format:"Single image ad", segment:"CISO direct", sector:"Financial services", ladder:"2 — Aware but undefended", incident:"", hypothesis:"", brief:"" },
 };
 
 const ASSET_MAP_04 = {
@@ -186,6 +190,12 @@ const ASSET_MAP_04 = {
 };
 const MODES_06 = ["Exposure calculation","Sector threat profile","Incident deep-dive","Proof data pack","Regulatory briefing"];
 const MODES_07 = ["Deal health check","Brand drift audit","Content gap audit","Conversion analysis","Agent improvement brief"];
+const MODES_11 = ["Quarterly ICP report","Monthly signal report","Niche opportunity analysis","Urgent flag check"];
+const MODES_12 = ["Ad variants","Test brief"];
+const PLATFORMS_12 = ["LinkedIn","Google Ads","Both"];
+const CAMPAIGN_TYPES_12 = ["Awareness — top of funnel","Consideration — middle of funnel","Conversion — bottom of funnel","Incident reactive","Brand defence","Competitor conquest"];
+const AD_FORMATS_12 = ["Single image ad","Carousel ad","Video ad script","Document ad","Conversation ad","Thought leader ad","Google search ad"];
+const SEGMENTS_12 = ["CISO direct","Security leadership","Board & CEO","CFO","IT leadership","Sector-specific"];
 const CTYPES_01 = ["Campaign brief","Messaging framework","Audience narrative","Website copy","Email","LinkedIn post","Press release"];
 const CTYPES_02 = ["Whitepaper","Breach anatomy article","CISO board brief template","Analyst-facing narrative","Executive opinion piece","LinkedIn long-form","Case study narrative","Regulatory briefing"];
 const CHANNELS_03 = ["LinkedIn ad","Cold email — first touch","Email nurture sequence","Landing page","Retargeting ad","Event follow-up","LinkedIn long-form post"];
@@ -237,6 +247,184 @@ async function buildPrompts(id) {
     const user = `Mode: ${s.mode}\nSector: ${s.sector}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Known exposure: £${s.exposure}\n`:""}${s.ticketVol?`Monthly tickets: ${s.ticketVol}\n`:""}${s.hourlyRate?`Hourly rate: £${s.hourlyRate}\n`:""}${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Produce most useful output for this mode."}`;
     return {sys,user};
   }
+  if (id==="11") {
+    const s = agentState["11"];
+    // Pull live CRM data from Supabase
+    let crmData = "";
+    try {
+      const res = await fetch(`${SUPABASE}/deals?order=created_at.desc&limit=200`, {
+        headers:{"Content-Type":"application/json","Prefer":"return=representation"}
+      });
+      const deals = await res.json();
+      const won    = deals.filter(d=>d.stage==="Closed won");
+      const lost   = deals.filter(d=>d.stage==="Closed lost");
+      const stalled= deals.filter(d=>d.days_since_activity>10 && !["Closed won","Closed lost"].includes(d.stage));
+      const active = deals.filter(d=>!["Closed won","Closed lost","Nurture"].includes(d.stage));
+      crmData = `LIVE CRM DATA (${deals.length} total deals):
+Closed won (${won.length}): ${JSON.stringify(won.map(d=>({company:d.company,sector:d.sector,headcount:d.headcount,value:d.deal_value,ladder:d.control_ladder,source:d.source})))}
+Closed lost (${lost.length}): ${JSON.stringify(lost.map(d=>({company:d.company,sector:d.sector,headcount:d.headcount,value:d.deal_value,ladder:d.control_ladder,notes:d.notes})))}
+Stalled deals (${stalled.length}): ${JSON.stringify(stalled.map(d=>({company:d.company,sector:d.sector,stage:d.stage,days_idle:d.days_since_activity,risk:d.risk})))}
+Active pipeline (${active.length}): ${JSON.stringify(active.map(d=>({company:d.company,sector:d.sector,stage:d.stage,value:d.deal_value,ladder:d.control_ladder})))}`;
+    } catch(e) { crmData = "CRM data unavailable — analyse based on sector and market knowledge."; }
+
+    const sys = `You are the ICP & Niche Agent for MyCena. Your job is to continuously refine targeting intelligence — which organisations, in which sectors, of which size, with which characteristics, are most likely to buy MyCena fast.
+
+Core belief: The ICP is a living model updated by every closed deal, every lost deal, and every sector event that changes urgency.
+
+ICP dimensions to maintain (Tier 1/2/3 rankings):
+- Sector: rank by conversion rate, deal velocity, average contract value, expansion potential
+- Headcount bands: <500, 500–2k, 2k–10k, 10k+
+- Third-party vendor count as leading indicator of credential sprawl
+- Trigger events: sector breach, new CISO appointment, M&A activity, regulatory enforcement
+
+${BRAND_RULES}
+
+${crmData}
+${s.campaignContext?`\nCAMPAIGN CONTEXT:\n${s.campaignContext}`:""}
+${s.adsContext?`\nADS CONTEXT:\n${s.adsContext}`:""}
+
+Respond in ${state.lang}.`;
+
+    const modeInstructions = {
+      "Quarterly ICP report": `Produce a full quarterly ICP report with these sections:
+1. What closed last quarter — breakdown by sector, headcount, velocity, top 3 shared characteristics
+2. What didn't close and why — stated vs diagnosed reason, stall patterns
+3. Niche opportunities — specific actionable niches with evidence, breach angle, regulatory hook, exact ICP titles, message variant, recommended campaign
+4. ICP adjustments recommended — promote/deprioritise with evidence and sample size
+5. Targeting instructions for Agents 03, 08, 12 and Apollo/Clay`,
+      "Monthly signal report": `Produce a monthly signal report covering: top converting segment this month, underperforming segment, breach intelligence, intent signals, one tactical adjustment for the next 30 days.`,
+      "Niche opportunity analysis": `Identify the 3 most promising niche opportunities in the current pipeline data. For each: the specific niche, evidence from CRM, breach angle, regulatory hook, exact ICP titles to target, message variant needed, recommended campaign type.`,
+      "Urgent flag check": `Check the CRM data for urgent flags: any sector with 3+ closed-won deals this month (breakout signal), any Tier 1 sector with 0 conversions for 60+ days, any new trigger event producing fast closes, any pattern suggesting competitive displacement. Flag each with recommended immediate action.`
+    };
+
+    const user = `Mode: ${s.mode}\n\n${modeInstructions[s.mode]||""}\n\nAdditional context: ${s.brief||"None provided."}`;
+    return {sys, user};
+  }
+
+  if (id==="12") {
+    const s = agentState["12"];
+    const [brandCtx, dataCtx] = await Promise.all([
+      callClaude(p05ctx("CISO", s.sector)),
+      callClaude(p06ctx(s.sector,"",s.ladder,s.incident))
+    ]);
+
+    const sys = `You are the Ads Testing Agent for MyCena. You generate ad variants and test briefs for paid media on LinkedIn and Google Ads.
+
+${BRAND_RULES}
+
+Your absolute rules:
+- Every ad points to one CTA only: Book the Board-Level Risk Assessment. Never "learn more", "explore", "download"
+- Nothing goes live without Brand Strategy Agent (01) approval — flag this on every output
+- Test one variable at a time — never change headline AND image AND audience simultaneously
+- Kill losers after 5 days / 400 impressions minimum. Scale winners by max 30% budget per week
+- LinkedIn Headline must stop the scroll: use the physical key analogy, a named incident, or a number — never open with a question
+- Google Headline 1: named incident / number / "credential control" — never generic
+- Google Headline 2: structural differentiator — "Generated. Encrypted. User-invisible."
+- Google Headline 3: "Book Your Risk Assessment" — not "Learn More"
+
+AUDIENCE & SECTOR INTELLIGENCE:
+${brandCtx}
+
+DATA & PROOF INTELLIGENCE:
+${dataCtx}
+
+Respond in ${state.lang}.`;
+
+    const modeInstructions = s.mode === "Ad variants"
+      ? `Produce 3 ad variants for the following spec. For each variant provide:
+- The full ad copy (headline(s), body, CTA)
+- The single variable that differs from the others
+- The hypothesis: why this angle should outperform
+- Brand check: confirm it meets all MyCena brand rules or flag any borderline choices
+- Note: requires Brand Strategy Agent 01 approval before launch
+
+Platform: ${s.platform}
+Campaign type: ${s.campaignType}
+Ad format: ${s.format}
+Audience segment: ${s.segment}
+Sector: ${s.sector}
+Control Ladder stage: ${s.ladder}
+${s.incident?`Incident hook: ${s.incident}`:""}
+Brief: ${s.brief||"Use your judgement based on the campaign type and audience."}`
+      : `Produce a test brief for the following:
+- Hypothesis (one sentence)
+- Variable being tested
+- Control variant (current best practice for this format/audience)
+- Test variant (the challenger)
+- Success metric: primary (cost per assessment booked) + secondary (CTR)
+- Minimum sample: 400 impressions per variant
+- Decision rule: 15%+ outperformance at 80% confidence → implement
+- Budget rule: max 20% of campaign budget on test variant until it wins
+- What to test next if this wins / if this loses
+
+Platform: ${s.platform}
+Campaign type: ${s.campaignType}
+Ad format: ${s.format}
+Audience segment: ${s.segment}
+Sector: ${s.sector}
+Hypothesis to test: ${s.hypothesis||"Suggest the highest-value hypothesis to test right now for this campaign type and audience."}
+Brief: ${s.brief||"Use your judgement."}`;
+
+    return {sys, user: modeInstructions};
+  }
+
+  if (id==="11") {
+    const s = agentState["11"];
+    const ag = AGENTS.find(a=>a.id==="11");
+    modesHtml = pills(MODES_11, s.mode, "11", "mode", ag.color);
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Primary sector focus <span class="field-opt">opt</span></label><select onchange="setField('11','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Campaign context <span class="field-opt">opt</span></label><input type="text" value="${esc(s.campaignContext)}" placeholder="e.g. Financial services sequence outperforming this month..." oninput="setField('11','campaignContext',this.value)"></div>
+      <div class="field"><label class="field-label">Ads context <span class="field-opt">opt</span></label><input type="text" value="${esc(s.adsContext)}" placeholder="e.g. CISO segment CPL dropped 30% last week..." oninput="setField('11','adsContext',this.value)"></div>
+    `;
+    textareaHtml = field("Additional context <span class='field-opt'>(optional)</span>", `<textarea placeholder="e.g. We've had 3 fast closes in healthcare this month — check if it's a breakout signal..." oninput="setField('11','brief',this.value)">${esc(s.brief)}</textarea>`);
+    const infoHtml = `<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:var(--green-bg);color:var(--green-text);margin-bottom:12px;border-left:3px solid #1D9E75">Pulls live CRM data from Supabase automatically before running.</div>`;
+    return `
+      <div class="panel-header">
+        <div class="panel-dot" style="background:${ag.color}"></div>
+        <span class="panel-title">Agent 11 — ICP &amp; Niche</span>
+        <span class="panel-desc">${ag.desc}</span>
+      </div>
+      ${modesHtml}${infoHtml}
+      <div class="form-grid">${fieldsHtml}</div>
+      ${textareaHtml}
+      <button class="run-btn" style="background:${ag.color}" onclick="runAgent('11')" ${running?"disabled":""}>
+        ${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}
+      </button>
+      ${outputHtml}`;
+  }
+
+  if (id==="12") {
+    const s = agentState["12"];
+    const ag = AGENTS.find(a=>a.id==="12");
+    modesHtml = pills(MODES_12, s.mode, "12", "mode", ag.color);
+    fieldsHtml = `
+      <div class="field"><label class="field-label">Platform</label><select onchange="setField('12','platform',this.value)">${sel(PLATFORMS_12,s.platform)}</select></div>
+      <div class="field"><label class="field-label">Campaign type</label><select onchange="setField('12','campaignType',this.value)">${sel(CAMPAIGN_TYPES_12,s.campaignType)}</select></div>
+      <div class="field"><label class="field-label">Ad format</label><select onchange="setField('12','format',this.value)">${sel(AD_FORMATS_12,s.format)}</select></div>
+      <div class="field"><label class="field-label">Audience segment</label><select onchange="setField('12','segment',this.value)">${sel(SEGMENTS_12,s.segment)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('12','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('12','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
+      <div class="field full"><label class="field-label">Incident hook <span class="field-opt">opt — leave blank to let agent choose</span></label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S £300M revenue impact, Colonial Pipeline $4.4M ransom..." oninput="setField('12','incident',this.value)"></div>
+      ${s.mode==="Test brief"?`<div class="field full"><label class="field-label">Hypothesis to test <span class="field-opt">opt — leave blank for agent recommendation</span></label><input type="text" value="${esc(s.hypothesis)}" placeholder="e.g. Incident-led headlines will outperform deployment-speed headlines for CISO audiences..." oninput="setField('12','hypothesis',this.value)"></div>`:""}
+    `;
+    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>", `<textarea placeholder="${s.mode==="Ad variants"?"e.g. Focus on the operational cost angle for BPO — SLA penalty risk as the hook...":"e.g. We want to test whether the physical key analogy or a named incident stops the scroll better..."}" oninput="setField('12','brief',this.value)">${esc(s.brief)}</textarea>`);
+    const warningHtml = `<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:#FAEEDA;color:#412402;margin-bottom:12px;border-left:3px solid #EF9F27">All output requires Brand Strategy Agent 01 approval before launch.</div>`;
+    return `
+      <div class="panel-header">
+        <div class="panel-dot" style="background:${ag.color}"></div>
+        <span class="panel-title">Agent 12 — Ads Testing</span>
+        <span class="panel-desc">${ag.desc}</span>
+      </div>
+      ${modesHtml}${warningHtml}
+      <div class="form-grid">${fieldsHtml}</div>
+      ${textareaHtml}
+      <button class="run-btn" style="background:${ag.color}" onclick="runAgent('12')" ${running?"disabled":""}>
+        ${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}
+      </button>
+      ${outputHtml}`;
+  }
+
   if (id==="07") {
     const ctx = await callClaude(`Performance context: ${s.mode} for ${s.sector}, ${s.role}, deal stage ${s.dealStage}, ladder ${s.ladder}. Normal velocity, common stall points, on-brand vs drifting execution, which agent (01-06) helps most right now and why?`);
     const sys = `You are the Performance & Optimisation Agent for MyCena. Diagnose and improve — do not create campaigns.\nPERFORMANCE CONTEXT:\n${ctx}\nBrand drift scoring (0-10): Problem clarity (0-2) + Named proof (0-2) + Audience specificity (0-2) + Ladder coherence (0-2) + CTA integrity (0-2). 9-10=on-brand, 7-8=minor drift, 5-6=significant, <5=systematic — flag to human.\nDeal health: stage velocity, risk signals, stall reason, re-engagement action with opening line, which agent helps most.\nDrift audits: score each dimension, flag specific passages, verdict APPROVED/APPROVED WITH EDITS/REQUIRES REVISION, exact rewrite instructions.\nRespond in ${lang}.`;
