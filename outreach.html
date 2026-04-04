@@ -356,7 +356,7 @@ async function generateNote(sid) {
 Contact: ${c.contact_name}, ${c.title} at ${c.company} | Sector: ${c.sector} | Country: ${c.country}
 Keywords: ${c.keywords||"none"}
 ${c.agent08_brief?`Brief:\n${c.agent08_brief}`:""}
-Rules: <200 chars. Never name the product. Reference something specific and real. No deck/link. Low-friction CTA. Peer-to-peer tone. Start with first name.`,
+Rules: STRICT 200 character maximum — count every character including spaces. Never name the product. Reference something specific and real about their company or sector. No deck/link/case study. One low-friction reason to connect. Peer-to-peer tone. Start with their first name. If your draft exceeds 200 characters, rewrite it shorter before responding.`,
     "Return only the LinkedIn note. No preamble, no labels, no quotes.");
   state.contacts=state.contacts.map(x=>x.id===sid?{...x,linkedin_note:note}:x);
   await saveBriefNote(sid,c.agent08_brief||"",note);
@@ -380,7 +380,7 @@ Return: 1) Sector breach 2) Control Ladder 3) Objection + response 4) Why MyCena
     const note=await claude(`LinkedIn connection note for MyCena founder.
 Contact: ${c.contact_name}, ${c.title} at ${c.company} | Sector: ${c.sector}
 Brief: ${brief}
-Rules: <200 chars, no product name, specific, peer-to-peer, start with first name.`,
+Rules: STRICT 200 character maximum — count every character. No product name. Specific reference. No deck/link. Low-friction CTA. Peer-to-peer. Start with first name. Rewrite if over 200 chars.`,
       "Return only the note. No preamble.");
     const sid=c.id||c.supabase_id;
     if(state.view==="import"){
