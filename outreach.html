@@ -398,7 +398,34 @@ Rules: STRICT 200 character maximum — count every character. No product name. 
   render();
 }
 
-function copyNote(text) {
+async function generateFollowUp(sid) {
+  state.loadingId=`followup_${sid}`; render();
+  const c=state.contacts.find(x=>x.id===sid); if(!c) return;
+  const msg=await claude(`You are MyCena's Post-Connection Message Agent. Write the first LinkedIn message to send after a connection request has been accepted.
+
+Contact: ${c.contact_name}, ${c.title} at ${c.company}
+Sector: ${c.sector} | Country: ${c.country}
+Keywords: ${c.keywords||"none"}
+${c.agent08_brief?`Research brief:\n${c.agent08_brief}`:""}
+${c.linkedin_note?`Connection note sent:\n${c.linkedin_note}`:""}
+
+Rules:
+- 3 sentences maximum
+- Open with a genuine one-line thank you — not "Thanks for connecting!" — make it specific
+- Second sentence: one observation or question that references something real about their company, sector, or a recent event — no pitch
+- Third sentence: a soft, open-ended invitation to continue the conversation — not "I'd love to show you what we do" or "can we book a call"
+- Never mention the product by name
+- Never attach a deck, link, or case study
+- The goal is a reply — not a meeting
+- Warm, peer-to-peer tone — write as the founder, not a salesperson
+
+Return only the message text. No subject line, no preamble, no labels.`,
+    "Return only the LinkedIn follow-up message. No preamble, no labels, no quotes.");
+  state.contacts=state.contacts.map(x=>x.id===sid?{...x,followup_msg:msg}:x);
+  await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({notes:(c.notes||"")+(c.notes?"\n\n":"")+`--- Follow-up message ---\n${msg}`})});
+  toast("Follow-up message ready");
+  state.loadingId=null; render();
+}
   navigator.clipboard?.writeText(text);
   toast("✓ Copied to clipboard");
 }
@@ -497,6 +524,24 @@ function renderContactCard(c) {
             </div>
           </div>
 
+          ${(status==="Connected"||status==="Replied"||status==="Booked")?`
+          <div style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border)">
+            <div class="section-title">First message after connecting</div>
+            ${c.followup_msg?`
+              <div class="note-box">${esc(c.followup_msg)}</div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-purple" onclick="copyNote(${JSON.stringify(c.followup_msg).replace(/"/g,'&quot;')})" style="flex:1">Copy message</button>
+                ${c.linkedin_url?`<a href="${esc(c.linkedin_url.startsWith("http")?c.linkedin_url:"https://"+c.linkedin_url)}" target="_blank" rel="noopener" class="btn btn-blue">Open LI →</a>`:""}
+                <button class="btn btn-sm" onclick="regenFollowUp('${sid}')" ${state.loadingId?"disabled":""}>Regenerate</button>
+              </div>
+            `:`
+              <button class="btn btn-primary" onclick="genFollowUp('${sid}')" ${state.loadingId?"disabled":""} style="width:100%">
+                ${state.loadingId===`followup_${sid}`?`<span class="spinner"></span>Writing message...`:"Generate follow-up message →"}
+              </button>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px">Personalised first message to send within 24–48hrs of connecting. You send it manually.</div>
+            `}
+          </div>`:""}
+
           ${canPromote?`
             <div class="promote-bar">
               <button class="btn btn-crm" onclick="promote('${sid}')" ${state.loadingId?"disabled":""} style="width:100%">
@@ -551,6 +596,8 @@ function renderMetrics(src) {
 }
 
 // ── event handlers ────────────────────────────────────────────────────────────
+function genFollowUp(sid) { generateFollowUp(sid); }
+function regenFollowUp(sid) { generateFollowUp(sid); }
 function toggleExpand(id) { state.expanded=state.expanded==id?null:id; render(); }
 function setStatus(sid,s) { updateStatus(sid,s); }
 function runBrief(sid) { runAgent08(sid); }
