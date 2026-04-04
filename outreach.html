@@ -124,13 +124,14 @@
 const SUPABASE = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 const PROXY    = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
 
-const STATUS_FLOW  = ["Not sent","Note sent","Connected","Replied","Booked"];
+const STATUS_FLOW  = ["Not sent","Note sent","Connected","Replied","Booked","Irrelevant"];
 const STATUS_STYLE = {
-  "Not sent":  {bg:"var(--bg2)",        text:"var(--text3)"},
-  "Note sent": {bg:"var(--purple-bg)",  text:"var(--purple-text)"},
-  "Connected": {bg:"#E6F1FB",           text:"#042C53"},
-  "Replied":   {bg:"var(--amber-bg)",   text:"var(--amber-text)"},
-  "Booked":    {bg:"var(--green-bg)",   text:"var(--green-text)"},
+  "Not sent":    {bg:"var(--bg2)",        text:"var(--text3)"},
+  "Note sent":   {bg:"var(--purple-bg)",  text:"var(--purple-text)"},
+  "Connected":   {bg:"#E6F1FB",           text:"#042C53"},
+  "Replied":     {bg:"var(--amber-bg)",   text:"var(--amber-text)"},
+  "Booked":      {bg:"var(--green-bg)",   text:"var(--green-text)"},
+  "Irrelevant":  {bg:"var(--bg3)",        text:"var(--text3)"},
 };
 const SECTOR_MAP = {
   "financial services":"Financial services","banking":"Financial services","insurance":"Financial services",
@@ -162,6 +163,7 @@ const icpScore = r => {
 
 let state = {
   view:"import", contacts:[], parsed:[], search:"", filterTier:"All", filterStatus:"All",
+  showIrrelevant:false,
   expanded:null, phase:"", progress:0, importing:false, imported:false,
   importedCount:0, skippedCount:0, batchRunning:false, batchDone:0, batchTotal:0, batchCurrent:"",
   loadingId:null, copiedId:null,
@@ -409,7 +411,8 @@ function filtered() {
     const mQ=!q||c.contact_name?.toLowerCase().includes(q)||c.company?.toLowerCase().includes(q)||c.title?.toLowerCase().includes(q);
     const mT=state.filterTier==="All"||c.icp_tier===state.filterTier;
     const mS=state.filterStatus==="All"||(c.outreach_status||"Not sent")===state.filterStatus;
-    return mQ&&mT&&mS;
+    const mI=state.showIrrelevant||(c.outreach_status||"Not sent")!=="Irrelevant";
+    return mQ&&mT&&mS&&mI;
   });
 }
 
@@ -565,6 +568,7 @@ function render() {
   const tier2c  = src.filter(c=>c.icp_tier==="2").length;
   const tier3c  = src.filter(c=>c.icp_tier==="3").length;
   const briefed = src.filter(c=>c.agent08_brief).length;
+  const irrelevantCount = state.contacts.filter(c=>c.outreach_status==="Irrelevant").length;
 
   document.getElementById("app").innerHTML = `
     <div class="header">
@@ -627,6 +631,7 @@ function render() {
           <div style="display:flex;gap:4px">
             ${["All","1","2","3"].map(t=>`<button class="btn btn-sm${state.filterTier===t?" btn-primary":""}" onclick="setTierFilter('${t}')">${t==="All"?"All":`T${t}`}</button>`).join("")}
           </div>
+          ${irrelevantCount>0?`<button class="btn btn-sm" style="${state.showIrrelevant?"background:var(--bg3)":""}" onclick="state.showIrrelevant=!state.showIrrelevant;render()">${state.showIrrelevant?"Hide":"Show"} irrelevant (${irrelevantCount})</button>`:""}
           <span style="font-size:11px;color:var(--text3);margin-left:auto">${filt.length} shown</span>
         </div>
         ${filt.length?filt.map(c=>renderContactCard(c)).join(""):`<div class="empty">No contacts found.</div>`}
