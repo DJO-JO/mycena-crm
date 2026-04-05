@@ -329,9 +329,10 @@ async function buildPrompts(id, sharedContext) {
   }
   if (id==="02") {
     const [c5,c6]=await Promise.all([callClaude(p05ctx(s.role,s.sector)),callClaude(p06ctx(s.sector,"",s.ladder))]);
+    const angleInstruction = s.angle ? `PRIORITY INSTRUCTION: The user has specified a specific angle — you MUST build the entire piece around this:\n"${s.angle}"\nDo not deviate from this angle. It is the spine of everything you write.\n\n` : "";
     return {
-      sys:`You are the Content & Thought Leadership Agent for MyCena.\n${BRAND_RULES}${intel}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nNever open with "In today's rapidly evolving threat landscape." Checklist: named incident + cost / physical key analogy / single audience / Ladder stage / no hypotheticals / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`,
-      user:`Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nAngle: ${s.angle||"Use judgement."}`
+      sys:`You are the Content & Thought Leadership Agent for MyCena.\n${angleInstruction}${BRAND_RULES}${intel}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nNever open with "In today's rapidly evolving threat landscape." Checklist: named incident + cost / physical key analogy / single audience / Ladder stage / no hypotheticals / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`,
+      user:`${s.angle?`ANGLE TO FOLLOW: ${s.angle}\n\n`:""}Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nAngle: ${s.angle||"Use judgement."}`
     };
   }
   if (id==="03") {
