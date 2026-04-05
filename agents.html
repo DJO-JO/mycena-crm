@@ -27,76 +27,50 @@
   }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); font-size: 14px; min-height: 100vh; }
   .app { max-width: 900px; margin: 0 auto; padding: 20px; }
-
-  /* header */
-  .header { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 14px; }
-  .header-left { display: flex; align-items: center; gap: 10px; }
-  .logo { width: 28px; height: 28px; border-radius: 7px; background: var(--purple); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--green-bg); color: var(--green-text); font-weight: 500; }
-
-  /* nav */
-  .agent-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-  .nav-btn { display: flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg2); cursor: pointer; font-family: inherit; color: var(--text); transition: all 0.15s; }
-  .nav-btn.active { border-color: var(--active-color); background: var(--active-muted); }
-  .nav-num { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: var(--bg3); color: var(--text2); font-weight: 500; }
-  .nav-btn.active .nav-num { color: white; background: var(--active-color); }
-  .nav-label { font-size: 12px; font-weight: 500; }
-  .nav-btn.active .nav-label { color: var(--active-color); }
-  .nav-desc { font-size: 10px; color: var(--text3); }
-
-  /* panel */
-  .panel { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
-  .panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 0.5px solid var(--border); }
-  .panel-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .panel-title { font-size: 13px; font-weight: 500; }
-  .panel-desc { font-size: 11px; color: var(--text3); }
-
-  /* form */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .field { display: flex; flex-direction: column; gap: 3px; }
-  .field-label { font-size: 11px; color: var(--text2); }
-  .field-opt { color: var(--text3); }
-  input, select, textarea { font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: inherit; width: 100%; }
-  input:focus, select:focus, textarea:focus { outline: 2px solid var(--purple); outline-offset: 1px; }
-  textarea { resize: vertical; height: 70px; }
-  .full { grid-column: 1 / -1; }
-
-  /* mode pills */
-  .mode-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .pill { font-size: 12px; padding: 5px 11px; border-radius: 6px; border: 0.5px solid var(--border2); background: var(--bg2); cursor: pointer; font-family: inherit; color: var(--text); transition: background 0.15s; }
-  .pill.active { color: white; border-color: transparent; }
-
-  /* run button */
-  .run-btn { font-size: 13px; padding: 8px 20px; border-radius: var(--radius); border: none; color: white; cursor: pointer; font-family: inherit; font-weight: 500; transition: opacity 0.15s; }
-  .run-btn:disabled { cursor: wait; opacity: 0.7; }
-
-  /* output */
-  .output { margin-top: 16px; background: var(--bg); border-radius: var(--radius-lg); padding: 16px; }
-  .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .output-label { font-size: 12px; font-weight: 500; }
-  .output-meta { font-size: 11px; color: var(--text3); margin-left: 8px; }
-  .output-text { font-size: 13px; line-height: 1.7; white-space: pre-wrap; max-height: 480px; overflow-y: auto; }
-  .output-actions { display: flex; gap: 6px; }
-
-  /* small btns */
-  .btn-sm { font-size: 11px; padding: 3px 9px; border-radius: 5px; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text2); cursor: pointer; font-family: inherit; }
-  .btn-sm:hover { background: var(--bg3); }
-
-  /* error */
-  .error { font-size: 12px; color: #E24B4A; margin-bottom: 10px; }
-
-  /* alert box */
-  .alert-box { font-size: 12px; padding: 8px 12px; border-radius: 7px; margin-bottom: 10px; border-left: 3px solid #E24B4A; background: var(--red-bg); color: var(--red-text); grid-column: 1/-1; }
-
-  /* lang selector */
-  .lang-wrap { display: flex; align-items: center; gap: 8px; }
-  .lang-wrap label { font-size: 11px; color: var(--text2); white-space: nowrap; }
-  .lang-wrap select { width: auto; font-size: 12px; padding: 5px 8px; }
-
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* library */
+  .header { display:flex; align-items:center; justify-content:space-between; background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:14px 18px; margin-bottom:14px; }
+  .header-left { display:flex; align-items:center; gap:10px; }
+  .logo { width:28px; height:28px; border-radius:7px; background:var(--purple); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .badge { font-size:11px; padding:2px 8px; border-radius:4px; background:var(--green-bg); color:var(--green-text); font-weight:500; }
+  .agent-nav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+  .nav-btn { display:flex; align-items:center; gap:7px; padding:7px 12px; border-radius:var(--radius); border:0.5px solid var(--border2); background:var(--bg2); cursor:pointer; font-family:inherit; color:var(--text); transition:all 0.15s; }
+  .nav-btn.active { border-color:var(--active-color); background:var(--active-muted); }
+  .nav-num { font-size:11px; padding:1px 6px; border-radius:3px; background:var(--bg3); color:var(--text2); font-weight:500; }
+  .nav-btn.active .nav-num { color:white; background:var(--active-color); }
+  .nav-label { font-size:12px; font-weight:500; }
+  .nav-btn.active .nav-label { color:var(--active-color); }
+  .nav-desc { font-size:10px; color:var(--text3); }
+  .panel { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
+  .panel-header { display:flex; align-items:center; gap:8px; margin-bottom:16px; padding-bottom:12px; border-bottom:0.5px solid var(--border); }
+  .panel-dot { width:8px; height:8px; border-radius:50%; }
+  .panel-title { font-size:13px; font-weight:500; }
+  .panel-desc { font-size:11px; color:var(--text3); }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  .field { display:flex; flex-direction:column; gap:3px; }
+  .field-label { font-size:11px; color:var(--text2); }
+  .field-opt { color:var(--text3); }
+  input, select, textarea { font-size:13px; padding:7px 10px; border-radius:var(--radius); border:0.5px solid var(--border2); background:var(--bg); color:var(--text); font-family:inherit; width:100%; }
+  input:focus, select:focus, textarea:focus { outline:2px solid var(--purple); outline-offset:1px; }
+  textarea { resize:vertical; height:70px; }
+  .full { grid-column:1/-1; }
+  .mode-pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .pill { font-size:12px; padding:5px 11px; border-radius:6px; border:0.5px solid var(--border2); background:var(--bg2); cursor:pointer; font-family:inherit; color:var(--text); }
+  .pill.active { color:white; border-color:transparent; }
+  .run-btn { font-size:13px; padding:8px 20px; border-radius:var(--radius); border:none; color:white; cursor:pointer; font-family:inherit; font-weight:500; }
+  .run-btn:disabled { cursor:wait; opacity:0.7; }
+  .output { margin-top:16px; background:var(--bg); border-radius:var(--radius-lg); padding:16px; }
+  .output-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .output-label { font-size:12px; font-weight:500; }
+  .output-meta { font-size:11px; color:var(--text3); margin-left:8px; }
+  .output-text { font-size:13px; line-height:1.7; white-space:pre-wrap; max-height:480px; overflow-y:auto; }
+  .output-actions { display:flex; gap:6px; }
+  .btn-sm { font-size:11px; padding:3px 9px; border-radius:5px; border:0.5px solid var(--border2); background:var(--bg2); color:var(--text2); cursor:pointer; font-family:inherit; }
+  .btn-sm:hover { background:var(--bg3); }
+  .alert-box { font-size:12px; padding:8px 12px; border-radius:7px; margin-bottom:10px; border-left:3px solid #E24B4A; background:var(--red-bg); color:var(--red-text); grid-column:1/-1; }
+  .lang-wrap { display:flex; align-items:center; gap:8px; }
+  .lang-wrap label { font-size:11px; color:var(--text2); white-space:nowrap; }
+  .lang-wrap select { width:auto; font-size:12px; padding:5px 8px; }
+  .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; margin-right:6px; vertical-align:middle; }
+  @keyframes spin { to { transform:rotate(360deg); } }
   .lib-toolbar { display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
   .lib-search { font-size:13px; padding:7px 10px; border-radius:var(--radius); border:0.5px solid var(--border2); background:var(--bg); color:var(--text); font-family:inherit; width:220px; }
   .lib-empty { font-size:13px; color:var(--text3); padding:40px; text-align:center; }
@@ -107,16 +81,16 @@
   .lib-card-preview { font-size:12px; color:var(--text2); line-height:1.6; max-height:60px; overflow:hidden; white-space:pre-wrap; }
   .lib-card-full { font-size:12px; line-height:1.7; white-space:pre-wrap; margin-top:8px; padding-top:8px; border-top:0.5px solid var(--border); }
   .lib-date { font-size:11px; color:var(--text3); }
-  .saved-toast { position:fixed; bottom:20px; right:20px; background:#1D9E75; color:white; font-size:12px; padding:8px 14px; border-radius:var(--radius); font-family:inherit; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+  .saved-toast { position:fixed; bottom:20px; right:20px; background:#1D9E75; color:white; font-size:12px; padding:8px 14px; border-radius:var(--radius); font-family:inherit; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:999; }
   .saved-toast.show { opacity:1; }
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
-
+<div class="saved-toast" id="toast"></div>
 <script>
-const PROXY     = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
-const SUPABASE  = "https://mycena-crm-proxy.julia-aa4.workers.dev";
+const PROXY    = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
+const SUPABASE = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 
 const LANGUAGES = ["English","French","German","Spanish","Italian","Portuguese","Dutch","Polish","Swedish","Norwegian"];
 const ROLES     = ["CISO","CTO","Risk & Compliance","CFO","Board member","IT Director","IT Manager"];
@@ -125,7 +99,6 @@ const LADDER    = ["1 — Out of control","2 — Aware but undefended","3 — Pa
 const HEADCOUNTS= ["<500","500–2k","2k–10k","10k+"];
 const STAGES_CRM= ["Identified","Contacted","Engaged","Assessment booked","Assessment delivered","Internal selling","Commercial","Closed won","Closed lost","Nurture"];
 const RISKS     = ["GREEN","AMBER","RED"];
-
 const AGENTS = [
   { id:"01", label:"Brand Strategy",      color:"#7F77DD", muted:"#EEEDFE", desc:"Brand voice & positioning" },
   { id:"02", label:"Content",             color:"#378ADD", muted:"#E6F1FB", desc:"Whitepapers & long-form" },
@@ -134,10 +107,9 @@ const AGENTS = [
   { id:"05", label:"Sales Enablement",    color:"#639922", muted:"#EAF3DE", desc:"Decks, objections & battlecards" },
   { id:"06", label:"Data & Intelligence", color:"#888780", muted:"#F1EFE8", desc:"Exposure figures & proof" },
   { id:"07", label:"Performance",         color:"#7F77DD", muted:"#EEEDFE", desc:"Drift, deal health & gaps" },
-  { id:"11", label:"ICP & Niche",         color:"#1D9E75", muted:"#E1F5EE", desc:"Targeting intelligence & segmentation" },
+  { id:"11", label:"ICP & Niche",         color:"#1D9E75", muted:"#E1F5EE", desc:"Targeting intelligence" },
   { id:"12", label:"Ads Testing",         color:"#D85A30", muted:"#FAECE7", desc:"Ad variants & test briefs" },
 ];
-
 const BRAND_RULES = `Non-negotiable rules:
 - Central argument: architectural, not incremental. Every security tool operates AFTER authentication. MyCena operates AT the credential layer.
 - Physical key analogy: "You wouldn't give every employee a master key to every room in your building. But that is exactly what most organisations do with digital credentials."
@@ -147,30 +119,55 @@ const BRAND_RULES = `Non-negotiable rules:
 - Only CTA: Board-Level Risk Assessment
 - Four-level persuasion: 1) Emotional truth 2) Structural diagnosis 3) Proof 4) Solution`;
 
+const INTEL_TYPE  = { "01":"brand_rules","02":"brand_rules","03":"campaign_pattern","04":"pr_context","05":"sales_context","06":"data_proof","07":"performance","11":"icp_update","12":"ads_pattern" };
+const INTEL_READS = {
+  "01":["icp_update","performance","campaign_pattern","ads_pattern"],
+  "02":["icp_update","data_proof","brand_rules"],
+  "03":["icp_update","brand_rules","ads_pattern","performance"],
+  "04":["data_proof","brand_rules","icp_update"],
+  "05":["icp_update","data_proof","performance","sales_context"],
+  "06":["icp_update"],
+  "07":["brand_rules","campaign_pattern","ads_pattern","performance","icp_update"],
+  "11":["campaign_pattern","ads_pattern","data_proof","performance"],
+  "12":["icp_update","brand_rules","campaign_pattern","data_proof"],
+};
+const INTEL_COLORS = { "icp_update":"#1D9E75","brand_rules":"#7F77DD","campaign_pattern":"#EF9F27","data_proof":"#888780","performance":"#378ADD","ads_pattern":"#D85A30","pr_context":"#D4537E","sales_context":"#639922","general":"#888780" };
+const MODE_COLORS_07 = {"Deal health check":"#378ADD","Brand drift audit":"#D4537E","Content gap audit":"#639922","Conversion analysis":"#EF9F27","Agent improvement brief":"#7F77DD"};
+const ASSET_MAP_04 = {
+  "Reactive — breach response":["Full reactive pack","Incident summary card","CEO quote only","Social post"],
+  "Proactive — media asset":["Press release","Award submission","Analyst briefing","Journalist pitch — security press","Journalist pitch — business press"],
+  "Executive prep":["Interview Q&A prep","Key message brief","On-record statement"],
+};
+const CTYPES_01   = ["Campaign brief","Messaging framework","Audience narrative","Website copy","Email","LinkedIn post","Press release"];
+const CTYPES_02   = ["Whitepaper","Breach anatomy article","CISO board brief template","Analyst-facing narrative","Executive opinion piece","LinkedIn long-form","Case study narrative","Regulatory briefing"];
+const CHANNELS_03 = ["LinkedIn ad","Cold email — first touch","Email nurture sequence","Landing page","Retargeting ad","Event follow-up","LinkedIn long-form post"];
+const CAMPAIGNS_03= ["Always-on brand","Incident reactive","Sector-specific","Control Ladder nurture","Assessment conversion","Closed-lost re-engagement"];
+const ASSETS_05   = ["Board presentation deck","CFO one-pager","Objection handling guide","Competitive battlecard","Champion toolkit","Internal business case","Executive summary","Procurement / security questionnaire responses"];
+const MODES_06    = ["Exposure calculation","Sector threat profile","Incident deep-dive","Proof data pack","Regulatory briefing"];
+const MODES_07    = ["Deal health check","Brand drift audit","Content gap audit","Conversion analysis","Agent improvement brief"];
+const MODES_11    = ["Quarterly ICP report","Monthly signal report","Niche opportunity analysis","Urgent flag check"];
+const MODES_12    = ["Ad variants","Test brief"];
+const PLATFORMS_12    = ["LinkedIn","Google Ads","Both"];
+const CAMP_TYPES_12   = ["Awareness — top of funnel","Consideration — middle of funnel","Conversion — bottom of funnel","Incident reactive","Brand defence","Competitor conquest"];
+const AD_FORMATS_12   = ["Single image ad","Carousel ad","Video ad script","Document ad","Conversation ad","Thought leader ad","Google search ad"];
+const SEGMENTS_12     = ["CISO direct","Security leadership","Board & CEO","CFO","IT leadership","Sector-specific"];
+
 const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-const sel = (arr, val) => arr.map(o=>`<option value="${esc(o)}"${o===val?" selected":""}>${esc(o)}</option>`).join("");
+const sel = (arr,val) => arr.map(o=>`<option value="${esc(o)}"${o===val?" selected":""}>${esc(o)}</option>`).join("");
+const hexMuted = h => ({"#7F77DD":"#CECBF6","#378ADD":"#B5D4F4","#EF9F27":"#FAC775","#D4537E":"#F4C0D1","#639922":"#C0DD97","#888780":"#D3D1C7","#E24B4A":"#F7C1C1","#1D9E75":"#9FE1CB","#D85A30":"#F5C4B3"})[h]||"#D3D1C7";
 
-let state = { view:"console", agent:"01", lang:"English", phases:{}, outputs:{}, errors:{}, library:[], libSearch:"", libExpanded:{}, libLoading:false, intelligence:[], intelLoading:false, intelSearch:"", loadedContext:{} };
-
-async function callClaude(userPrompt, systemPrompt) {
-  const body = { model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:userPrompt}] };
-  if (systemPrompt) body.system = systemPrompt;
-  const res = await fetch(PROXY, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
-  const data = await res.json();
-  return data.content?.[0]?.text || "";
+function showToast(msg) {
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2500);
 }
 
-const p05ctx = (role,sector,extra="") =>
-`You are MyCena's Sales Enablement Agent. Reason from first principles.
-Role: ${role} | Sector: ${sector}${extra}
-Return: 1) Primary motivation 2) Internal pressures 3) How they buy 4) Top 2 objections + responses 5) Single most important thing MyCena must demonstrate. Be specific.`;
-
-const p06ctx = (sector,headcount="",ladder="",incident="") =>
-`You are MyCena's Data & Intelligence Agent. Reason from first principles.
-Sector: ${sector}${headcount?` | Headcount: ${headcount}`:""}${ladder?` | Ladder: ${ladder}`:""}${incident?`\nIncident: ${incident}`:""}
-Return: 1) Most relevant named incident + cost 2) Regulatory pressure 3) Credential failure mode 4) Proof data to shift belief 5) Native sector language. Real figures only.`;
-
-// ── per-agent state ──────────────────────────────────────────────────────────
+// ── state ────────────────────────────────────────────────────────────────────
+let state = {
+  view:"console", agent:"01", lang:"English",
+  phases:{}, outputs:{}, errors:{}, loadedContext:{},
+  library:[], libSearch:"", libExpanded:{}, libLoading:false,
+  intelligence:[], intelLoading:false, intelSearch:"",
+};
 const agentState = {
   "01":{ mode:"Generation", ctype:"Campaign brief", role:"CISO", sector:"Financial services", topic:"", review:"" },
   "02":{ role:"CISO", sector:"Financial services", ctype:"Whitepaper", ladder:"2 — Aware but undefended", angle:"" },
@@ -183,534 +180,383 @@ const agentState = {
   "12":{ mode:"Ad variants", platform:"LinkedIn", campaignType:"Conversion — bottom of funnel", format:"Single image ad", segment:"CISO direct", sector:"Financial services", ladder:"2 — Aware but undefended", incident:"", hypothesis:"", brief:"" },
 };
 
-const ASSET_MAP_04 = {
-  "Reactive — breach response":["Full reactive pack","Incident summary card","CEO quote only","Social post"],
-  "Proactive — media asset":["Press release","Award submission","Analyst briefing","Journalist pitch — security press","Journalist pitch — business press"],
-  "Executive prep":["Interview Q&A prep","Key message brief","On-record statement"],
-};
-const MODES_06 = ["Exposure calculation","Sector threat profile","Incident deep-dive","Proof data pack","Regulatory briefing"];
-const MODES_07 = ["Deal health check","Brand drift audit","Content gap audit","Conversion analysis","Agent improvement brief"];
-const MODES_11 = ["Quarterly ICP report","Monthly signal report","Niche opportunity analysis","Urgent flag check"];
-const MODES_12 = ["Ad variants","Test brief"];
-const PLATFORMS_12 = ["LinkedIn","Google Ads","Both"];
-const CAMPAIGN_TYPES_12 = ["Awareness — top of funnel","Consideration — middle of funnel","Conversion — bottom of funnel","Incident reactive","Brand defence","Competitor conquest"];
-const AD_FORMATS_12 = ["Single image ad","Carousel ad","Video ad script","Document ad","Conversation ad","Thought leader ad","Google search ad"];
-const SEGMENTS_12 = ["CISO direct","Security leadership","Board & CEO","CFO","IT leadership","Sector-specific"];
-const CTYPES_01 = ["Campaign brief","Messaging framework","Audience narrative","Website copy","Email","LinkedIn post","Press release"];
-const CTYPES_02 = ["Whitepaper","Breach anatomy article","CISO board brief template","Analyst-facing narrative","Executive opinion piece","LinkedIn long-form","Case study narrative","Regulatory briefing"];
-const CHANNELS_03 = ["LinkedIn ad","Cold email — first touch","Email nurture sequence","Landing page","Retargeting ad","Event follow-up","LinkedIn long-form post"];
-const CAMPAIGNS_03 = ["Always-on brand","Incident reactive","Sector-specific","Control Ladder nurture","Assessment conversion","Closed-lost re-engagement"];
-const ASSETS_05 = ["Board presentation deck","CFO one-pager","Objection handling guide","Competitive battlecard","Champion toolkit","Internal business case","Executive summary","Procurement / security questionnaire responses"];
-const MODE_COLORS_07 = {"Deal health check":"#378ADD","Brand drift audit":"#D4537E","Content gap audit":"#639922","Conversion analysis":"#EF9F27","Agent improvement brief":"#7F77DD"};
-
-// ── prompt builders ──────────────────────────────────────────────────────────
-async function buildPrompts(id, sharedContext="") {
-  const intelBlock = sharedContext ? `\n\n--- SHARED INTELLIGENCE FROM OTHER AGENTS ---\n${sharedContext}\n---\n` : "";
-  const s = agentState[id]; const lang = state.lang;
-
-  if (id==="01") {
-    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector)), callClaude(p06ctx(s.sector))]);
-    const sys = `You are the Brand Strategy Agent for MyCena.\n${BRAND_RULES}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nWhen reviewing: Voice/Proof/Audience/Control Ladder check then verdict: APPROVED / APPROVED WITH EDITS / REQUIRES REVISION.\nRespond in ${lang}.`;
-    const user = s.mode==="Generation" ? `Mode: Generation\nContent type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nTopic: ${s.topic||"Use judgement."}` : `Mode: Review\nAudience: ${s.role}\nSector: ${s.sector}\nContent:\n${s.review}`;
-    return {sys,user};
-  }
-  if (id==="02") {
-    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector)), callClaude(p06ctx(s.sector,"",s.ladder))]);
-    const sys = `You are the Content & Thought Leadership Agent for MyCena.\n${BRAND_RULES}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nNever open with "In today's rapidly evolving threat landscape." Checklist: named incident + cost / physical key analogy / single audience / Ladder stage / no hypotheticals / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`;
-    const user = `Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nAngle: ${s.angle||"Use judgement."}`;
-    return {sys,user};
-  }
-  if (id==="03") {
-    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector)), callClaude(p06ctx(s.sector,"",s.ladder))]);
-    const sys = `You are the Campaign & Demand Generation Agent for MyCena.\n${BRAND_RULES}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nChannel rules: LinkedIn — stop scroll, never open with question. Cold email 1 — never mention product. Landing pages — headline = problem, sub = structural gap, one named incident, CTA = book assessment. Never "learn more"/"explore"/"find out how". Email nurture 5 stages: problem → incident pattern → structural diagnosis → proof → conversion.\nRespond in ${lang}.`;
-    const user = `Channel: ${s.channel}\nCampaign: ${s.campaign}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nBrief: ${s.brief||"Use judgement."}`;
-    return {sys,user};
-  }
-  if (id==="04") {
-    const modeColor = s.mode==="Reactive — breach response"?"#E24B4A":s.mode==="Proactive — media asset"?"#1D9E75":"#7F77DD";
-    const [c5,c6] = await Promise.all([
-      callClaude(`You are MyCena's media relations specialist. What does ${s.pressTarget} want from a cybersecurity story? What makes a MyCena CEO quote independently quotable? What kills credibility with this audience?`),
-      callClaude(p06ctx(s.sector,"","",s.incident))
-    ]);
-    const sys = `You are the PR & Media Agent for MyCena.\n${BRAND_RULES}\nMEDIA BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nRules: Security press = technical pattern first. Business press = financial/human consequence first. Never same pitch to both. CEO quotes must survive removal from context — no passive voice. Flag if credential involvement unconfirmed. Reactive pack = incident summary card + pattern match + cost projection + structural fix statement + CEO quote.\nRespond in ${lang}.`;
-    const user = `Mode: ${s.mode}\nAsset: ${s.assetType}\nSector: ${s.sector}\nPress target: ${s.pressTarget}\n${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Use judgement."}`;
-    return {sys,user};
-  }
-  if (id==="05") {
-    const [c5,c6] = await Promise.all([callClaude(p05ctx(s.role,s.sector,`\nAsset: ${s.assetType} | Ladder: ${s.ladder}`)), callClaude(p06ctx(s.sector,s.headcount))]);
-    const sys = `You are the Sales Enablement Agent for MyCena.\n${BRAND_RULES}\nBUYING SITUATION:\n${c5}\nDATA INTELLIGENCE:\n${c6}\nRules: Board deck opens with named sector incident — never company overview. CFO one-pager leads with exposure figure: monthly cost + SLA risk = annual exposure, MyCena cost, net saving, payback period. Objections: (1) Already have Okta/Azure AD → MyCena fills the gap they don't cover. (2) No IT resource → overlay, 4 weeks. (3) No breach yet → Colonial Pipeline hadn't either. (4) Board won't prioritise → M&S lost £300M in 5 weeks. Never position against Okta/Azure AD — real displacement is the spreadsheet and manual checklist.\nRespond in ${lang}.`;
-    const user = `Asset: ${s.assetType}\nRole: ${s.role}\nSector: ${s.sector}\nLadder: ${s.ladder}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Exposure: £${s.exposure}\n`:""}Brief: ${s.brief||"Use judgement."}`;
-    return {sys,user};
-  }
-  if (id==="06") {
-    const ctx = await callClaude(`Operational context for ${s.sector}, headcount ${s.headcount}: typical IT helpdesk structure, credential ticket volume, SLA/contractual framework, regulatory environment, common credential failure mode, what good governance looks like vs industry average. Be specific.`);
-    const sys = `You are the Data & Intelligence Agent for MyCena — the proof layer.\nOPERATIONAL CONTEXT:\n${ctx}\nRules: Primary sources only (IBM, Verizon DBIR, Ponemon, official filings). Distinguish mean/median/max cost. Flag sources >3 years. Flag all estimates. Core figures: avg breach $4.88M (IBM 2024), 80%+ credential-involved (Verizon DBIR), 194 days avg detection (IBM 2024), Colonial Pipeline $4.4M, M&S £300M+ (Q1 2025), SolarWinds $100M+. Exposure: monthly tickets × £25 + SLA risk + staff downtime = annual exposure.\nRespond in ${lang}.`;
-    const user = `Mode: ${s.mode}\nSector: ${s.sector}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Known exposure: £${s.exposure}\n`:""}${s.ticketVol?`Monthly tickets: ${s.ticketVol}\n`:""}${s.hourlyRate?`Hourly rate: £${s.hourlyRate}\n`:""}${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Produce most useful output for this mode."}`;
-    return {sys,user};
-  }
-  if (id==="11") {
-    const s = agentState["11"];
-    // Pull live CRM data from Supabase
-    let crmData = "";
-    try {
-      const res = await fetch(`${SUPABASE}/deals?order=created_at.desc&limit=200`, {
-        headers:{"Content-Type":"application/json","Prefer":"return=representation"}
-      });
-      const deals = await res.json();
-      const won    = deals.filter(d=>d.stage==="Closed won");
-      const lost   = deals.filter(d=>d.stage==="Closed lost");
-      const stalled= deals.filter(d=>d.days_since_activity>10 && !["Closed won","Closed lost"].includes(d.stage));
-      const active = deals.filter(d=>!["Closed won","Closed lost","Nurture"].includes(d.stage));
-      crmData = `LIVE CRM DATA (${deals.length} total deals):
-Closed won (${won.length}): ${JSON.stringify(won.map(d=>({company:d.company,sector:d.sector,headcount:d.headcount,value:d.deal_value,ladder:d.control_ladder,source:d.source})))}
-Closed lost (${lost.length}): ${JSON.stringify(lost.map(d=>({company:d.company,sector:d.sector,headcount:d.headcount,value:d.deal_value,ladder:d.control_ladder,notes:d.notes})))}
-Stalled deals (${stalled.length}): ${JSON.stringify(stalled.map(d=>({company:d.company,sector:d.sector,stage:d.stage,days_idle:d.days_since_activity,risk:d.risk})))}
-Active pipeline (${active.length}): ${JSON.stringify(active.map(d=>({company:d.company,sector:d.sector,stage:d.stage,value:d.deal_value,ladder:d.control_ladder})))}`;
-    } catch(e) { crmData = "CRM data unavailable — analyse based on sector and market knowledge."; }
-
-    const sys = `You are the ICP & Niche Agent for MyCena. Your job is to continuously refine targeting intelligence — which organisations, in which sectors, of which size, with which characteristics, are most likely to buy MyCena fast.
-
-Core belief: The ICP is a living model updated by every closed deal, every lost deal, and every sector event that changes urgency.
-
-ICP dimensions to maintain (Tier 1/2/3 rankings):
-- Sector: rank by conversion rate, deal velocity, average contract value, expansion potential
-- Headcount bands: <500, 500–2k, 2k–10k, 10k+
-- Third-party vendor count as leading indicator of credential sprawl
-- Trigger events: sector breach, new CISO appointment, M&A activity, regulatory enforcement
-
-${BRAND_RULES}${intelBlock}
-
-${crmData}
-${s.campaignContext?`\nCAMPAIGN CONTEXT:\n${s.campaignContext}`:""}
-${s.adsContext?`\nADS CONTEXT:\n${s.adsContext}`:""}
-
-Respond in ${state.lang}.`;
-
-    const modeInstructions = {
-      "Quarterly ICP report": `Produce a full quarterly ICP report with these sections:
-1. What closed last quarter — breakdown by sector, headcount, velocity, top 3 shared characteristics
-2. What didn't close and why — stated vs diagnosed reason, stall patterns
-3. Niche opportunities — specific actionable niches with evidence, breach angle, regulatory hook, exact ICP titles, message variant, recommended campaign
-4. ICP adjustments recommended — promote/deprioritise with evidence and sample size
-5. Targeting instructions for Agents 03, 08, 12 and Apollo/Clay`,
-      "Monthly signal report": `Produce a monthly signal report covering: top converting segment this month, underperforming segment, breach intelligence, intent signals, one tactical adjustment for the next 30 days.`,
-      "Niche opportunity analysis": `Identify the 3 most promising niche opportunities in the current pipeline data. For each: the specific niche, evidence from CRM, breach angle, regulatory hook, exact ICP titles to target, message variant needed, recommended campaign type.`,
-      "Urgent flag check": `Check the CRM data for urgent flags: any sector with 3+ closed-won deals this month (breakout signal), any Tier 1 sector with 0 conversions for 60+ days, any new trigger event producing fast closes, any pattern suggesting competitive displacement. Flag each with recommended immediate action.`
-    };
-
-    const user = `Mode: ${s.mode}\n\n${modeInstructions[s.mode]||""}\n\nAdditional context: ${s.brief||"None provided."}`;
-    return {sys, user};
-  }
-
-  if (id==="12") {
-    const s = agentState["12"];
-    const [brandCtx, dataCtx] = await Promise.all([
-      callClaude(p05ctx("CISO", s.sector)),
-      callClaude(p06ctx(s.sector,"",s.ladder,s.incident))
-    ]);
-
-    const sys = `You are the Ads Testing Agent for MyCena. You generate ad variants and test briefs for paid media on LinkedIn and Google Ads.
-
-${BRAND_RULES}${intelBlock}
-
-Your absolute rules:
-- Every ad points to one CTA only: Book the Board-Level Risk Assessment. Never "learn more", "explore", "download"
-- Nothing goes live without Brand Strategy Agent (01) approval — flag this on every output
-- Test one variable at a time — never change headline AND image AND audience simultaneously
-- Kill losers after 5 days / 400 impressions minimum. Scale winners by max 30% budget per week
-- LinkedIn Headline must stop the scroll: use the physical key analogy, a named incident, or a number — never open with a question
-- Google Headline 1: named incident / number / "credential control" — never generic
-- Google Headline 2: structural differentiator — "Generated. Encrypted. User-invisible."
-- Google Headline 3: "Book Your Risk Assessment" — not "Learn More"
-
-AUDIENCE & SECTOR INTELLIGENCE:
-${brandCtx}
-
-DATA & PROOF INTELLIGENCE:
-${dataCtx}
-
-Respond in ${state.lang}.`;
-
-    const modeInstructions = s.mode === "Ad variants"
-      ? `Produce 3 ad variants for the following spec. For each variant provide:
-- The full ad copy (headline(s), body, CTA)
-- The single variable that differs from the others
-- The hypothesis: why this angle should outperform
-- Brand check: confirm it meets all MyCena brand rules or flag any borderline choices
-- Note: requires Brand Strategy Agent 01 approval before launch
-
-Platform: ${s.platform}
-Campaign type: ${s.campaignType}
-Ad format: ${s.format}
-Audience segment: ${s.segment}
-Sector: ${s.sector}
-Control Ladder stage: ${s.ladder}
-${s.incident?`Incident hook: ${s.incident}`:""}
-Brief: ${s.brief||"Use your judgement based on the campaign type and audience."}`
-      : `Produce a test brief for the following:
-- Hypothesis (one sentence)
-- Variable being tested
-- Control variant (current best practice for this format/audience)
-- Test variant (the challenger)
-- Success metric: primary (cost per assessment booked) + secondary (CTR)
-- Minimum sample: 400 impressions per variant
-- Decision rule: 15%+ outperformance at 80% confidence → implement
-- Budget rule: max 20% of campaign budget on test variant until it wins
-- What to test next if this wins / if this loses
-
-Platform: ${s.platform}
-Campaign type: ${s.campaignType}
-Ad format: ${s.format}
-Audience segment: ${s.segment}
-Sector: ${s.sector}
-Hypothesis to test: ${s.hypothesis||"Suggest the highest-value hypothesis to test right now for this campaign type and audience."}
-Brief: ${s.brief||"Use your judgement."}`;
-
-    return {sys, user: modeInstructions};
-  }
-
-  if (id==="07") {
-    const ctx = await callClaude(`Performance context: ${s.mode} for ${s.sector}, ${s.role}, deal stage ${s.dealStage}, ladder ${s.ladder}. Normal velocity, common stall points, on-brand vs drifting execution, which agent (01-06) helps most right now and why?`);
-    const sys = `You are the Performance & Optimisation Agent for MyCena. Diagnose and improve — do not create campaigns.\nPERFORMANCE CONTEXT:\n${ctx}\nBrand drift scoring (0-10): Problem clarity (0-2) + Named proof (0-2) + Audience specificity (0-2) + Ladder coherence (0-2) + CTA integrity (0-2). 9-10=on-brand, 7-8=minor drift, 5-6=significant, <5=systematic — flag to human.\nDeal health: stage velocity, risk signals, stall reason, re-engagement action with opening line, which agent helps most.\nDrift audits: score each dimension, flag specific passages, verdict APPROVED/APPROVED WITH EDITS/REQUIRES REVISION, exact rewrite instructions.\nRespond in ${lang}.`;
-    const user = `Mode: ${s.mode}\nSector: ${s.sector}\nRole: ${s.role}\nLadder: ${s.ladder}\n${s.dealStage?`Deal stage: ${s.dealStage}\n`:""}${s.risk?`Risk: ${s.risk}\n`:""}${s.daysIdle?`Days idle: ${s.daysIdle}\n`:""}${s.lastAct?`Last activity: ${s.lastAct}\n`:""}${s.content?`Content:\n${s.content}\n`:""}Brief: ${s.brief||"Use judgement."}`;
-    return {sys,user};
-  }
+// ── API ───────────────────────────────────────────────────────────────────────
+async function callClaude(userPrompt, systemPrompt) {
+  const body = { model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:userPrompt}] };
+  if (systemPrompt) body.system = systemPrompt;
+  const res = await fetch(PROXY, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  const data = await res.json();
+  return data.content?.[0]?.text || "";
 }
+async function dbFetch(path, opts={}) {
+  const res = await fetch(`${SUPABASE}/${path}`, {
+    method: opts.method||"GET",
+    headers: {"Content-Type":"application/json","Prefer":opts.prefer!==undefined?opts.prefer:"return=representation"},
+    body: opts.body,
+  });
+  if (res.status===204) return null;
+  return res.json();
+}
+
+// ── shared context prompts ───────────────────────────────────────────────────
+const p05ctx = (role,sector,extra="") =>
+`You are MyCena's Sales Enablement Agent. Reason from first principles.
+Role: ${role} | Sector: ${sector}${extra}
+Return: 1) Primary motivation 2) Internal pressures 3) How they buy 4) Top 2 objections + responses 5) Single most important thing MyCena must demonstrate. Be specific.`;
+
+const p06ctx = (sector,headcount="",ladder="",incident="") =>
+`You are MyCena's Data & Intelligence Agent. Reason from first principles.
+Sector: ${sector}${headcount?` | Headcount: ${headcount}`:""}${ladder?` | Ladder: ${ladder}`:""}${incident?`\nIncident: ${incident}`:""}
+Return: 1) Most relevant named incident + cost 2) Regulatory pressure 3) Credential failure mode 4) Proof data to shift belief 5) Native sector language. Real figures only.`;
+
+// ── intelligence store ───────────────────────────────────────────────────────
+async function loadIntelContext(id, sector) {
+  const types = INTEL_READS[id]||[];
+  if (!types.length) return {context:"", contributors:[]};
+  try {
+    const rows = await dbFetch(`intelligence?intel_type=in.(${types.join(",")})&order=created_at.desc&limit=50`, {prefer:""});
+    if (!Array.isArray(rows)||!rows.length) return {context:"", contributors:[]};
+    const seen={}, filtered=[];
+    for (const r of rows) {
+      const key=`${r.agent_id}-${r.intel_type}`;
+      if (!seen[key]) { seen[key]=true; filtered.push(r); }
+    }
+    const contributors=[...new Set(filtered.map(r=>`Agent ${r.agent_id} — ${r.agent_label}`))];
+    const context=filtered.map(r=>`[Agent ${r.agent_id} — ${r.agent_label} | ${r.intel_type}${r.sector?` | ${r.sector}`:""}]\n${r.summary}`).join("\n\n");
+    return {context, contributors};
+  } catch(e) { return {context:"", contributors:[]}; }
+}
+
+async function saveIntelligence(id, sector, role, fullOutput) {
+  const ag = AGENTS.find(a=>a.id===id);
+  try {
+    const summary = await callClaude(
+      `Extract key intelligence from this agent output as a concise summary (max 200 words). Focus on actionable insights, data points, patterns, and decisions other agents should know.\nAgent: ${ag.label} | Sector: ${sector||""} | Role: ${role||""}\nOutput:\n${fullOutput}`,
+      "Return only the summary. No preamble, no labels, no formatting."
+    );
+    await dbFetch("intelligence", {
+      method:"POST", prefer:"return=minimal",
+      body: JSON.stringify({ agent_id:ag.id, agent_label:ag.label, intel_type:INTEL_TYPE[id]||"general", sector:sector||"", role:role||"", summary, full_output:fullOutput })
+    });
+  } catch(e) { console.warn("saveIntelligence failed:", e); }
+}
+
+async function loadIntelligenceStore() {
+  state.intelLoading=true; render();
+  try {
+    const data = await dbFetch("intelligence?order=created_at.desc&limit=200", {prefer:""});
+    state.intelligence = Array.isArray(data)?data:[];
+  } catch(e) { state.intelligence=[]; }
+  state.intelLoading=false; render();
+}
+
+async function deleteIntel(id) {
+  await dbFetch(`intelligence?id=eq.${id}`, {method:"DELETE", prefer:"return=minimal"});
+  state.intelligence=state.intelligence.filter(c=>c.id!==id); render();
+}
+function setIntelSearch(v) { state.intelSearch=v; render(); }
+
+// ── content library ──────────────────────────────────────────────────────────
+async function loadLibrary() {
+  state.libLoading=true; render();
+  try {
+    const data = await dbFetch("content?order=created_at.desc&limit=200", {prefer:""});
+    state.library = Array.isArray(data)?data:[];
+  } catch(e) { state.library=[]; }
+  state.libLoading=false; render();
+}
+async function saveOutput(id) {
+  const s=agentState[id]; const ag=AGENTS.find(a=>a.id===id);
+  try {
+    await dbFetch("content", { method:"POST", prefer:"return=minimal", body:JSON.stringify({
+      agent_id:id, agent_label:ag.label, sector:s.sector||"", role:s.role||"",
+      language:state.lang, mode:s.mode||"", asset_type:s.assetType||s.ctype||s.channel||"",
+      brief:s.brief||s.topic||s.angle||"", output:state.outputs[id]||""
+    })});
+    showToast("Saved to library");
+  } catch(e) { showToast("Save failed"); }
+}
+async function deleteContent(id) {
+  await dbFetch(`content?id=eq.${id}`, {method:"DELETE", prefer:"return=minimal"});
+  state.library=state.library.filter(c=>c.id!==id); render();
+}
+function setLibSearch(v) { state.libSearch=v; render(); }
+function toggleExpand(id) { state.libExpanded[id]=!state.libExpanded[id]; render(); }
+function clearOutput(id) { state.outputs[id]=null; render(); }
+function copyOutput(id) { navigator.clipboard?.writeText(state.outputs[id]||""); showToast("Copied"); }
 
 // ── run agent ────────────────────────────────────────────────────────────────
 async function runAgent(id) {
-  const s = agentState[id];
-  const sector = s.sector||"";
-  const role   = s.role||"";
-  state.phases[id] = "Loading shared intelligence..."; state.errors[id]=""; render();
+  const s=agentState[id]; const sector=s.sector||""; const role=s.role||"";
+  state.phases[id]="Loading shared intelligence..."; state.errors[id]=""; render();
   try {
-    // Load context from other agents
     const {context, contributors} = await loadIntelContext(id, sector);
-    state.loadedContext[id] = contributors;
-    state.phases[id] = contributors.length
-      ? `Context from ${contributors.length} agent${contributors.length>1?"s":""}...`
-      : "Briefing context agents...";
+    state.loadedContext[id]=contributors;
+    state.phases[id]=contributors.length?`Context from ${contributors.length} agent${contributors.length>1?"s":""}...`:"Briefing context agents...";
     render();
-
-    const {sys, user} = await buildPrompts(id, context);
-    state.phases[id] = "Generating output..."; render();
+    const {sys,user} = await buildPrompts(id, context);
+    state.phases[id]="Generating output..."; render();
     const result = await callClaude(user, sys);
-    state.outputs[id] = result;
-
-    // Auto-save intelligence
-    state.phases[id] = "Saving intelligence..."; render();
+    state.outputs[id]=result;
+    state.phases[id]="Saving intelligence..."; render();
     await saveIntelligence(id, sector, role, result);
-
   } catch(e) {
     console.error("runAgent error:", e);
-    console.error("stack:", e.stack);
-    state.outputs[id] = "Agent unavailable — " + e.message;
+    state.outputs[id]="Agent unavailable — "+e.message;
   }
-  state.phases[id] = null; render();
+  state.phases[id]=null; render();
 }
 
-async function saveOutput(id) {
-  const s = agentState[id];
-  const ag = AGENTS.find(a=>a.id===id);
-  const payload = {
-    agent_id:    id,
-    agent_label: ag.label,
-    sector:      s.sector||"",
-    role:        s.role||"",
-    language:    state.lang,
-    mode:        s.mode||"",
-    asset_type:  s.assetType||s.ctype||s.channel||"",
-    brief:       s.brief||s.topic||s.angle||"",
-    output:      state.outputs[id]||""
-  };
-  try {
-    await fetch(`${SUPABASE}/content`, {
-      method:"POST", headers:{"Content-Type":"application/json","Prefer":"return=minimal"},
-      body:JSON.stringify(payload)
-    });
-    showToast("Saved to library");
-  } catch(e) { showToast("Save failed — check connection"); }
-}
-
-function showToast(msg) {
-  let t = document.getElementById("toast");
-  if (!t) { t = document.createElement("div"); t.id="toast"; t.className="saved-toast"; document.body.appendChild(t); }
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2500);
-}
-
-async function loadLibrary() {
-  state.libLoading = true; render();
-  try {
-    const res = await fetch(`${SUPABASE}/content?order=created_at.desc&limit=200`, {
-      headers:{"Content-Type":"application/json","Prefer":"return=representation"}
-    });
-    state.library = await res.json();
-  } catch(e) { state.library = []; }
-  state.libLoading = false; render();
-}
-
-async function deleteContent(id) {
-  await fetch(`${SUPABASE}/content?id=eq.${id}`, { method:"DELETE", headers:{"Content-Type":"application/json"} });
-  state.library = state.library.filter(c=>c.id!==id);
-  render();
-}
-
-function toggleExpand(id) { state.libExpanded[id]=!state.libExpanded[id]; render(); }
-function setLibSearch(v) { state.libSearch=v; render(); }
-
-function clearOutput(id) { state.outputs[id] = null; render(); }
-function copyOutput(id) { navigator.clipboard?.writeText(state.outputs[id]||""); }
-
-// ── field change helpers ─────────────────────────────────────────────────────
-function setField(id, field, value) {
-  agentState[id][field] = value;
-  if (id==="04" && field==="mode") agentState[id].assetType = ASSET_MAP_04[value][0];
-  render();
-}
-
-// ── panel renderers ──────────────────────────────────────────────────────────
-function renderPanel(id) {
-  const s = agentState[id];
-  const ag = AGENTS.find(a=>a.id===id);
-  const phase = state.phases[id];
-  const output = state.outputs[id];
-  const running = !!phase;
-  const color = id==="07" ? (MODE_COLORS_07[s.mode]||ag.color) : id==="04" ? (s.mode==="Reactive — breach response"?"#E24B4A":s.mode==="Proactive — media asset"?"#1D9E75":"#7F77DD") : ag.color;
-
-  let modesHtml = "";
-  let fieldsHtml = "";
-  let textareaHtml = "";
+// ── prompt builders ──────────────────────────────────────────────────────────
+async function buildPrompts(id, sharedContext) {
+  const intel = sharedContext ? `\n\n--- SHARED INTELLIGENCE FROM OTHER AGENTS ---\n${sharedContext}\n---\n` : "";
+  const s=agentState[id]; const lang=state.lang;
 
   if (id==="01") {
-    modesHtml = pills(["Generation","Review"], s.mode, id, "mode", color);
-    fieldsHtml = `
+    const [c5,c6]=await Promise.all([callClaude(p05ctx(s.role,s.sector)),callClaude(p06ctx(s.sector))]);
+    return {
+      sys:`You are the Brand Strategy Agent for MyCena.\n${BRAND_RULES}${intel}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nWhen reviewing: Voice/Proof/Audience/Control Ladder check then verdict: APPROVED / APPROVED WITH EDITS / REQUIRES REVISION.\nRespond in ${lang}.`,
+      user:s.mode==="Generation"?`Mode: Generation\nContent type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nTopic: ${s.topic||"Use judgement."}`:`Mode: Review\nAudience: ${s.role}\nSector: ${s.sector}\nContent:\n${s.review}`
+    };
+  }
+  if (id==="02") {
+    const [c5,c6]=await Promise.all([callClaude(p05ctx(s.role,s.sector)),callClaude(p06ctx(s.sector,"",s.ladder))]);
+    return {
+      sys:`You are the Content & Thought Leadership Agent for MyCena.\n${BRAND_RULES}${intel}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nNever open with "In today's rapidly evolving threat landscape." Checklist: named incident + cost / physical key analogy / single audience / Ladder stage / no hypotheticals / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`,
+      user:`Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nAngle: ${s.angle||"Use judgement."}`
+    };
+  }
+  if (id==="03") {
+    const [c5,c6]=await Promise.all([callClaude(p05ctx(s.role,s.sector)),callClaude(p06ctx(s.sector,"",s.ladder))]);
+    return {
+      sys:`You are the Campaign & Demand Generation Agent for MyCena.\n${BRAND_RULES}${intel}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nChannel rules: LinkedIn — stop scroll, never open with question. Cold email 1 — never mention product. Landing pages — headline = problem, sub = structural gap, one named incident, CTA = book assessment. Never "learn more"/"explore"/"find out how". Email nurture 5 stages: problem → incident pattern → structural diagnosis → proof → conversion.\nRespond in ${lang}.`,
+      user:`Channel: ${s.channel}\nCampaign: ${s.campaign}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nBrief: ${s.brief||"Use judgement."}`
+    };
+  }
+  if (id==="04") {
+    const [c5,c6]=await Promise.all([
+      callClaude(`You are MyCena's media relations specialist. What does ${s.pressTarget} want from a cybersecurity story? What makes a MyCena CEO quote independently quotable? What kills credibility with this audience?`),
+      callClaude(p06ctx(s.sector,"","",s.incident))
+    ]);
+    return {
+      sys:`You are the PR & Media Agent for MyCena.\n${BRAND_RULES}${intel}\nMEDIA BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nRules: Security press = technical pattern first. Business press = financial/human consequence first. Never same pitch to both. CEO quotes must survive removal from context — no passive voice. Flag if credential involvement unconfirmed. Reactive pack = incident summary card + pattern match + cost projection + structural fix statement + CEO quote.\nRespond in ${lang}.`,
+      user:`Mode: ${s.mode}\nAsset: ${s.assetType}\nSector: ${s.sector}\nPress target: ${s.pressTarget}\n${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Use judgement."}`
+    };
+  }
+  if (id==="05") {
+    const [c5,c6]=await Promise.all([callClaude(p05ctx(s.role,s.sector,`\nAsset: ${s.assetType} | Ladder: ${s.ladder}`)),callClaude(p06ctx(s.sector,s.headcount))]);
+    return {
+      sys:`You are the Sales Enablement Agent for MyCena.\n${BRAND_RULES}${intel}\nBUYING SITUATION:\n${c5}\nDATA INTELLIGENCE:\n${c6}\nRules: Board deck opens with named sector incident — never company overview. CFO one-pager leads with exposure figure: monthly cost + SLA risk = annual exposure, MyCena cost, net saving, payback period. Objections: (1) Okta/Azure AD → MyCena fills the gap. (2) No IT resource → overlay, 4 weeks. (3) No breach yet → Colonial Pipeline hadn't either. (4) Board won't prioritise → M&S lost £300M in 5 weeks.\nRespond in ${lang}.`,
+      user:`Asset: ${s.assetType}\nRole: ${s.role}\nSector: ${s.sector}\nLadder: ${s.ladder}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Exposure: £${s.exposure}\n`:""}Brief: ${s.brief||"Use judgement."}`
+    };
+  }
+  if (id==="06") {
+    const ctx=await callClaude(`Operational context for ${s.sector}, headcount ${s.headcount}: typical IT helpdesk structure, credential ticket volume, SLA/contractual framework, regulatory environment, common credential failure mode, what good governance looks like vs industry average. Be specific.`);
+    return {
+      sys:`You are the Data & Intelligence Agent for MyCena — the proof layer.\nOPERATIONAL CONTEXT:\n${ctx}${intel}\nRules: Primary sources only (IBM, Verizon DBIR, Ponemon, official filings). Distinguish mean/median/max cost. Flag sources >3 years. Flag all estimates. Core figures: avg breach $4.88M (IBM 2024), 80%+ credential-involved (Verizon DBIR), 194 days avg detection (IBM 2024), Colonial Pipeline $4.4M, M&S £300M+ (Q1 2025), SolarWinds $100M+. Exposure: monthly tickets × £25 + SLA risk + staff downtime = annual exposure.\nRespond in ${lang}.`,
+      user:`Mode: ${s.mode}\nSector: ${s.sector}\nHeadcount: ${s.headcount}\n${s.dealValue?`Deal value: £${s.dealValue}\n`:""}${s.exposure?`Known exposure: £${s.exposure}\n`:""}${s.ticketVol?`Monthly tickets: ${s.ticketVol}\n`:""}${s.hourlyRate?`Hourly rate: £${s.hourlyRate}\n`:""}${s.incident?`Incident: ${s.incident}\n`:""}Brief: ${s.brief||"Produce most useful output for this mode."}`
+    };
+  }
+  if (id==="07") {
+    const ctx=await callClaude(`Performance context: ${s.mode} for ${s.sector}, ${s.role}, deal stage ${s.dealStage}, ladder ${s.ladder}. Normal velocity, common stall points, on-brand vs drifting execution, which agent (01-06) helps most right now and why?`);
+    return {
+      sys:`You are the Performance & Optimisation Agent for MyCena. Diagnose and improve — do not create campaigns.\nPERFORMANCE CONTEXT:\n${ctx}${intel}\nBrand drift scoring (0-10): Problem clarity (0-2) + Named proof (0-2) + Audience specificity (0-2) + Ladder coherence (0-2) + CTA integrity (0-2). 9-10=on-brand, 7-8=minor drift, 5-6=significant, <5=systematic — flag to human.\nDeal health: stage velocity, risk signals, stall reason, re-engagement action with opening line, which agent helps most.\nDrift audits: score each dimension, flag specific passages, verdict APPROVED/APPROVED WITH EDITS/REQUIRES REVISION, exact rewrite instructions.\nRespond in ${lang}.`,
+      user:`Mode: ${s.mode}\nSector: ${s.sector}\nRole: ${s.role}\nLadder: ${s.ladder}\n${s.dealStage?`Deal stage: ${s.dealStage}\n`:""}${s.risk?`Risk: ${s.risk}\n`:""}${s.daysIdle?`Days idle: ${s.daysIdle}\n`:""}${s.lastAct?`Last activity: ${s.lastAct}\n`:""}${s.content?`Content:\n${s.content}\n`:""}Brief: ${s.brief||"Use judgement."}`
+    };
+  }
+  if (id==="11") {
+    let crmData="";
+    try {
+      const deals=await dbFetch("deals?order=created_at.desc&limit=200",{prefer:""});
+      if (Array.isArray(deals)) {
+        const won=deals.filter(d=>d.stage==="Closed won");
+        const lost=deals.filter(d=>d.stage==="Closed lost");
+        const stalled=deals.filter(d=>d.days_since_activity>10&&!["Closed won","Closed lost"].includes(d.stage));
+        const active=deals.filter(d=>!["Closed won","Closed lost","Nurture"].includes(d.stage));
+        crmData=`LIVE CRM DATA (${deals.length} total):\nClosed won (${won.length}): ${JSON.stringify(won.map(d=>({company:d.company,sector:d.sector,headcount:d.headcount,value:d.deal_value,ladder:d.control_ladder})))}\nClosed lost (${lost.length}): ${JSON.stringify(lost.map(d=>({company:d.company,sector:d.sector,notes:d.notes})))}\nStalled (${stalled.length}): ${JSON.stringify(stalled.map(d=>({company:d.company,sector:d.sector,stage:d.stage,days:d.days_since_activity})))}\nActive (${active.length}): ${JSON.stringify(active.map(d=>({company:d.company,sector:d.sector,stage:d.stage,value:d.deal_value})))}`;
+      }
+    } catch(e) { crmData="CRM data unavailable."; }
+    const modeInstructions = {
+      "Quarterly ICP report":"Produce a full quarterly ICP report: 1) What closed — breakdown by sector/headcount/velocity/top 3 shared characteristics 2) What didn't close and why — stated vs diagnosed reason 3) Niche opportunities — specific niches with evidence, breach angle, regulatory hook, exact ICP titles, message variant, recommended campaign 4) ICP adjustments with evidence and sample size 5) Targeting instructions for Agents 03, 08, 12 and Apollo/Clay",
+      "Monthly signal report":"Produce a monthly signal report: top converting segment, underperforming segment, breach intelligence, intent signals, one tactical adjustment for the next 30 days.",
+      "Niche opportunity analysis":"Identify the 3 most promising niche opportunities. For each: specific niche, CRM evidence, breach angle, regulatory hook, exact ICP titles, message variant, recommended campaign type.",
+      "Urgent flag check":"Check for urgent flags: sector with 3+ closed-won deals this month, Tier 1 sector with 0 conversions for 60+ days, new trigger event producing fast closes, competitive displacement pattern. Flag each with immediate action recommended."
+    };
+    return {
+      sys:`You are the ICP & Niche Agent for MyCena. Continuously refine targeting intelligence.\nICP model: Tier 1/2/3 rankings by sector, headcount, third-party vendor count, trigger events.\n${BRAND_RULES}${intel}\n${crmData}\n${s.campaignContext?`CAMPAIGN CONTEXT:\n${s.campaignContext}`:""}\n${s.adsContext?`ADS CONTEXT:\n${s.adsContext}`:""}\nRespond in ${lang}.`,
+      user:`Mode: ${s.mode}\n\n${modeInstructions[s.mode]||""}\n\nAdditional context: ${s.brief||"None."}`
+    };
+  }
+  if (id==="12") {
+    const [brandCtx,dataCtx]=await Promise.all([callClaude(p05ctx("CISO",s.sector)),callClaude(p06ctx(s.sector,"",s.ladder,s.incident))]);
+    const modeUser = s.mode==="Ad variants"
+      ? `Produce 3 ad variants. For each: full ad copy (headline/body/CTA), single variable that differs, hypothesis why it should outperform, brand check. Note: requires Agent 01 approval before launch.\nPlatform: ${s.platform}\nCampaign type: ${s.campaignType}\nAd format: ${s.format}\nAudience segment: ${s.segment}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\n${s.incident?`Incident hook: ${s.incident}\n`:""}Brief: ${s.brief||"Use judgement."}`
+      : `Produce a test brief: hypothesis, variable being tested, control variant, test variant, success metric (primary: cost per assessment booked; secondary: CTR), minimum sample (400 impressions/variant), decision rule (15%+ outperformance at 80% confidence), budget rule (max 20% on test variant), what to test next.\nPlatform: ${s.platform}\nCampaign type: ${s.campaignType}\nFormat: ${s.format}\nSegment: ${s.segment}\nSector: ${s.sector}\nHypothesis: ${s.hypothesis||"Suggest the highest-value hypothesis to test."}\nBrief: ${s.brief||"Use judgement."}`;
+    return {
+      sys:`You are the Ads Testing Agent for MyCena.\n${BRAND_RULES}${intel}\nYour rules: Every ad CTA = Book Board-Level Risk Assessment only. Nothing launches without Agent 01 approval. Test one variable at a time. Kill losers after 5 days/400 impressions. Scale winners max 30%/week. LinkedIn headline: physical key analogy, named incident, or number — never open with a question. Google H1: incident/number/"credential control". Google H2: "Generated. Encrypted. User-invisible." Google H3: "Book Your Risk Assessment".\nAUDIENCE INTELLIGENCE:\n${brandCtx}\nDATA INTELLIGENCE:\n${dataCtx}\nRespond in ${lang}.`,
+      user: modeUser
+    };
+  }
+  throw new Error(`Unknown agent id: ${id}`);
+}
+
+// ── field helpers ─────────────────────────────────────────────────────────────
+function setField(id, f, v) {
+  agentState[id][f]=v;
+  if (id==="04"&&f==="mode") agentState[id].assetType=ASSET_MAP_04[v][0];
+  render();
+}
+function pills(arr, active, id, f, color) {
+  return `<div class="mode-pills">${arr.map(m=>`<button class="pill${m===active?" active":""}" style="${m===active?`background:${color};`:""}" onclick="setField('${id}','${f}',this.textContent.trim())">${esc(m)}</button>`).join("")}</div>`;
+}
+function fld(labelHtml, inputHtml) {
+  return `<div class="field" style="margin-bottom:12px"><label class="field-label">${labelHtml}</label>${inputHtml}</div>`;
+}
+
+// ── panel renderer ────────────────────────────────────────────────────────────
+function renderPanel(id) {
+  const s=agentState[id], ag=AGENTS.find(a=>a.id===id);
+  const phase=state.phases[id], output=state.outputs[id], running=!!phase;
+  const color = id==="07"?(MODE_COLORS_07[s.mode]||ag.color):id==="04"?(s.mode==="Reactive — breach response"?"#E24B4A":s.mode==="Proactive — media asset"?"#1D9E75":"#7F77DD"):ag.color;
+
+  let modesHtml="", fieldsHtml="", textareaHtml="", extraHtml="";
+
+  if (id==="01") {
+    modesHtml=pills(["Generation","Review"],s.mode,id,"mode",color);
+    fieldsHtml=`
       <div class="field"><label class="field-label">Role</label><select onchange="setField('01','role',this.value)">${sel(ROLES,s.role)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('01','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
-      ${s.mode==="Generation"?`<div class="field"><label class="field-label">Content type</label><select onchange="setField('01','ctype',this.value)">${sel(CTYPES_01,s.ctype)}</select></div>`:""}
-    `;
-    textareaHtml = s.mode==="Generation"
-      ? field("Topic / brief","<textarea placeholder=\"e.g. LinkedIn post for BPO IT Directors — focus on SLA risk...\" oninput=\"setField('01','topic',this.value)\">${s.topic}</textarea>".replace("${s.topic}",esc(s.topic)))
-      : field("Content to review",`<textarea style="height:110px" placeholder="Paste copy to audit against brand rules..." oninput="setField('01','review',this.value)">${esc(s.review)}</textarea>`);
+      ${s.mode==="Generation"?`<div class="field"><label class="field-label">Content type</label><select onchange="setField('01','ctype',this.value)">${sel(CTYPES_01,s.ctype)}</select></div>`:""}`;
+    textareaHtml=s.mode==="Generation"
+      ?fld("Topic / brief",`<textarea placeholder="e.g. LinkedIn post for BPO IT Directors — focus on SLA risk..." oninput="setField('01','topic',this.value)">${esc(s.topic)}</textarea>`)
+      :fld("Content to review",`<textarea style="height:110px" placeholder="Paste copy to audit against brand rules..." oninput="setField('01','review',this.value)">${esc(s.review)}</textarea>`);
   }
-
   if (id==="02") {
-    fieldsHtml = `
+    fieldsHtml=`
       <div class="field"><label class="field-label">Audience role</label><select onchange="setField('02','role',this.value)">${sel(ROLES,s.role)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('02','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Content type</label><select onchange="setField('02','ctype',this.value)">${sel(CTYPES_02,s.ctype)}</select></div>
-      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('02','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
-    `;
-    textareaHtml = field("Angle / focus <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Anchor on Kaseya — third-party access as the entry point..." oninput="setField('02','angle',this.value)">${esc(s.angle)}</textarea>`);
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('02','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>`;
+    textareaHtml=fld("Angle / focus <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Anchor on Kaseya — third-party access as the entry point..." oninput="setField('02','angle',this.value)">${esc(s.angle)}</textarea>`);
   }
-
   if (id==="03") {
-    fieldsHtml = `
+    fieldsHtml=`
       <div class="field"><label class="field-label">Audience role</label><select onchange="setField('03','role',this.value)">${sel(ROLES,s.role)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('03','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Channel</label><select onchange="setField('03','channel',this.value)">${sel(CHANNELS_03,s.channel)}</select></div>
       <div class="field"><label class="field-label">Campaign type</label><select onchange="setField('03','campaign',this.value)">${sel(CAMPAIGNS_03,s.campaign)}</select></div>
-      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('03','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
-    `;
-    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Reactive LinkedIn ad after M&S breach — target retail CISOs..." oninput="setField('03','brief',this.value)">${esc(s.brief)}</textarea>`);
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('03','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Reactive LinkedIn ad after M&S breach — target retail CISOs..." oninput="setField('03','brief',this.value)">${esc(s.brief)}</textarea>`);
   }
-
   if (id==="04") {
-    const assetOpts = ASSET_MAP_04[s.mode]||[];
-    modesHtml = pills(Object.keys(ASSET_MAP_04), s.mode, id, "mode", color);
-    fieldsHtml = `
+    const assetOpts=ASSET_MAP_04[s.mode]||[];
+    modesHtml=pills(Object.keys(ASSET_MAP_04),s.mode,id,"mode",color);
+    fieldsHtml=`
       ${s.mode==="Reactive — breach response"?`<div class="alert-box">Reactive mode — paste incident below. Agent flags if credential involvement unconfirmed.</div>`:""}
       <div class="field"><label class="field-label">Asset type</label><select onchange="setField('04','assetType',this.value)">${sel(assetOpts,s.assetType)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('04','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Press target</label><select onchange="setField('04','pressTarget',this.value)">${sel(["Security press","Business press (FT/BBC/Times)","Trade press","Both"],s.pressTarget)}</select></div>
-      ${s.mode==="Reactive — breach response"?`<div class="field full"><label class="field-label">Incident / news hook</label><textarea style="height:60px" placeholder="e.g. Major UK retailer hit by ransomware..." oninput="setField('04','incident',this.value)">${esc(s.incident)}</textarea></div>`:""}
-    `;
-    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CEO interview on Sky News — focus on what boards should ask..." oninput="setField('04','brief',this.value)">${esc(s.brief)}</textarea>`);
+      ${s.mode==="Reactive — breach response"?`<div class="field full"><label class="field-label">Incident / news hook</label><textarea style="height:60px" placeholder="e.g. Major UK retailer hit by ransomware..." oninput="setField('04','incident',this.value)">${esc(s.incident)}</textarea></div>`:""}`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CEO interview on Sky News..." oninput="setField('04','brief',this.value)">${esc(s.brief)}</textarea>`);
   }
-
   if (id==="05") {
-    fieldsHtml = `
+    fieldsHtml=`
       <div class="field"><label class="field-label">Primary role</label><select onchange="setField('05','role',this.value)">${sel(ROLES,s.role)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('05','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Asset type</label><select onchange="setField('05','assetType',this.value)">${sel(ASSETS_05,s.assetType)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('05','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
       <div class="field"><label class="field-label">Headcount</label><select onchange="setField('05','headcount',this.value)">${sel(HEADCOUNTS,s.headcount)}</select></div>
       <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.dealValue)}" placeholder="e.g. 85000" oninput="setField('05','dealValue',this.value)"></div>
-      <div class="field"><label class="field-label">Exposure figure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('05','exposure',this.value)"></div>
-    `;
-    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CISO on board but CFO blocked it — build ROI case for sceptical CFO..." oninput="setField('05','brief',this.value)">${esc(s.brief)}</textarea>`);
+      <div class="field"><label class="field-label">Exposure figure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('05','exposure',this.value)"></div>`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CISO on board but CFO blocked it..." oninput="setField('05','brief',this.value)">${esc(s.brief)}</textarea>`);
   }
-
   if (id==="06") {
-    modesHtml = pills(MODES_06, s.mode, id, "mode", color);
-    fieldsHtml = `
+    modesHtml=pills(MODES_06,s.mode,id,"mode",color);
+    fieldsHtml=`
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('06','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Headcount</label><select onchange="setField('06','headcount',this.value)">${sel(HEADCOUNTS,s.headcount)}</select></div>
-      ${s.mode==="Exposure calculation"?`
-        <div class="field"><label class="field-label">Monthly credential tickets <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.ticketVol)}" placeholder="e.g. 320" oninput="setField('06','ticketVol',this.value)"></div>
-        <div class="field"><label class="field-label">Staff hourly rate (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.hourlyRate)}" placeholder="e.g. 35" oninput="setField('06','hourlyRate',this.value)"></div>
-      `:""}
+      ${s.mode==="Exposure calculation"?`<div class="field"><label class="field-label">Monthly credential tickets <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.ticketVol)}" placeholder="e.g. 320" oninput="setField('06','ticketVol',this.value)"></div><div class="field"><label class="field-label">Staff hourly rate (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.hourlyRate)}" placeholder="e.g. 35" oninput="setField('06','hourlyRate',this.value)"></div>`:""}
       ${s.mode==="Incident deep-dive"?`<div class="field full"><label class="field-label">Incident to analyse</label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S May 2025, Colonial Pipeline..." oninput="setField('06','incident',this.value)"></div>`:""}
       <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.dealValue)}" placeholder="e.g. 85000" oninput="setField('06','dealValue',this.value)"></div>
-      <div class="field"><label class="field-label">Known exposure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('06','exposure',this.value)"></div>
-    `;
-    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Need exposure figure to anchor CFO one-pager..." oninput="setField('06','brief',this.value)">${esc(s.brief)}</textarea>`);
+      <div class="field"><label class="field-label">Known exposure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('06','exposure',this.value)"></div>`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Need exposure figure to anchor CFO one-pager..." oninput="setField('06','brief',this.value)">${esc(s.brief)}</textarea>`);
   }
-
   if (id==="07") {
-    const showDeal = ["Deal health check","Conversion analysis"].includes(s.mode);
-    const showContent = ["Brand drift audit","Agent improvement brief"].includes(s.mode);
-    modesHtml = pills(MODES_07, s.mode, id, "mode", color);
-    fieldsHtml = `
+    const showDeal=["Deal health check","Conversion analysis"].includes(s.mode);
+    const showContent=["Brand drift audit","Agent improvement brief"].includes(s.mode);
+    modesHtml=pills(MODES_07,s.mode,id,"mode",color);
+    fieldsHtml=`
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('07','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Buyer role</label><select onchange="setField('07','role',this.value)">${sel(ROLES,s.role)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('07','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
-      ${showDeal?`
-        <div class="field"><label class="field-label">Deal stage</label><select onchange="setField('07','dealStage',this.value)">${sel(STAGES_CRM,s.dealStage)}</select></div>
-        <div class="field"><label class="field-label">Risk rating</label><select onchange="setField('07','risk',this.value)">${sel(RISKS,s.risk)}</select></div>
-        <div class="field"><label class="field-label">Days since last activity</label><input type="number" value="${esc(s.daysIdle)}" placeholder="e.g. 14" oninput="setField('07','daysIdle',this.value)"></div>
-        <div class="field"><label class="field-label">Last activity <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.lastAct)}" placeholder="e.g. Sent CFO one-pager" oninput="setField('07','lastAct',this.value)"></div>
-      `:""}
-      ${showContent?`<div class="field full"><label class="field-label">${s.mode==="Brand drift audit"?"Content to audit":"Agent output to improve"}</label><textarea style="height:100px" placeholder="${s.mode==="Brand drift audit"?"Paste copy to score against MyCena brand rules...":"Paste agent output to diagnose and improve..."}" oninput="setField('07','content',this.value)">${esc(s.content)}</textarea></div>`:""}
-    `;
-    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${showDeal?"e.g. CISO engaged but quiet after board deck — CFO meeting next week...":"e.g. Check for IAM/PAM framing drift..."}" oninput="setField('07','brief',this.value)">${esc(s.brief)}</textarea>`);
+      ${showDeal?`<div class="field"><label class="field-label">Deal stage</label><select onchange="setField('07','dealStage',this.value)">${sel(STAGES_CRM,s.dealStage)}</select></div><div class="field"><label class="field-label">Risk rating</label><select onchange="setField('07','risk',this.value)">${sel(RISKS,s.risk)}</select></div><div class="field"><label class="field-label">Days since last activity</label><input type="number" value="${esc(s.daysIdle)}" placeholder="e.g. 14" oninput="setField('07','daysIdle',this.value)"></div><div class="field"><label class="field-label">Last activity <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.lastAct)}" placeholder="e.g. Sent CFO one-pager" oninput="setField('07','lastAct',this.value)"></div>`:""}
+      ${showContent?`<div class="field full"><label class="field-label">${s.mode==="Brand drift audit"?"Content to audit":"Agent output to improve"}</label><textarea style="height:100px" placeholder="${s.mode==="Brand drift audit"?"Paste copy to score...":"Paste agent output to diagnose..."}" oninput="setField('07','content',this.value)">${esc(s.content)}</textarea></div>`:""}`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${showDeal?"e.g. CISO engaged but quiet after board deck...":"e.g. Check for IAM/PAM framing drift..."}" oninput="setField('07','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+  if (id==="11") {
+    modesHtml=pills(MODES_11,s.mode,id,"mode",color);
+    extraHtml=`<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:var(--green-bg);color:var(--green-text);margin-bottom:12px;border-left:3px solid #1D9E75">Pulls live CRM data from Supabase automatically before running.</div>`;
+    fieldsHtml=`
+      <div class="field"><label class="field-label">Primary sector focus <span class='field-opt'>opt</span></label><select onchange="setField('11','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Campaign context <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.campaignContext)}" placeholder="e.g. Financial services sequence outperforming..." oninput="setField('11','campaignContext',this.value)"></div>
+      <div class="field"><label class="field-label">Ads context <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.adsContext)}" placeholder="e.g. CISO segment CPL dropped 30%..." oninput="setField('11','adsContext',this.value)"></div>`;
+    textareaHtml=fld("Additional context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. 3 fast closes in healthcare this month — check if breakout signal..." oninput="setField('11','brief',this.value)">${esc(s.brief)}</textarea>`);
+  }
+  if (id==="12") {
+    modesHtml=pills(MODES_12,s.mode,id,"mode",color);
+    extraHtml=`<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:#FAEEDA;color:#412402;margin-bottom:12px;border-left:3px solid #EF9F27">All output requires Agent 01 brand approval before launch.</div>`;
+    fieldsHtml=`
+      <div class="field"><label class="field-label">Platform</label><select onchange="setField('12','platform',this.value)">${sel(PLATFORMS_12,s.platform)}</select></div>
+      <div class="field"><label class="field-label">Campaign type</label><select onchange="setField('12','campaignType',this.value)">${sel(CAMP_TYPES_12,s.campaignType)}</select></div>
+      <div class="field"><label class="field-label">Ad format</label><select onchange="setField('12','format',this.value)">${sel(AD_FORMATS_12,s.format)}</select></div>
+      <div class="field"><label class="field-label">Audience segment</label><select onchange="setField('12','segment',this.value)">${sel(SEGMENTS_12,s.segment)}</select></div>
+      <div class="field"><label class="field-label">Sector</label><select onchange="setField('12','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
+      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('12','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
+      <div class="field full"><label class="field-label">Incident hook <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S £300M, Colonial Pipeline $4.4M..." oninput="setField('12','incident',this.value)"></div>
+      ${s.mode==="Test brief"?`<div class="field full"><label class="field-label">Hypothesis to test <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.hypothesis)}" placeholder="e.g. Incident-led headlines outperform deployment-speed headlines..." oninput="setField('12','hypothesis',this.value)"></div>`:""}`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${s.mode==="Ad variants"?"e.g. Focus on SLA penalty risk for BPO...":"e.g. Test physical key analogy vs named incident..."}" oninput="setField('12','brief',this.value)">${esc(s.brief)}</textarea>`);
   }
 
-  const contributors = state.loadedContext[id]||[];
-  const contextBadge = contributors.length ? `
-    <div style="font-size:11px;padding:6px 10px;border-radius:6px;background:var(--purple-bg);color:var(--purple-text);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-      <span style="font-weight:500">Context loaded from:</span> ${contributors.map(c=>`<span style="padding:1px 6px;border-radius:3px;background:var(--bg3)">${esc(c)}</span>`).join(" ")}
-    </div>` : "";
+  const contributors=state.loadedContext[id]||[];
+  const contextBadge=contributors.length?`<div style="font-size:11px;padding:6px 10px;border-radius:6px;background:var(--purple-bg);color:var(--purple-text);margin-bottom:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:500">Context loaded from:</span>${contributors.map(c=>`<span style="padding:1px 6px;border-radius:3px;background:var(--bg3)">${esc(c)}</span>`).join("")}</div>`:"";
+  const outputHtml=output?`<div class="output" style="border:0.5px solid ${hexMuted(color)}"><div class="output-header"><div><span class="output-label" style="color:${color}">Agent ${id} output</span><span class="output-meta">${esc(agentState[id].sector||"")} · ${esc(state.lang)}</span></div><div class="output-actions"><button class="btn-sm" onclick="saveOutput('${id}')">Save to library</button><button class="btn-sm" onclick="copyOutput('${id}')">Copy</button><button class="btn-sm" onclick="clearOutput('${id}')">✕</button></div></div>${contextBadge}<div class="output-text">${esc(output)}</div></div>`:"";
 
-  const outputHtml = output ? `
-    <div class="output" style="border:0.5px solid ${hexToMuted(color)}">
-      <div class="output-header">
-        <div><span class="output-label" style="color:${color}">Agent ${id} output</span><span class="output-meta">${esc(agentState[id].sector||"")} · ${esc(state.lang)}</span></div>
-        <div class="output-actions">
-          <button class="btn-sm" onclick="saveOutput('${id}')">Save to library</button>
-          <button class="btn-sm" onclick="copyOutput('${id}')">Copy</button>
-          <button class="btn-sm" onclick="clearOutput('${id}')">✕</button>
-        </div>
-      </div>
-      ${contextBadge}
-      <div class="output-text">${esc(output)}</div>
-    </div>` : "";
-
-  return `
-    <div class="panel-header">
-      <div class="panel-dot" style="background:${color}"></div>
-      <span class="panel-title">Agent ${id} — ${ag.label}</span>
-      <span class="panel-desc">${ag.desc}</span>
-    </div>
-    ${modesHtml}
-    <div class="form-grid">${fieldsHtml}</div>
-    ${textareaHtml}
-    <button class="run-btn" style="background:${color}" onclick="runAgent('${id}')" ${running?"disabled":""}>
-      ${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}
-    </button>
-    ${outputHtml}
-  `;
+  return `<div class="panel-header"><div class="panel-dot" style="background:${color}"></div><span class="panel-title">Agent ${id} — ${ag.label}</span><span class="panel-desc">${ag.desc}</span></div>${modesHtml}${extraHtml}<div class="form-grid">${fieldsHtml}</div>${textareaHtml}<button class="run-btn" style="background:${color}" onclick="runAgent('${id}')" ${running?"disabled":""}>${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}</button>${outputHtml}`;
 }
 
-function pills(arr, active, id, field, color) {
-  return `<div class="mode-pills">${arr.map(m=>`<button class="pill${m===active?" active":""}" style="${m===active?`background:${color};`:""}" onclick="setField('${id}','${field}',this.textContent.trim())">${esc(m)}</button>`).join("")}</div>`;
-}
-function field(labelHtml, inputHtml) {
-  return `<div class="field" style="margin-bottom:12px"><label class="field-label">${labelHtml}</label>${inputHtml}</div>`;
-}
-function hexToMuted(hex) {
-  const map={"#7F77DD":"#CECBF6","#378ADD":"#B5D4F4","#EF9F27":"#FAC775","#D4537E":"#F4C0D1","#639922":"#C0DD97","#888780":"#D3D1C7","#E24B4A":"#F7C1C1","#1D9E75":"#9FE1CB"};
-  return map[hex]||"#D3D1C7";
-}
-
-// ── main render ──────────────────────────────────────────────────────────────
-function renderIntelligence() {
-  const INTEL_COLORS = {
-    "icp_update":"#1D9E75","brand_rules":"#7F77DD","campaign_pattern":"#EF9F27",
-    "data_proof":"#888780","performance":"#378ADD","ads_pattern":"#D85A30",
-    "pr_context":"#D4537E","sales_context":"#639922","general":"#888780"
-  };
-  const q = state.intelSearch.toLowerCase();
-  const items = state.intelligence.filter(c =>
-    !q || c.agent_label?.toLowerCase().includes(q) || c.intel_type?.toLowerCase().includes(q) ||
-    c.sector?.toLowerCase().includes(q) || c.summary?.toLowerCase().includes(q)
-  );
-  if (!items.length) return `<div class="lib-empty">${state.intelSearch?"No results found.":"No intelligence saved yet. Run any agent to start building the shared context store."}</div>`;
-  return items.map(c => {
-    const color = INTEL_COLORS[c.intel_type]||"#888780";
-    const date  = new Date(c.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
-    const expanded = state.libExpanded["i_"+c.id];
-    return `
-      <div class="lib-card">
-        <div class="lib-card-header">
-          <div>
-            <span style="font-size:12px;font-weight:500;color:${color}">Agent ${c.agent_id} — ${esc(c.agent_label)}</span>
-            <span class="lib-date" style="margin-left:8px">${date}</span>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn-sm" onclick="toggleExpand('i_${c.id}')">${expanded?"Collapse":"Expand"}</button>
-            <button class="btn-sm" style="color:#E24B4A" onclick="deleteIntel('${c.id}')">Delete</button>
-          </div>
-        </div>
-        <div class="lib-card-meta">
-          <span class="lib-tag" style="background:${color}20;color:${color}">${esc(c.intel_type.replace("_"," "))}</span>
-          ${c.sector?`<span class="lib-tag">${esc(c.sector)}</span>`:""}
-          ${c.role?`<span class="lib-tag">${esc(c.role)}</span>`:""}
-        </div>
-        <div class="${expanded?"lib-card-full":"lib-card-preview"}">${esc(expanded?(c.full_output||c.summary):c.summary.slice(0,200)+(c.summary.length>200?"...":""))}</div>
-      </div>`;
-  }).join("");
-}
-
+// ── library & intelligence renderers ─────────────────────────────────────────
 function renderLibrary() {
-  const q = state.libSearch.toLowerCase();
-  const items = state.library.filter(c =>
-    !q || c.agent_label?.toLowerCase().includes(q) || c.sector?.toLowerCase().includes(q) ||
-    c.role?.toLowerCase().includes(q) || c.output?.toLowerCase().includes(q) || c.asset_type?.toLowerCase().includes(q)
-  );
-  if (state.libLoading) return `<div class="lib-empty">Loading library...</div>`;
-  if (!items.length) return `<div class="lib-empty">${state.libSearch?"No results found.":"No saved content yet. Run an agent and click Save to library."}</div>`;
-  return items.map(c => {
-    const expanded = state.libExpanded[c.id];
-    const ag = AGENTS.find(a=>a.id===c.agent_id);
-    const color = ag?.color||"#888780";
-    const date = new Date(c.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
-    return `
-      <div class="lib-card">
-        <div class="lib-card-header">
-          <div>
-            <span style="font-size:12px;font-weight:500;color:${color}">Agent ${c.agent_id} — ${esc(c.agent_label)}</span>
-            <span class="lib-date" style="margin-left:8px">${date}</span>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn-sm" onclick="navigator.clipboard?.writeText(${JSON.stringify(c.output||'').replace(/"/g,'&quot;')})">Copy</button>
-            <button class="btn-sm" onclick="toggleExpand('${c.id}')">${expanded?"Collapse":"Expand"}</button>
-            <button class="btn-sm" style="color:#E24B4A" onclick="deleteContent('${c.id}')">Delete</button>
-          </div>
-        </div>
-        <div class="lib-card-meta">
-          ${c.sector?`<span class="lib-tag">${esc(c.sector)}</span>`:""}
-          ${c.role?`<span class="lib-tag">${esc(c.role)}</span>`:""}
-          ${c.asset_type?`<span class="lib-tag">${esc(c.asset_type)}</span>`:""}
-          ${c.language?`<span class="lib-tag">${esc(c.language)}</span>`:""}
-          ${c.mode?`<span class="lib-tag">${esc(c.mode)}</span>`:""}
-        </div>
-        ${expanded
-          ? `<div class="lib-card-full">${esc(c.output||"")}</div>`
-          : `<div class="lib-card-preview">${esc((c.output||"").slice(0,200))}${(c.output||"").length>200?"...":""}</div>`}
-      </div>`;
+  const q=state.libSearch.toLowerCase();
+  const items=state.library.filter(c=>!q||c.agent_label?.toLowerCase().includes(q)||c.sector?.toLowerCase().includes(q)||c.role?.toLowerCase().includes(q)||c.output?.toLowerCase().includes(q)||c.asset_type?.toLowerCase().includes(q));
+  if (state.libLoading) return `<div class="lib-empty">Loading...</div>`;
+  if (!items.length) return `<div class="lib-empty">${state.libSearch?"No results.":"No saved content yet. Run an agent and click Save to library."}</div>`;
+  return items.map(c=>{
+    const expanded=state.libExpanded[c.id]; const ag=AGENTS.find(a=>a.id===c.agent_id); const color=ag?.color||"#888780";
+    const date=new Date(c.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    return `<div class="lib-card"><div class="lib-card-header"><div><span style="font-size:12px;font-weight:500;color:${color}">Agent ${c.agent_id} — ${esc(c.agent_label)}</span><span class="lib-date" style="margin-left:8px">${date}</span></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="navigator.clipboard?.writeText(${JSON.stringify(c.output||'').replace(/"/g,'&quot;')});showToast('Copied')">Copy</button><button class="btn-sm" onclick="toggleExpand('${c.id}')">${expanded?"Collapse":"Expand"}</button><button class="btn-sm" style="color:#E24B4A" onclick="deleteContent('${c.id}')">Delete</button></div></div><div class="lib-card-meta">${c.sector?`<span class="lib-tag">${esc(c.sector)}</span>`:""} ${c.role?`<span class="lib-tag">${esc(c.role)}</span>`:""} ${c.asset_type?`<span class="lib-tag">${esc(c.asset_type)}</span>`:""} ${c.language?`<span class="lib-tag">${esc(c.language)}</span>`:""}</div>${expanded?`<div class="lib-card-full">${esc(c.output||"")}</div>`:`<div class="lib-card-preview">${esc((c.output||"").slice(0,200))}${(c.output||"").length>200?"...":""}</div>`}</div>`;
   }).join("");
 }
 
+function renderIntelligence() {
+  const q=state.intelSearch.toLowerCase();
+  const items=state.intelligence.filter(c=>!q||c.agent_label?.toLowerCase().includes(q)||c.intel_type?.toLowerCase().includes(q)||c.sector?.toLowerCase().includes(q)||c.summary?.toLowerCase().includes(q));
+  if (!items.length) return `<div class="lib-empty">${state.intelSearch?"No results.":"No intelligence saved yet. Run any agent to start building the shared context store."}</div>`;
+  return items.map(c=>{
+    const color=INTEL_COLORS[c.intel_type]||"#888780"; const expanded=state.libExpanded["i_"+c.id];
+    const date=new Date(c.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    return `<div class="lib-card"><div class="lib-card-header"><div><span style="font-size:12px;font-weight:500;color:${color}">Agent ${c.agent_id} — ${esc(c.agent_label)}</span><span class="lib-date" style="margin-left:8px">${date}</span></div><div style="display:flex;gap:6px"><button class="btn-sm" onclick="toggleExpand('i_${c.id}')">${expanded?"Collapse":"Expand"}</button><button class="btn-sm" style="color:#E24B4A" onclick="deleteIntel('${c.id}')">Delete</button></div></div><div class="lib-card-meta"><span class="lib-tag" style="background:${color}20;color:${color}">${esc(c.intel_type.replace("_"," "))}</span>${c.sector?`<span class="lib-tag">${esc(c.sector)}</span>`:""}</div><div class="${expanded?"lib-card-full":"lib-card-preview"}">${esc(expanded?(c.full_output||c.summary):c.summary.slice(0,200)+(c.summary.length>200?"...":""))}</div></div>`;
+  }).join("");
+}
+
+// ── main render ───────────────────────────────────────────────────────────────
 function render() {
-  const ag = AGENTS.find(a=>a.id===state.agent);
-  document.getElementById("app").innerHTML = `
+  const ag=AGENTS.find(a=>a.id===state.agent);
+  document.getElementById("app").innerHTML=`
     <div class="header">
       <div class="header-left">
         <div class="logo"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="white"/><rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".7"/><rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".4"/></svg></div>
         <span style="font-size:15px;font-weight:500">MyCena Agent Console</span>
-        <span class="badge">7 agents</span>
+        <span class="badge">${AGENTS.length} agents</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <div style="display:flex;gap:6px">
@@ -718,52 +564,27 @@ function render() {
           <button class="btn-sm" style="${state.view==="library"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='library';loadLibrary()">Library</button>
           <button class="btn-sm" style="${state.view==="intelligence"?"background:var(--purple);color:white;border-color:var(--purple)":""}" onclick="state.view='intelligence';loadIntelligenceStore()">Intelligence</button>
         </div>
-        <div class="lang-wrap">
-          <label>Language</label>
-          <select onchange="state.lang=this.value;render()">${sel(LANGUAGES,state.lang)}</select>
-        </div>
+        <div class="lang-wrap"><label>Language</label><select onchange="state.lang=this.value;render()">${sel(LANGUAGES,state.lang)}</select></div>
       </div>
     </div>
-    ${state.view==="console" ? `
+    ${state.view==="console"?`
       <div class="agent-nav">
-        ${AGENTS.map(a=>`
-          <button class="nav-btn${state.agent===a.id?" active":""}" style="--active-color:${a.color};--active-muted:${a.muted}" onclick="state.agent='${a.id}';render()">
-            <span class="nav-num">${a.id}</span>
-            <div>
-              <div class="nav-label">${esc(a.label)}</div>
-              <div class="nav-desc">${esc(a.desc)}</div>
-            </div>
-          </button>`).join("")}
+        ${AGENTS.map(a=>`<button class="nav-btn${state.agent===a.id?" active":""}" style="--active-color:${a.color};--active-muted:${a.muted}" onclick="state.agent='${a.id}';render()"><span class="nav-num">${a.id}</span><div><div class="nav-label">${esc(a.label)}</div><div class="nav-desc">${esc(a.desc)}</div></div></button>`).join("")}
       </div>
       <div class="panel">${renderPanel(state.agent)}</div>
-    ` : state.view==="library" ? `
+    `:state.view==="library"?`
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-dot" style="background:var(--purple)"></div>
-          <span class="panel-title">Content library</span>
-          <span class="panel-desc">All saved agent outputs</span>
-        </div>
-        <div class="lib-toolbar">
-          <input class="lib-search" type="text" placeholder="Search by agent, sector, role, content..." value="${esc(state.libSearch)}" oninput="setLibSearch(this.value)">
-          <span style="font-size:11px;color:var(--text3)">${state.library.length} item${state.library.length!==1?"s":""}</span>
-        </div>
+        <div class="panel-header"><div class="panel-dot" style="background:var(--purple)"></div><span class="panel-title">Content library</span><span class="panel-desc">All saved agent outputs</span></div>
+        <div class="lib-toolbar"><input class="lib-search" type="text" placeholder="Search..." value="${esc(state.libSearch)}" oninput="setLibSearch(this.value)"><span style="font-size:11px;color:var(--text3)">${state.library.length} item${state.library.length!==1?"s":""}</span></div>
         ${renderLibrary()}
       </div>
-    ` : `
+    `:`
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-dot" style="background:var(--purple)"></div>
-          <span class="panel-title">Shared intelligence store</span>
-          <span class="panel-desc">Auto-saved context from all agents</span>
-        </div>
-        <div class="lib-toolbar">
-          <input class="lib-search" type="text" placeholder="Search by agent, sector, type, content..." value="${esc(state.intelSearch)}" oninput="setIntelSearch(this.value)">
-          <span style="font-size:11px;color:var(--text3)">${state.intelligence.length} item${state.intelligence.length!==1?"s":""}</span>
-        </div>
-        ${state.intelLoading ? '<div class="lib-empty">Loading...</div>' : renderIntelligence()}
+        <div class="panel-header"><div class="panel-dot" style="background:var(--purple)"></div><span class="panel-title">Shared intelligence store</span><span class="panel-desc">Auto-saved context from all agents</span></div>
+        <div class="lib-toolbar"><input class="lib-search" type="text" placeholder="Search..." value="${esc(state.intelSearch)}" oninput="setIntelSearch(this.value)"><span style="font-size:11px;color:var(--text3)">${state.intelligence.length} item${state.intelligence.length!==1?"s":""}</span></div>
+        ${state.intelLoading?'<div class="lib-empty">Loading...</div>':renderIntelligence()}
       </div>
-    `}
-  `;
+    `}`;
 }
 
 render();
