@@ -401,7 +401,11 @@ async function runAgent(id) {
     state.phases[id] = "Saving intelligence..."; render();
     await saveIntelligence(id, sector, role, result);
 
-  } catch(e) { state.outputs[id] = "Agent unavailable — check connection."; }
+  } catch(e) {
+    console.error("runAgent error:", e);
+    console.error("stack:", e.stack);
+    state.outputs[id] = "Agent unavailable — " + e.message;
+  }
   state.phases[id] = null; render();
 }
 
