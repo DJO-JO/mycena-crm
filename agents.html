@@ -328,11 +328,21 @@ async function buildPrompts(id, sharedContext) {
     };
   }
   if (id==="02") {
-    const [c5,c6]=await Promise.all([callClaude(p05ctx(s.role,s.sector)),callClaude(p06ctx(s.sector,"",s.ladder))]);
     const angleInstruction = s.angle ? `PRIORITY INSTRUCTION: The user has specified a specific angle — you MUST build the entire piece around this:\n"${s.angle}"\nDo not deviate from this angle. It is the spine of everything you write.\n\n` : "";
+
+    // Run Agent 05 (audience motivation), Agent 06 (verified data), and angle fact-check in parallel
+    const [c5, c6, verifiedFacts] = await Promise.all([
+      callClaude(p05ctx(s.role, s.sector)),
+      callClaude(p06ctx(s.sector, "", s.ladder)),
+      s.angle ? callClaude(
+        `You are MyCena's Data & Intelligence Agent. A content writer is about to write a piece using the following angle. Extract every factual claim, statistic, company name, incident, cost figure, and data point from it. For each one:\n1. State whether it is VERIFIED, UNVERIFIED, or DISTORTED based on public record\n2. Provide the correct figure if it is wrong or distorted\n3. Flag any figures that should not be used without a source\n\nAngle:\n${s.angle}\n\nBe precise. The writer must only use verified figures. Flag everything that could become a hallucination.`,
+        "Return a structured fact-check. Label each claim VERIFIED, UNVERIFIED, or DISTORTED with corrections where needed."
+      ) : Promise.resolve("")
+    ]);
+
     return {
-      sys:`You are the Content & Thought Leadership Agent for MyCena.\n${angleInstruction}${BRAND_RULES}${intel}\nSALES BRIEFING:\n${c5}\nDATA BRIEFING:\n${c6}\nNever open with "In today's rapidly evolving threat landscape." Checklist: named incident + cost / physical key analogy / single audience / Ladder stage / no hypotheticals / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`,
-      user:`${s.angle?`ANGLE TO FOLLOW: ${s.angle}\n\n`:""}Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}\nAngle: ${s.angle||"Use judgement."}`
+      sys: `You are the Content & Thought Leadership Agent for MyCena.\n${angleInstruction}${BRAND_RULES}${intel}\n\nSALES BRIEFING (audience motivation):\n${c5}\n\nDATA & INTELLIGENCE BRIEFING (verified sector proof):\n${c6}\n\n${verifiedFacts ? `FACT-CHECK OF YOUR ANGLE (CRITICAL — follow this strictly):\n${verifiedFacts}\n\nYou MUST:\n- Only use figures marked VERIFIED\n- Replace any DISTORTED figures with the corrected versions above\n- Remove any UNVERIFIED claims entirely or flag them as unconfirmed\n- Never invent figures not present in the angle or the data briefing above\n` : ""}Never open with "In today's rapidly evolving threat landscape."\nChecklist before finishing: named incident + VERIFIED cost figure / physical key analogy / single audience / Ladder stage identified / no hypotheticals / no invented figures / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`,
+      user: `${s.angle ? `ANGLE TO FOLLOW (use only verified figures from the fact-check above):\n${s.angle}\n\n` : ""}Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}`
     };
   }
   if (id==="03") {
