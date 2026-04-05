@@ -369,63 +369,6 @@ Brief: ${s.brief||"Use your judgement."}`;
     return {sys, user: modeInstructions};
   }
 
-  if (id==="11") {
-    const s = agentState["11"];
-    const ag = AGENTS.find(a=>a.id==="11");
-    modesHtml = pills(MODES_11, s.mode, "11", "mode", ag.color);
-    fieldsHtml = `
-      <div class="field"><label class="field-label">Primary sector focus <span class="field-opt">opt</span></label><select onchange="setField('11','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
-      <div class="field"><label class="field-label">Campaign context <span class="field-opt">opt</span></label><input type="text" value="${esc(s.campaignContext)}" placeholder="e.g. Financial services sequence outperforming this month..." oninput="setField('11','campaignContext',this.value)"></div>
-      <div class="field"><label class="field-label">Ads context <span class="field-opt">opt</span></label><input type="text" value="${esc(s.adsContext)}" placeholder="e.g. CISO segment CPL dropped 30% last week..." oninput="setField('11','adsContext',this.value)"></div>
-    `;
-    textareaHtml = field("Additional context <span class='field-opt'>(optional)</span>", `<textarea placeholder="e.g. We've had 3 fast closes in healthcare this month — check if it's a breakout signal..." oninput="setField('11','brief',this.value)">${esc(s.brief)}</textarea>`);
-    const infoHtml = `<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:var(--green-bg);color:var(--green-text);margin-bottom:12px;border-left:3px solid #1D9E75">Pulls live CRM data from Supabase automatically before running.</div>`;
-    return `
-      <div class="panel-header">
-        <div class="panel-dot" style="background:${ag.color}"></div>
-        <span class="panel-title">Agent 11 — ICP &amp; Niche</span>
-        <span class="panel-desc">${ag.desc}</span>
-      </div>
-      ${modesHtml}${infoHtml}
-      <div class="form-grid">${fieldsHtml}</div>
-      ${textareaHtml}
-      <button class="run-btn" style="background:${ag.color}" onclick="runAgent('11')" ${running?"disabled":""}>
-        ${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}
-      </button>
-      ${outputHtml}`;
-  }
-
-  if (id==="12") {
-    const s = agentState["12"];
-    const ag = AGENTS.find(a=>a.id==="12");
-    modesHtml = pills(MODES_12, s.mode, "12", "mode", ag.color);
-    fieldsHtml = `
-      <div class="field"><label class="field-label">Platform</label><select onchange="setField('12','platform',this.value)">${sel(PLATFORMS_12,s.platform)}</select></div>
-      <div class="field"><label class="field-label">Campaign type</label><select onchange="setField('12','campaignType',this.value)">${sel(CAMPAIGN_TYPES_12,s.campaignType)}</select></div>
-      <div class="field"><label class="field-label">Ad format</label><select onchange="setField('12','format',this.value)">${sel(AD_FORMATS_12,s.format)}</select></div>
-      <div class="field"><label class="field-label">Audience segment</label><select onchange="setField('12','segment',this.value)">${sel(SEGMENTS_12,s.segment)}</select></div>
-      <div class="field"><label class="field-label">Sector</label><select onchange="setField('12','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
-      <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('12','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
-      <div class="field full"><label class="field-label">Incident hook <span class="field-opt">opt — leave blank to let agent choose</span></label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S £300M revenue impact, Colonial Pipeline $4.4M ransom..." oninput="setField('12','incident',this.value)"></div>
-      ${s.mode==="Test brief"?`<div class="field full"><label class="field-label">Hypothesis to test <span class="field-opt">opt — leave blank for agent recommendation</span></label><input type="text" value="${esc(s.hypothesis)}" placeholder="e.g. Incident-led headlines will outperform deployment-speed headlines for CISO audiences..." oninput="setField('12','hypothesis',this.value)"></div>`:""}
-    `;
-    textareaHtml = field("Brief / context <span class='field-opt'>(optional)</span>", `<textarea placeholder="${s.mode==="Ad variants"?"e.g. Focus on the operational cost angle for BPO — SLA penalty risk as the hook...":"e.g. We want to test whether the physical key analogy or a named incident stops the scroll better..."}" oninput="setField('12','brief',this.value)">${esc(s.brief)}</textarea>`);
-    const warningHtml = `<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:#FAEEDA;color:#412402;margin-bottom:12px;border-left:3px solid #EF9F27">All output requires Brand Strategy Agent 01 approval before launch.</div>`;
-    return `
-      <div class="panel-header">
-        <div class="panel-dot" style="background:${ag.color}"></div>
-        <span class="panel-title">Agent 12 — Ads Testing</span>
-        <span class="panel-desc">${ag.desc}</span>
-      </div>
-      ${modesHtml}${warningHtml}
-      <div class="form-grid">${fieldsHtml}</div>
-      ${textareaHtml}
-      <button class="run-btn" style="background:${ag.color}" onclick="runAgent('12')" ${running?"disabled":""}>
-        ${running?`<span class="spinner"></span>${esc(phase)}`:"Run →"}
-      </button>
-      ${outputHtml}`;
-  }
-
   if (id==="07") {
     const ctx = await callClaude(`Performance context: ${s.mode} for ${s.sector}, ${s.role}, deal stage ${s.dealStage}, ladder ${s.ladder}. Normal velocity, common stall points, on-brand vs drifting execution, which agent (01-06) helps most right now and why?`);
     const sys = `You are the Performance & Optimisation Agent for MyCena. Diagnose and improve — do not create campaigns.\nPERFORMANCE CONTEXT:\n${ctx}\nBrand drift scoring (0-10): Problem clarity (0-2) + Named proof (0-2) + Audience specificity (0-2) + Ladder coherence (0-2) + CTA integrity (0-2). 9-10=on-brand, 7-8=minor drift, 5-6=significant, <5=systematic — flag to human.\nDeal health: stage velocity, risk signals, stall reason, re-engagement action with opening line, which agent helps most.\nDrift audits: score each dimension, flag specific passages, verdict APPROVED/APPROVED WITH EDITS/REQUIRES REVISION, exact rewrite instructions.\nRespond in ${lang}.`;
@@ -789,7 +732,7 @@ function render() {
           </button>`).join("")}
       </div>
       <div class="panel">${renderPanel(state.agent)}</div>
-    ` : `
+    ` : state.view==="library" ? `
       <div class="panel">
         <div class="panel-header">
           <div class="panel-dot" style="background:var(--purple)"></div>
@@ -801,6 +744,19 @@ function render() {
           <span style="font-size:11px;color:var(--text3)">${state.library.length} item${state.library.length!==1?"s":""}</span>
         </div>
         ${renderLibrary()}
+      </div>
+    ` : `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot" style="background:var(--purple)"></div>
+          <span class="panel-title">Shared intelligence store</span>
+          <span class="panel-desc">Auto-saved context from all agents</span>
+        </div>
+        <div class="lib-toolbar">
+          <input class="lib-search" type="text" placeholder="Search by agent, sector, type, content..." value="${esc(state.intelSearch)}" oninput="setIntelSearch(this.value)">
+          <span style="font-size:11px;color:var(--text3)">${state.intelligence.length} item${state.intelligence.length!==1?"s":""}</span>
+        </div>
+        ${state.intelLoading ? '<div class="lib-empty">Loading...</div>' : renderIntelligence()}
       </div>
     `}
   `;
