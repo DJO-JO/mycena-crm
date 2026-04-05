@@ -194,8 +194,11 @@ async function dbFetch(path, opts={}) {
     headers: {"Content-Type":"application/json","Prefer":opts.prefer!==undefined?opts.prefer:"return=representation"},
     body: opts.body,
   });
-  if (res.status===204) return null;
-  return res.json();
+  if (res.status===204||res.status===201&&opts.prefer==="return=minimal") return null;
+  if (res.headers.get("content-length")==="0") return null;
+  const text = await res.text();
+  if (!text||!text.trim()) return null;
+  return JSON.parse(text);
 }
 
 // ── shared context prompts ───────────────────────────────────────────────────
@@ -268,13 +271,18 @@ async function loadLibrary() {
 async function saveOutput(id) {
   const s=agentState[id]; const ag=AGENTS.find(a=>a.id===id);
   try {
-    await dbFetch("content", { method:"POST", prefer:"return=minimal", body:JSON.stringify({
-      agent_id:id, agent_label:ag.label, sector:s.sector||"", role:s.role||"",
-      language:state.lang, mode:s.mode||"", asset_type:s.assetType||s.ctype||s.channel||"",
-      brief:s.brief||s.topic||s.angle||"", output:state.outputs[id]||""
-    })});
-    showToast("Saved to library");
-  } catch(e) { showToast("Save failed"); }
+    const res = await fetch(`${SUPABASE}/content`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Prefer":"return=minimal"},
+      body:JSON.stringify({
+        agent_id:id, agent_label:ag.label, sector:s.sector||"", role:s.role||"",
+        language:state.lang, mode:s.mode||"", asset_type:s.assetType||s.ctype||s.channel||"",
+        brief:s.brief||s.topic||s.angle||"", output:state.outputs[id]||""
+      })
+    });
+    if (res.ok) showToast("Saved to library");
+    else showToast("Save failed — "+res.status);
+  } catch(e) { showToast("Save failed — "+e.message); }
 }
 async function deleteContent(id) {
   await dbFetch(`content?id=eq.${id}`, {method:"DELETE", prefer:"return=minimal"});
