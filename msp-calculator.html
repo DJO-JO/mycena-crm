@@ -177,7 +177,34 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">4</span>Portfolio-wide compliance overhead</div>
+    <div class="section-title"><span class="section-num">4</span>Credential operations — your monthly baseline cost</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Average credential resets per client environment per month</label>
+        <input type="number" id="resetsPerClient" placeholder="4" value="4" oninput="calc()">
+        <span class="hint">Across all users at that client — industry avg 3–5 per client per month</span>
+      </div>
+      <div class="field">
+        <label>Cost per reset (£)</label>
+        <input type="number" id="resetCost" placeholder="30" value="30" oninput="calc()">
+        <span class="hint">IT time including verification and logging · avg £25–47</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Own technician resets per month</label>
+        <input type="number" id="techResets" placeholder="e.g. 34" oninput="calc()">
+        <span class="hint">Avg 1.7 resets per technician per month</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual credential operations cost</span>
+      <span class="section-total-value" id="s5">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">5</span>Portfolio-wide compliance overhead</div>
 
     <div class="field-row">
       <div class="field">
@@ -299,16 +326,22 @@ function calc(){
   var auditRate=parseFloat(document.getElementById('auditRate').value)||75;
   var mycenaCost=parseFloat(document.getElementById('mycenaCost').value)||0;
 
+  var resetsPerClient=parseFloat(document.getElementById('resetsPerClient').value)||0;
+  var resetCost=parseFloat(document.getElementById('resetCost').value)||30;
+  var techResets=parseFloat(document.getElementById('techResets').value)||0;
+
   var s1=clients*notifyCost*incidents;
   var s2=(contractValue*clients*(churnPct/100))+insuranceIncrease;
   var s3=techs*(techTurnover/100)*provisionHours*hourlyRate;
   var s4=complianceClients*auditHours*auditCycles*auditRate;
-  var total=s1+s2+s3+s4;
+  var s5=((clients*resetsPerClient)+techResets)*resetCost*12;
+  var total=s1+s2+s3+s4+s5;
 
   document.getElementById('s1').textContent=clients?fmt(s1):'—';
   document.getElementById('s2').textContent=contractValue?fmt(s2):'—';
   document.getElementById('s3').textContent=techs?fmt(s3):'—';
   document.getElementById('s4').textContent=complianceClients?fmt(s4):'—';
+  document.getElementById('s5').textContent=(clients&&resetsPerClient)||techResets?fmt(s5):'—';
 
   if(clients){
     var blastRadius=clients*techsPerClient;
@@ -317,7 +350,7 @@ function calc(){
     document.getElementById('blastNum').textContent=Math.round(clients)+' client environments';
   }
 
-  var hasData=clients||contractValue||techs||complianceClients;
+  var hasData=clients||contractValue||techs||complianceClients||techResets;
   if(hasData){
     document.getElementById('total').textContent=fmt(total);
     document.getElementById('totalSub').textContent='per year · operational costs only · excludes breach liability and regulatory fines';
