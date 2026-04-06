@@ -427,7 +427,110 @@ function filtered(){
 function tierStyle(t){
   return t==="1"?{bg:"#E1F5EE",text:"#1D9E75"}:t==="2"?{bg:"#FAEEDA",text:"#EF9F27"}:{bg:"#F1EFE8",text:"#888780"};
 }
-  function buildCard(c){
+
+function markNoteSent(sid){
+  var el=document.getElementById("ns-"+sid);
+  if(!el||!el.value.trim()) return;
+  var txt=el.value.trim(), ts=new Date().toISOString();
+  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({note_sent_text:txt,note_sent_at:ts})})
+    .then(function(){
+      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{note_sent_text:txt,note_sent_at:ts}):c;});
+      showToast("Note logged"); render();
+    });
+}
+
+function markFollowupSent(sid){
+  var el=document.getElementById("fs-"+sid);
+  if(!el||!el.value.trim()) return;
+  var txt=el.value.trim(), ts=new Date().toISOString();
+  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_sent_text:txt,followup_sent_at:ts})})
+    .then(function(){
+      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{followup_sent_text:txt,followup_sent_at:ts}):c;});
+      showToast("Message logged"); render();
+    });
+}
+
+function clearSent(sid,field){
+  var patch={};
+  patch[field]="";
+  state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,patch):c;});
+  render();
+}
+
+function copyBtn(el){
+  var txt=uf(el.getAttribute("data-text")||"");
+  if(navigator.clipboard) navigator.clipboard.writeText(txt);
+  showToast("Copied");
+}
+
+function generateFollowUp2(sid){
+  state.loadingId="followup2_"+sid; render();
+  var c=state.contacts.filter(function(x){return x.id===sid;})[0];
+  if(!c){state.loadingId=null;render();return;}
+  var p="You are writing a second LinkedIn follow-up message on behalf of "+FOUNDER+", co-founder of MyCena.\n"
+    +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
+    +"Sector: "+c.sector+" | Country: "+c.country+"\n"
+    +(c.followup_sent_text?"First message sent:\n"+c.followup_sent_text+"\n":"")
+    +"This is the second touch. They have either not replied or replied and shown interest.\n"
+    +"Write a short direct message under 40 words excluding sign-off.\n"
+    +"Structure: one line acknowledging the previous message without being pushy. One direct warm ask for a short conversation — 20 minutes, no deck, just a conversation. End with just: "+FOUNDER+"\n"
+    +"Never mention MyCena by name. Tone: direct but warm. Not apologetic. Not salesy. A founder asking for a real conversation.";
+  aiReq(p,"Return only the message. No preamble no labels no quotes.")
+    .then(function(msg){
+      state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{followup2_msg:msg}):x;});
+      return dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup2_msg:msg})});
+    }).then(function(){showToast("Second follow-up ready");state.loadingId=null;render();});
+}
+
+function runAllTier1(){
+  var src=state.view==="import"?state.parsed:state.contacts;
+  var t1=src.filter(function(c){return c.icp_tier==="1"&&!c.agent08_brief&&!c.linkedin_note;});
+  if(!t1.length){showToast("All Tier 1 already briefed");return;}
+  state.batchRunning=true; state.batchDone=0; state.batchTotal=t1.length; state.batchCurrent=""; render();
+  var i=0;
+  function nx(){
+    if(i>=t1.length){
+      state.batchDone=t1.length; state.batchRunning=false; state.batchCurrent="";
+      showToast("Done — "+t1.length+" briefed"); render(); return;
+    }
+    var c=t1[i];
+    state.batchCurrent=c.contact_name+" at "+c.company; state.batchDone=i; render();
+    var bp="MyCena Sales Research Agent 08.\n"
+      +"Company: "+c.company+" | Sector: "+c.sector+" | Contact: "+c.contact_name+", "+c.title+"\n"
+      +"Headcount: "+c.headcount+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
+      +"Return: 1) Sector breach 2) Control Ladder 3) Objection + response 4) Why MyCena now 5) LinkedIn angle. Specific no jargon.";
+    aiReq(bp).then(function(brief){
+      var np="LinkedIn connection note for "+FOUNDER+" co-founder of MyCena.\n"
+        +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+" | Sector: "+c.sector+"\n"
+        +"Brief: "+brief+"\n"
+        +"STRICT 200 character max. No product name. Specific reference. No deck/link. Peer-to-peer. Start with first name. Rewrite if over 200 chars.";
+      return aiReq(np,"Return only the note. No preamble.").then(function(note){
+        var sid=c.id||c.supabase_id;
+        if(state.view==="import"){
+          state.parsed=state.parsed.map(function(x){return x._pid===c._pid?Object.assign({},x,{agent08_brief:brief,linkedin_note:note}):x;});
+        } else {
+          state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{agent08_brief:brief,linkedin_note:note}):x;});
+        }
+        if(sid) return saveBN(sid,brief,note);
+      });
+    }).then(function(){render();i++;nx();});
+  }
+  nx();
+}
+
+function filtered(){
+  var src=state.view==="import"?state.parsed:state.contacts;
+  var q=state.search.toLowerCase();
+  return src.filter(function(c){
+    var mQ=!q||(c.contact_name||"").toLowerCase().indexOf(q)>=0||(c.company||"").toLowerCase().indexOf(q)>=0||(c.title||"").toLowerCase().indexOf(q)>=0;
+    var mT=state.filterTier==="All"||c.icp_tier===state.filterTier;
+    var mS=state.filterStatus==="All"||(c.outreach_status||"Not sent")===state.filterStatus;
+    var mI=state.showIrrelevant||(c.outreach_status||"Not sent")!=="Irrelevant";
+    return mQ&&mT&&mS&&mI;
+  });
+}
+
+function buildCard(c){
   var sid=c.id||c.supabase_id||"";
   var isOpen=state.expanded===sid||state.expanded===c._pid;
   var status=c.outreach_status||"Not sent";
@@ -436,9 +539,11 @@ function tierStyle(t){
   var lBrief=state.loadingId==="brief_"+sid;
   var lNote=state.loadingId==="note_"+sid;
   var lFU=state.loadingId==="followup_"+sid;
+  var lFU2=state.loadingId==="followup2_"+sid;
   var lProm=state.loadingId==="promote_"+sid;
   var canPromote=!c.deal_id&&(status==="Connected"||status==="Replied"||status==="Booked")&&sid;
   var showFU=status==="Connected"||status==="Replied"||status==="Booked";
+  var showFU2=!!(c.followup_sent_text||status==="Replied");
   var liUrl=c.linkedin_url?(c.linkedin_url.indexOf("http")===0?c.linkedin_url:"https://"+c.linkedin_url):"";
   var h="";
 
@@ -519,6 +624,10 @@ function tierStyle(t){
     if(c.note_sent_text){
       h+='<div class="sent-box">'+ef(c.note_sent_text)+'</div>';
       h+='<button class="btn btn-sm" onclick="clearSent(\''+sid+'\',\'note_sent_text\')">Edit</button>';
+      if(c.followup_sent_text){
+        h+='<div class="sec-title" style="margin-top:10px">First message sent <span class="sec-sub">· '+fd(c.followup_sent_at)+'</span></div>';
+        h+='<div class="sent-box">'+ef(c.followup_sent_text)+'</div>';
+      }
     } else {
       h+='<textarea id="ns-'+sid+'" placeholder="Paste the exact note you sent..." style="height:55px;font-size:12px;margin-bottom:6px"></textarea>';
       h+='<button class="btn btn-primary" onclick="markNoteSent(\''+sid+'\')" style="width:100%">Mark as sent →</button>';
@@ -565,6 +674,27 @@ function tierStyle(t){
       h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">Personalised message to send after they accept. You send it manually on LinkedIn.</div>';
     }
     h+='</div>';
+
+    if(showFU2){
+      h+='<div class="divider">';
+      h+='<div class="sec-title">Second follow-up <span class="sec-sub">(direct ask)</span></div>';
+      if(c.followup2_msg){
+        h+='<div class="note-box">'+ef(c.followup2_msg)+'</div>';
+        h+='<div style="display:flex;gap:6px;margin-bottom:8px">';
+        h+='<button class="btn btn-purple" onclick="copyBtn(this)" data-text="'+ef(c.followup2_msg)+'" style="flex:1">Copy message</button>';
+        if(liUrl) h+='<a href="'+ef(liUrl)+'" target="_blank" rel="noopener" class="btn btn-blue">Open LI</a>';
+        h+='<button class="btn btn-sm" onclick="generateFollowUp2(\''+sid+'\')" '+(state.loadingId?"disabled":"")+'>';
+        h+=lFU2?'<span class="spinner"></span>...':"Regenerate";
+        h+='</button>';
+        h+='</div>';
+      } else {
+        h+='<button class="btn btn-primary" onclick="generateFollowUp2(\''+sid+'\')" '+(state.loadingId?"disabled":"")+' style="width:100%">';
+        h+=lFU2?'<span class="spinner"></span>Writing...':"Generate second follow-up →";
+        h+='</button>';
+        h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">More direct ask. References your first message.</div>';
+      }
+      h+='</div>';
+    }
   }
 
   if(canPromote){
@@ -628,7 +758,7 @@ function render(){
   h+='</div>';
   h+='<div class="tabs">';
   h+='<button class="tab'+(state.view==="import"?" active":"")+'" onclick="switchView(\'import\')">Import CSV</button>';
-  h+='<button class="tab'+(state.view==="contacts"?" active":"")+'" onclick="switchView(\'contacts\')">All contacts'+(state.contacts.length?" ("+state.contacts.length+")" :"")+' </button>';
+  h+='<button class="tab'+(state.view==="contacts"?" active":"")+'" onclick="switchView(\'contacts\')">All contacts'+(state.contacts.length?" ("+state.contacts.length+")":"")+' </button>';
   h+='</div>';
   h+='</div>';
 
