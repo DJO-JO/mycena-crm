@@ -17,6 +17,11 @@
   --red-bg:#FCEBEB;--red-text:#501313;
   --radius:8px;--radius-lg:12px;
 }
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1a;--bg2:#242422;--bg3:#2c2c2a;
+  --text:#e8e6de;--text2:#9b9996;--text3:#6b6b66;
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);
+}}
 body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);font-size:14px;min-height:100vh;padding:24px 16px;}
 .wrap{max-width:680px;margin:0 auto;}
 .calc-header{background:var(--mycena-dark);color:#ffffff;border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
@@ -25,47 +30,47 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
 .calc-header p{font-size:13px;color:var(--mycena-silver);line-height:1.5;}
 .incident-bar{background:var(--red-bg);border-left:3px solid #E24B4A;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--red-text);line-height:1.6;border-radius:0 var(--radius) var(--radius) 0;}
 .section{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
-.section-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:6px;letter-spacing:0.02em;}
+.section-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:16px;letter-spacing:0.02em;}
 .section-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-charcoal);color:#ffffff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Manrope',sans-serif;}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 .field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:11px;color:var(--text2);font-family:'Manrope',sans-serif;}
+.field label{font-size:11px;color:var(--text2);}
 .field input{font-size:13px;padding:8px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Manrope',sans-serif;width:100%;}
 .field input:focus{outline:2px solid var(--mycena-blue);outline-offset:1px;}
 .field .hint{font-size:11px;color:var(--text3);line-height:1.4;}
-.multiplier{font-size:11px;padding:6px 10px;background:#FAEEDA;color:#412402;border-radius:var(--radius);margin-bottom:10px;border-left:2px solid #D8B26F;}
+.multiplier{font-size:11px;padding:6px 10px;background:#FAEEDA;color:#412402;border-radius:var(--radius);margin-bottom:10px;border-left:2px solid var(--mycena-gold);}
 .section-total{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);margin-top:4px;}
 .section-total-label{font-size:12px;color:var(--text2);}
 .section-total-value{font-size:16px;font-weight:500;font-family:'Bai Jamjuree',sans-serif;}
 .total-card{background:var(--mycena-dark);border-radius:var(--radius-lg);padding:22px 28px;margin:20px 0 12px;}
-.total-label{font-size:12px;color:var(--mycena-silver);margin-bottom:6px;font-family:'Manrope',sans-serif;}
+.total-label{font-size:12px;color:var(--mycena-silver);margin-bottom:6px;}
 .total-value{font-family:'Bai Jamjuree',sans-serif;font-size:36px;font-weight:600;color:#ffffff;margin-bottom:4px;}
-.total-sub{font-size:12px;color:#6b6b66;font-family:'Manrope',sans-serif;}
-.multiplier-callout{background:var(--mycena-blue);border-radius:var(--radius-lg);padding:16px 20px;margin:12px 0;color:white;}
-.multiplier-callout h3{font-family:'Bai Jamjuree',sans-serif;font-size:14px;font-weight:600;color:white;margin-bottom:6px;}
-.multiplier-callout p{font-size:12px;color:#B2B4B3;line-height:1.6;}
-.multiplier-callout .big{font-size:28px;font-weight:600;font-family:'Bai Jamjuree',sans-serif;color:var(--mycena-gold);margin:8px 0 4px;}
+.total-sub{font-size:12px;color:#6b6b66;}
+.blast-card{background:var(--mycena-blue);border-radius:var(--radius-lg);padding:16px 20px;margin:12px 0;display:none;}
+.blast-card h3{font-family:'Bai Jamjuree',sans-serif;font-size:14px;font-weight:600;color:white;margin-bottom:6px;}
+.blast-card .big{font-size:28px;font-weight:600;font-family:'Bai Jamjuree',sans-serif;color:var(--mycena-gold);margin:8px 0 4px;}
+.blast-card p{font-size:12px;color:#B2B4B3;line-height:1.6;}
 .proof-section{background:var(--bg2);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;}
 .proof-title{font-family:'Bai Jamjuree',sans-serif;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;}
 .proof-item{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);}
 .proof-item:last-child{border-bottom:none;padding-bottom:0;}
 .proof-dot{width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0;margin-top:5px;}
-.proof-text{font-size:12px;color:var(--text2);line-height:1.6;font-family:'Manrope',sans-serif;}
+.proof-text{font-size:12px;color:var(--text2);line-height:1.6;}
 .proof-text strong{color:var(--text);}
+.proof-text em{font-style:italic;color:var(--text3);}
 .mycena-section{border:0.5px solid var(--mycena-blue);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
-.mycena-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;letter-spacing:0.02em;}
-.mycena-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-blue);color:white;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Manrope',sans-serif;}
-.mycena-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;font-family:'Manrope',sans-serif;}
+.mycena-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;}
+.mycena-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-blue);color:white;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mycena-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
 .mycena-row:last-child{border-bottom:none;padding-bottom:0;}
 .mycena-row-label{color:var(--text2);}
 .mycena-row-value{font-weight:500;}
 .saving{color:var(--mycena-blue);font-family:'Bai Jamjuree',sans-serif;font-size:18px;font-weight:600;}
-.disclaimer{font-size:11px;color:var(--text3);line-height:1.7;padding:12px 0;font-family:'Manrope',sans-serif;}
+.disclaimer{font-size:11px;color:var(--text3);line-height:1.7;padding:12px 0;}
 .cta{background:var(--mycena-blue);color:white;border-radius:var(--radius-lg);padding:18px 24px;text-align:center;margin-top:4px;}
-.cta h2{font-family:'Bai Jamjuree',sans-serif;font-size:15px;font-weight:600;color:white;margin-bottom:6px;letter-spacing:0.02em;}
-.cta p{font-size:12px;color:#B2B4B3;margin-bottom:14px;line-height:1.5;font-family:'Manrope',sans-serif;}
-.cta a{display:inline-block;background:var(--mycena-gold);color:var(--mycena-dark);font-size:13px;font-weight:600;padding:10px 24px;border-radius:var(--radius);text-decoration:none;font-family:'Manrope',sans-serif;}
-.cta a:hover{opacity:0.9;}
+.cta h2{font-family:'Bai Jamjuree',sans-serif;font-size:15px;font-weight:600;color:white;margin-bottom:6px;}
+.cta p{font-size:12px;color:#B2B4B3;margin-bottom:14px;line-height:1.5;}
+.cta a{display:inline-block;background:var(--mycena-gold);color:var(--mycena-dark);font-size:13px;font-weight:600;padding:10px 24px;border-radius:var(--radius);text-decoration:none;}
 @media(max-width:520px){.field-row{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -81,34 +86,58 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="incident-bar">
-    <strong>The MSP risk multiplier:</strong> Kaseya (2021) — one credential compromise cascaded through 60 MSPs to hit 1,500+ downstream client companies. ConnectWise (2024) — shared remote access credentials created blast radius amplification across hundreds of MSP client bases. The attack surface is not your organisation. It is every client you manage.
+    <strong>The MSP risk multiplier:</strong> Kaseya (2021) — one credential compromise cascaded through 60 MSPs to hit 1,500+ downstream client companies. ConnectWise (May 2025) — nation-state threat actor exploited ScreenConnect credentials; CISA added CVE-2025-3935 to its Known Exploited Vulnerabilities catalog. The attack surface is not your organisation. It is every client you manage.
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">1</span>Client breach notification cascade</div>
-
-    <div class="multiplier" id="multiplier1">Enter your client count below to see your blast radius.</div>
+    <div class="section-title"><span class="section-num">1</span>Credential operations — your monthly baseline</div>
+    <div class="multiplier" id="multiplier1">Enter your client count and technician numbers to see your monthly credential overhead.</div>
     <div class="field-row">
       <div class="field">
         <label>Number of managed client environments</label>
         <input type="number" id="clients" placeholder="e.g. 25" oninput="calc()">
-        <span class="hint">Each client environment = separate breach notification obligation</span>
       </div>
       <div class="field">
-        <label>Average technicians per client environment</label>
-        <input type="number" id="techsPerClient" placeholder="3" value="3" oninput="calc()">
-        <span class="hint">With credential sprawl each tech has access to multiple clients</span>
+        <label>Average credential resets per client per month</label>
+        <input type="number" id="resetsPerClient" placeholder="4" oninput="calc()">
+        <span class="hint">Across all users at that client · industry avg 3–5</span>
       </div>
     </div>
     <div class="field-row">
       <div class="field">
+        <label>Total technicians and engineers</label>
+        <input type="number" id="techs" placeholder="e.g. 20" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Own technician resets per month</label>
+        <input type="number" id="techResets" placeholder="e.g. 34" oninput="calc()">
+        <span class="hint">Avg 1.7 resets per technician per month</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Cost per reset (£)</label>
+        <input type="number" id="resetCost" placeholder="30" oninput="calc()">
+        <span class="hint">IT time including verification and logging · avg £25–47</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual credential operations cost</span>
+      <span class="section-total-value" id="s5">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">2</span>Client breach notification cascade</div>
+    <div class="field-row">
+      <div class="field">
         <label>Cost per breach notification per client (£)</label>
-        <input type="number" id="notifyCost" placeholder="4500" value="4500" oninput="calc()">
-        <span class="hint">Legal, communication, emergency credential rotation · avg £4,500 per client</span>
+        <input type="number" id="notifyCost" placeholder="4500" oninput="calc()">
+        <span class="hint">Legal, communication, emergency credential rotation · avg £4,500</span>
       </div>
       <div class="field">
         <label>Estimated credential incidents per year</label>
-        <input type="number" id="incidents" placeholder="2" value="2" oninput="calc()">
+        <input type="number" id="incidents" placeholder="2" oninput="calc()">
         <span class="hint">Technician departure, shared password exposure, phishing</span>
       </div>
     </div>
@@ -119,8 +148,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">2</span>Contract renegotiation and client loss</div>
-
+    <div class="section-title"><span class="section-num">3</span>Contract renegotiation and client loss</div>
     <div class="field-row">
       <div class="field">
         <label>Average annual contract value per client (£)</label>
@@ -128,7 +156,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
       </div>
       <div class="field">
         <label>Estimated client churn after a security incident (%)</label>
-        <input type="number" id="churnPct" placeholder="15" value="15" oninput="calc()">
+        <input type="number" id="churnPct" placeholder="15" oninput="calc()">
         <span class="hint">Industry avg 15–30% client churn post-incident</span>
       </div>
     </div>
@@ -136,7 +164,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
       <div class="field">
         <label>Insurance premium increase post-incident (£/year)</label>
         <input type="number" id="insuranceIncrease" placeholder="e.g. 8000" oninput="calc()">
-        <span class="hint">Cyber insurance uplift after credential incident</span>
       </div>
     </div>
     <div class="section-total">
@@ -146,85 +173,51 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">3</span>Technician offboarding and access management</div>
-
+    <div class="section-title"><span class="section-num">4</span>Technician offboarding and access management</div>
     <div class="field-row">
       <div class="field">
-        <label>Total technicians and engineers</label>
-        <input type="number" id="techs" placeholder="e.g. 20" oninput="calc()">
+        <label>Annual technician turnover (%)</label>
+        <input type="number" id="techTurnover" placeholder="25" oninput="calc()">
+        <span class="hint">Each departure requires access revocation across all client environments — manually, one by one</span>
       </div>
       <div class="field">
-        <label>Annual technician turnover (%)</label>
-        <input type="number" id="techTurnover" placeholder="25" value="25" oninput="calc()">
-        <span class="hint">When a technician leaves, their access must be revoked across every client environment — manually, one by one</span>
+        <label>Hours to offboard one technician across all client environments</label>
+        <input type="number" id="provisionHours" placeholder="8" oninput="calc()">
       </div>
     </div>
     <div class="field-row">
       <div class="field">
-        <label>Hours to offboard one technician across all client environments</label>
-        <input type="number" id="provisionHours" placeholder="8" value="8" oninput="calc()">
-        <span class="hint">Manual access management across client environments</span>
-      </div>
-      <div class="field">
         <label>IT staff hourly rate (£)</label>
-        <input type="number" id="hourlyRate" placeholder="75" value="75" oninput="calc()">
+        <input type="number" id="hourlyRate" placeholder="75" oninput="calc()">
       </div>
     </div>
     <div class="section-total">
-      <span class="section-total-label">Annual provisioning overhead</span>
+      <span class="section-total-label">Annual offboarding overhead</span>
       <span class="section-total-value" id="s3">—</span>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">4</span>Credential operations — your monthly baseline cost</div>
-    <div class="field-row">
-      <div class="field">
-        <label>Average credential resets per client environment per month</label>
-        <input type="number" id="resetsPerClient" placeholder="4" value="4" oninput="calc()">
-        <span class="hint">Across all users at that client — industry avg 3–5 per client per month</span>
-      </div>
-      <div class="field">
-        <label>Cost per reset (£)</label>
-        <input type="number" id="resetCost" placeholder="30" value="30" oninput="calc()">
-        <span class="hint">IT time including verification and logging · avg £25–47</span>
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Own technician resets per month</label>
-        <input type="number" id="techResets" placeholder="e.g. 34" oninput="calc()">
-        <span class="hint">Avg 1.7 resets per technician per month</span>
-      </div>
-    </div>
-    <div class="section-total">
-      <span class="section-total-label">Annual credential operations cost</span>
-      <span class="section-total-value" id="s5">—</span>
-    </div>
-  </div>
-
-  <div class="section">
     <div class="section-title"><span class="section-num">5</span>Portfolio-wide compliance overhead</div>
-
     <div class="field-row">
       <div class="field">
-        <label>Number of clients requiring compliance evidence</label>
+        <label>Clients requiring compliance evidence</label>
         <input type="number" id="complianceClients" placeholder="e.g. 10" oninput="calc()">
         <span class="hint">SOX, HIPAA, PCI, ISO27001 — each client may require different framework evidence</span>
       </div>
       <div class="field">
-        <label>Hours per client per audit cycle for credential evidence</label>
-        <input type="number" id="auditHours" placeholder="12" value="12" oninput="calc()">
+        <label>Hours per client per audit cycle</label>
+        <input type="number" id="auditHours" placeholder="12" oninput="calc()">
       </div>
     </div>
     <div class="field-row">
       <div class="field">
         <label>Audit cycles per year</label>
-        <input type="number" id="auditCycles" placeholder="2" value="2" oninput="calc()">
+        <input type="number" id="auditCycles" placeholder="2" oninput="calc()">
       </div>
       <div class="field">
-        <label>IT staff hourly rate (£)</label>
-        <input type="number" id="auditRate" placeholder="75" value="75" oninput="calc()">
+        <label>IT staff hourly rate for audit prep (£)</label>
+        <input type="number" id="auditRate" placeholder="75" oninput="calc()">
       </div>
     </div>
     <div class="section-total">
@@ -239,10 +232,10 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
     <div class="total-sub" id="totalSub">Operational costs only · excludes breach liability, regulatory fines, reputational damage</div>
   </div>
 
-  <div class="multiplier-callout" id="blastRadius" style="display:none">
+  <div class="blast-card" id="blastCard">
     <h3>Your blast radius</h3>
     <div class="big" id="blastNum">—</div>
-    <p>client environments exposed if a single technician credential is compromised. This is the MSP risk that BPO, enterprise, and government organisations do not face at the same scale.</p>
+    <p>client environments exposed if a single technician credential is compromised. This is the risk that makes MSPs a priority target for threat actors — one entry point, dozens of victims.</p>
   </div>
 
   <div class="proof-section">
@@ -253,15 +246,15 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
     </div>
     <div class="proof-item">
       <div class="proof-dot"></div>
-      <div class="proof-text"><strong>ConnectWise ScreenConnect (May 2025):</strong> ConnectWise disclosed suspicious activity attributed to a nation-state threat actor, affecting a number of ScreenConnect on-premise customers. CVE-2025-3935 — a high-severity RCE vulnerability — was added to CISA's Known Exploited Vulnerabilities catalog days later. Investigation ongoing; full scope not yet confirmed. The pattern is consistent with credential harvesting across MSP-managed client environments. <em>(Source: ConnectWise advisory, May 28 2025)</em></div>
+      <div class="proof-text"><strong>ConnectWise ScreenConnect (May 2025):</strong> ConnectWise disclosed suspicious activity attributed to a nation-state threat actor, affecting a number of ScreenConnect on-premise customers. CVE-2025-3935 was added to CISA's Known Exploited Vulnerabilities catalog days later. Investigation ongoing; full scope not yet confirmed. <em>(Source: ConnectWise advisory, May 28 2025)</em></div>
     </div>
     <div class="proof-item">
       <div class="proof-dot"></div>
-      <div class="proof-text"><strong>SolarWinds MSP Division (2019):</strong> Single credential compromise of MSP-specific tools enabled cross-client data harvesting across email archives and remote access systems. Regulatory investigations followed for multiple MSPs.</div>
+      <div class="proof-text"><strong>SolarWinds MSP Division (2019):</strong> Single credential compromise of MSP-specific tools enabled cross-client data harvesting across email archives and remote access systems.</div>
     </div>
     <div class="proof-item">
       <div class="proof-dot"></div>
-      <div class="proof-text"><strong>IBM Cost of a Data Breach 2024:</strong> Average breach cost $4.88M. MSPs face this exposure multiplied by client count. 80%+ of breaches involve compromised credentials — the entry point MyCena eliminates.</div>
+      <div class="proof-text"><strong>IBM Cost of a Data Breach 2024:</strong> Average breach cost $4.88M. MSPs face this exposure multiplied by client count. Over 80% of breaches involve compromised credentials.</div>
     </div>
   </div>
 
@@ -271,7 +264,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
       <div class="field">
         <label>MyCena annual licence cost (£)</label>
         <input type="number" id="mycenaCost" placeholder="Contact us for pricing" oninput="calc()">
-        <span class="hint">Headcount and client environment-based pricing · contact hello@mycena.co</span>
+        <span class="hint">Headcount and client environment-based pricing · hello@mycena.co</span>
       </div>
     </div>
     <div class="mycena-row">
@@ -293,7 +286,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="disclaimer">
-    This calculation covers operational exposure only: breach notification costs, client contract and insurance exposure, technician provisioning overhead, and compliance preparation. It excludes average breach cost (£3.9M per incident), regulatory fines under GDPR/HIPAA/PCI, reputational damage, and the cascading effect of multi-client exposure. Full exposure for an MSP is materially higher than the figure shown — each client environment multiplies your liability.
+    This calculation covers operational exposure only: credential reset costs, breach notification, client contract and insurance exposure, technician offboarding, and compliance preparation. It excludes average breach cost (£3.9M per incident), regulatory fines, reputational damage, and the cascading effect of multi-client exposure. Full exposure for an MSP is materially higher — each client environment multiplies your liability.
   </div>
 
   <div class="cta">
@@ -310,14 +303,16 @@ function fmt(n){
 }
 function calc(){
   var clients=parseFloat(document.getElementById('clients').value)||0;
-  var techsPerClient=parseFloat(document.getElementById('techsPerClient').value)||3;
-  var notifyCost=parseFloat(document.getElementById('notifyCost').value)||4500;
-  var incidents=parseFloat(document.getElementById('incidents').value)||2;
-  var contractValue=parseFloat(document.getElementById('contractValue').value)||0;
-  var churnPct=parseFloat(document.getElementById('churnPct').value)||15;
-  var insuranceIncrease=parseFloat(document.getElementById('insuranceIncrease').value)||0;
+  var resetsPerClient=parseFloat(document.getElementById('resetsPerClient').value)||0;
   var techs=parseFloat(document.getElementById('techs').value)||0;
-  var techTurnover=parseFloat(document.getElementById('techTurnover').value)||25;
+  var techResets=parseFloat(document.getElementById('techResets').value)||0;
+  var resetCost=parseFloat(document.getElementById('resetCost').value)||30;
+  var notifyCost=parseFloat(document.getElementById('notifyCost').value)||4500;
+  var incidents=parseFloat(document.getElementById('incidents').value)||0;
+  var contractValue=parseFloat(document.getElementById('contractValue').value)||0;
+  var churnPct=parseFloat(document.getElementById('churnPct').value)||0;
+  var insuranceIncrease=parseFloat(document.getElementById('insuranceIncrease').value)||0;
+  var techTurnover=parseFloat(document.getElementById('techTurnover').value)||0;
   var provisionHours=parseFloat(document.getElementById('provisionHours').value)||8;
   var hourlyRate=parseFloat(document.getElementById('hourlyRate').value)||75;
   var complianceClients=parseFloat(document.getElementById('complianceClients').value)||0;
@@ -326,27 +321,22 @@ function calc(){
   var auditRate=parseFloat(document.getElementById('auditRate').value)||75;
   var mycenaCost=parseFloat(document.getElementById('mycenaCost').value)||0;
 
-  var resetsPerClient=parseFloat(document.getElementById('resetsPerClient').value)||0;
-  var resetCost=parseFloat(document.getElementById('resetCost').value)||30;
-  var techResets=parseFloat(document.getElementById('techResets').value)||0;
-
+  var s5=((clients*resetsPerClient)+techResets)*resetCost*12;
   var s1=clients*notifyCost*incidents;
   var s2=(contractValue*clients*(churnPct/100))+insuranceIncrease;
   var s3=techs*(techTurnover/100)*provisionHours*hourlyRate;
   var s4=complianceClients*auditHours*auditCycles*auditRate;
-  var s5=((clients*resetsPerClient)+techResets)*resetCost*12;
   var total=s1+s2+s3+s4+s5;
 
-  document.getElementById('s1').textContent=clients?fmt(s1):'—';
+  document.getElementById('s5').textContent=(clients||techResets)?fmt(s5):'—';
+  document.getElementById('s1').textContent=(clients&&incidents)?fmt(s1):'—';
   document.getElementById('s2').textContent=contractValue?fmt(s2):'—';
-  document.getElementById('s3').textContent=techs?fmt(s3):'—';
+  document.getElementById('s3').textContent=(techs&&techTurnover)?fmt(s3):'—';
   document.getElementById('s4').textContent=complianceClients?fmt(s4):'—';
-  document.getElementById('s5').textContent=(clients&&resetsPerClient)||techResets?fmt(s5):'—';
 
   if(clients){
-    var blastRadius=clients*techsPerClient;
-    document.getElementById('multiplier1').textContent='Blast radius: '+Math.round(blastRadius)+' credential access points across your client base. One compromised technician credential exposes all of them simultaneously.';
-    document.getElementById('blastRadius').style.display='block';
+    document.getElementById('multiplier1').textContent='Blast radius: '+Math.round(clients)+' client environments. One compromised technician credential exposes all of them simultaneously.';
+    document.getElementById('blastCard').style.display='block';
     document.getElementById('blastNum').textContent=Math.round(clients)+' client environments';
   }
 
