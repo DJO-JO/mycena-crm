@@ -315,11 +315,12 @@ function generateNote(sid){
 var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
     +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
     +"Sector: "+c.sector+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
-    +(c.agent08_brief?"Research brief:\n"+c.agent08_brief+"\n":"")
-    +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
++(c.agent08_brief?"Key pain angle: "+c.agent08_brief.split("\n")[0]+"\n":"")
+  +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
     +"Write a short LinkedIn message. STRICT 60 word maximum excluding the sign-off.\n"
     +"Structure: one warm opener specific to them. One plain observation about a pain someone in their role would recognise immediately. One short easy question they can answer in one sentence.\n"
-    +"End with just: "+FOUNDER+"\n"
+    +"If your draft exceeds 60 words rewrite it shorter. Count every word before responding.\n"
+  +"End with just: "+FOUNDER+"\n"
     +"Never mention MyCena or any product. Never use: regulatory nightmares, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, I wanted to reach out.\n"
     +"No deck no link. Tone: founder to peer — warm and direct. Goal: one reply.";
   aiReq(p,"Return only the note. No preamble no labels no quotes.")
@@ -335,11 +336,12 @@ function generateFollowUp(sid){
  var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
     +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
     +"Sector: "+c.sector+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
-    +(c.agent08_brief?"Research brief:\n"+c.agent08_brief+"\n":"")
-    +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
++(c.agent08_brief?"Key pain angle: "+c.agent08_brief.split("\n")[0]+"\n":"")
+   +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
     +"Write a short LinkedIn message. STRICT 60 word maximum excluding the sign-off.\n"
     +"Structure: one warm opener specific to them. One plain observation about a pain someone in their role would recognise immediately. One short easy question they can answer in one sentence.\n"
-    +"End with just: "+FOUNDER+"\n"
+    +"If your draft exceeds 60 words rewrite it shorter. Count every word before responding.\n"
+   +"End with just: "+FOUNDER+"\n"
     +"Never mention MyCena or any product. Never use: regulatory nightmares, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, I wanted to reach out.\n"
     +"No deck no link. Tone: founder to peer — warm and direct. Goal: one reply.";
   aiReq(p,"Return only the message. No preamble no labels no quotes.")
