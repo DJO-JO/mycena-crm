@@ -4,13 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Credential Exposure Calculator — MyCena</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeede8;
   --text:#1a1a18;--text2:#6b6b66;--text3:#9b9b96;
   --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
-  --green:#1D9E75;--green-bg:#E1F5EE;--green-text:#04342C;
+  --mycena-dark:#151515;--mycena-charcoal:#3A3A38;
+  --mycena-blue:#002662;--mycena-gold:#D8B26F;
+  --mycena-silver:#B2B4B3;
   --red-bg:#FCEBEB;--red-text:#501313;
   --radius:8px;--radius-lg:12px;
 }
@@ -21,51 +24,53 @@
   --green-bg:#04342C;--green-text:#9FE1CB;
   --red-bg:#501313;--red-text:#F09595;
 }}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg3);color:var(--text);font-size:14px;min-height:100vh;padding:24px 16px;}
+body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);font-size:14px;min-height:100vh;padding:24px 16px;}
 .wrap{max-width:680px;margin:0 auto;}
-.calc-header{background:#1a1a18;color:#e8e6de;border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
-.calc-header .logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.calc-header .logo-mark{width:32px;height:32px;border-radius:8px;background:var(--green);display:flex;align-items:center;justify-content:center;}
-.calc-header .logo-name{font-size:15px;font-weight:500;color:#e8e6de;}
-.calc-header h1{font-size:20px;font-weight:500;color:#e8e6de;margin-bottom:6px;}
-.calc-header p{font-size:13px;color:#9b9b96;line-height:1.5;}
+.calc-header{background:var(--mycena-dark);color:#ffffff;border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
+.calc-header .logo{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.logo-svg{width:36px;height:36px;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;gap:1px;}
+.logo-name{font-family:'Bai Jamjuree',sans-serif;font-size:18px;font-weight:600;color:#ffffff;letter-spacing:0.08em;}
+.logo-tag{font-size:9px;letter-spacing:0.2em;color:var(--mycena-silver);font-family:'Manrope',sans-serif;}
+.calc-header h1{font-family:'Bai Jamjuree',sans-serif;font-size:20px;font-weight:600;color:#ffffff;margin-bottom:6px;}
+.calc-header p{font-size:13px;color:var(--mycena-silver);line-height:1.5;}
 .incident-bar{background:var(--red-bg);border-left:3px solid #E24B4A;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--red-text);line-height:1.6;border-radius:0 var(--radius) var(--radius) 0;}
 .section{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
-.section-title{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;margin-bottom:16px;}
-.section-num{width:24px;height:24px;border-radius:50%;background:#1a1a18;color:#e8e6de;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:16px;letter-spacing:0.02em;}
+.section-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-charcoal);color:#ffffff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Manrope',sans-serif;}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 .field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:11px;color:var(--text2);}
-.field input{font-size:13px;padding:8px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:inherit;width:100%;}
-.field input:focus{outline:2px solid var(--green);outline-offset:1px;}
+.field label{font-size:11px;color:var(--text2);font-family:'Manrope',sans-serif;}
+.field input{font-size:13px;padding:8px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Manrope',sans-serif;width:100%;}
+.field input:focus{outline:2px solid var(--mycena-blue);outline-offset:1px;}
 .field .hint{font-size:11px;color:var(--text3);line-height:1.4;}
 .section-total{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);margin-top:4px;}
 .section-total-label{font-size:12px;color:var(--text2);}
-.section-total-value{font-size:16px;font-weight:500;}
-.total-card{background:#1a1a18;border-radius:var(--radius-lg);padding:22px 28px;margin:20px 0 12px;}
-.total-label{font-size:12px;color:#9b9b96;margin-bottom:6px;}
-.total-value{font-size:36px;font-weight:500;color:#e8e6de;margin-bottom:4px;}
-.total-sub{font-size:12px;color:#6b6b66;}
+.section-total-value{font-size:16px;font-weight:500;font-family:'Bai Jamjuree',sans-serif;}
+.total-card{background:var(--mycena-dark);border-radius:var(--radius-lg);padding:22px 28px;margin:20px 0 12px;}
+.total-label{font-size:12px;color:var(--mycena-silver);margin-bottom:6px;font-family:'Manrope',sans-serif;}
+.total-value{font-family:'Bai Jamjuree',sans-serif;font-size:36px;font-weight:600;color:#ffffff;margin-bottom:4px;}
+.total-sub{font-size:12px;color:#6b6b66;font-family:'Manrope',sans-serif;}
 .proof-section{background:var(--bg2);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;}
-.proof-title{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em;}
+.proof-title{font-family:'Bai Jamjuree',sans-serif;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;}
 .proof-item{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);}
 .proof-item:last-child{border-bottom:none;padding-bottom:0;}
 .proof-dot{width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0;margin-top:5px;}
-.proof-text{font-size:12px;color:var(--text2);line-height:1.6;}
+.proof-text{font-size:12px;color:var(--text2);line-height:1.6;font-family:'Manrope',sans-serif;}
 .proof-text strong{color:var(--text);}
-.mycena-section{border:0.5px solid var(--green);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
-.mycena-title{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;margin-bottom:14px;}
-.mycena-num{width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.mycena-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+.mycena-section{border:0.5px solid var(--mycena-blue);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
+.mycena-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;letter-spacing:0.02em;}
+.mycena-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-blue);color:white;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Manrope',sans-serif;}
+.mycena-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;font-family:'Manrope',sans-serif;}
 .mycena-row:last-child{border-bottom:none;padding-bottom:0;}
 .mycena-row-label{color:var(--text2);}
 .mycena-row-value{font-weight:500;}
-.saving{color:var(--green);font-size:18px;}
-.disclaimer{font-size:11px;color:var(--text3);line-height:1.7;padding:12px 0;}
-.cta{background:var(--green);color:white;border-radius:var(--radius-lg);padding:18px 24px;text-align:center;margin-top:4px;}
-.cta h2{font-size:15px;font-weight:500;color:white;margin-bottom:6px;}
-.cta p{font-size:12px;color:#9FE1CB;margin-bottom:14px;line-height:1.5;}
-.cta a{display:inline-block;background:white;color:#04342C;font-size:13px;font-weight:500;padding:10px 24px;border-radius:var(--radius);text-decoration:none;font-family:inherit;}
+.saving{color:var(--mycena-blue);font-family:'Bai Jamjuree',sans-serif;font-size:18px;font-weight:600;}
+.disclaimer{font-size:11px;color:var(--text3);line-height:1.7;padding:12px 0;font-family:'Manrope',sans-serif;}
+.cta{background:var(--mycena-blue);color:white;border-radius:var(--radius-lg);padding:18px 24px;text-align:center;margin-top:4px;}
+.cta h2{font-family:'Bai Jamjuree',sans-serif;font-size:15px;font-weight:600;color:white;margin-bottom:6px;letter-spacing:0.02em;}
+.cta p{font-size:12px;color:#B2B4B3;margin-bottom:14px;line-height:1.5;font-family:'Manrope',sans-serif;}
+.cta a{display:inline-block;background:var(--mycena-gold);color:var(--mycena-dark);font-size:13px;font-weight:600;padding:10px 24px;border-radius:var(--radius);text-decoration:none;font-family:'Manrope',sans-serif;}
 .cta a:hover{opacity:0.9;}
 @media(max-width:520px){.field-row{grid-template-columns:1fr;}}
 </style>
@@ -75,15 +80,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <div class="calc-header">
     <div class="logo">
-      <div class="logo-mark">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/>
-          <rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".7"/>
-          <rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".7"/>
-          <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".4"/>
-        </svg>
+      <svg class="logo-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 3L6 10.5V18L18 12L30 18V10.5L18 3Z" fill="white"/>
+        <path d="M6 18L18 24L30 18V25.5L18 33L6 25.5V18Z" fill="white" opacity="0.7"/>
+        <path d="M18 12L6 18L18 24L30 18L18 12Z" fill="white" opacity="0.4"/>
+      </svg>
+      <div class="logo-text">
+        <span class="logo-name">MYCENA</span>
+        <span class="logo-tag">UNPHISHABLE</span>
       </div>
-      <span class="logo-name">MyCena</span>
     </div>
     <h1>Credential exposure calculator</h1>
     <p>BPO operations · CFO risk assessment · Enter your numbers to calculate your specific annual exposure from credential-related operational cost.</p>
