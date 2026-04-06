@@ -146,7 +146,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">3</span>Multi-client access provisioning overhead</div>
+    <div class="section-title"><span class="section-num">3</span>Technician offboarding and access management</div>
 
     <div class="field-row">
       <div class="field">
@@ -156,12 +156,12 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
       <div class="field">
         <label>Annual technician turnover (%)</label>
         <input type="number" id="techTurnover" placeholder="25" value="25" oninput="calc()">
-        <span class="hint">Each departure requires access revocation across all client environments</span>
+        <span class="hint">When a technician leaves, their access must be revoked across every client environment — manually, one by one</span>
       </div>
     </div>
     <div class="field-row">
       <div class="field">
-        <label>Hours to provision or deprovision one technician across all clients</label>
+        <label>Hours to offboard one technician across all client environments</label>
         <input type="number" id="provisionHours" placeholder="8" value="8" oninput="calc()">
         <span class="hint">Manual access management across client environments</span>
       </div>
