@@ -98,8 +98,8 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
         <path d="M248.223 198.42C245.759 198.42 243.58 197.917 241.685 196.912C239.805 195.891 238.332 194.47 237.268 192.648C236.204 190.811 235.672 188.654 235.672 186.175V166.299L240.307 166.277V185.935C240.307 187.276 240.533 188.457 240.985 189.477C241.437 190.498 242.042 191.35 242.8 192.035C243.558 192.721 244.404 193.238 245.337 193.588C246.284 193.938 247.246 194.113 248.223 194.113C249.214 194.113 250.176 193.938 251.109 193.588C252.057 193.224 252.91 192.699 253.668 192.014C254.426 191.328 255.023 190.476 255.461 189.455C255.912 188.435 256.138 187.261 256.138 185.935V166.277H260.774V186.175C260.774 188.639 260.242 190.789 259.178 192.626C258.114 194.463 256.634 195.891 254.739 196.912C252.859 197.917 250.687 198.42 248.223 198.42Z" fill="white"/>
       </svg>
     </div>
-    <h1>Credential exposure calculator</h1>
-    <p>BPO operations · CFO risk assessment · Enter your numbers to calculate your specific annual exposure from credential-related operational cost.</p>
+    <h1>BPO credential exposure calculator</h1>
+    <p>Business process outsourcing · CFO risk assessment · Enter your numbers to calculate your specific annual exposure from credential-related operational cost.</p>
   </div>
 
   <div class="incident-bar">
@@ -107,17 +107,24 @@ body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);fo
   </div>
 
   <div class="section">
-    <div class="section-title"><span class="section-num">1</span>Helpdesk reset costs</div>
+    <div class="section-title"><span class="section-num">1</span>Agent credential reset costs</div>
     <div class="field-row">
       <div class="field">
         <label>Total headcount (agents)</label>
         <input type="number" id="headcount" placeholder="e.g. 1000" oninput="calc()">
-        <span class="hint">Average BPO agent generates 1.7 password reset tickets per month</span>
+        <span class="hint">Number of agents in your operation</span>
       </div>
       <div class="field">
-        <label>Cost per ticket (£)</label>
+        <label>Average password resets per agent per month</label>
+        <input type="number" id="resetsPerAgent" placeholder="1.7" value="1.7" oninput="calc()">
+        <span class="hint">Industry average 1.7 resets per agent per month</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Cost per reset (£)</label>
         <input type="number" id="ticketCost" placeholder="47" value="47" oninput="calc()">
-        <span class="hint">Industry average £47 · range £25–70 including IT time and user downtime</span>
+        <span class="hint">Industry average £47 · range £25–70 including IT time and agent downtime</span>
       </div>
     </div>
     <div class="section-total">
