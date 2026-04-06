@@ -33,11 +33,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .tabs{display:flex;gap:6px;}
 .tab{font-size:12px;padding:6px 14px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);cursor:pointer;font-family:inherit;}
 .tab.active{background:var(--green);color:white;border-color:var(--green);}
-.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;}
-.metric{background:var(--bg2);border-radius:var(--radius);padding:10px 12px;cursor:pointer;}
+.metrics{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;}
+.metric{background:var(--bg2);border-radius:var(--radius);padding:8px 10px;cursor:pointer;}
 .metric.active{background:var(--green-bg);}
-.metric-label{font-size:11px;color:var(--text2);margin-bottom:3px;}
-.metric-value{font-size:22px;font-weight:500;}
+.metric-label{font-size:10px;color:var(--text2);margin-bottom:3px;}
+.metric-value{font-size:20px;font-weight:500;}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px;}
 .bar{display:flex;align-items:center;gap:10px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:14px;}
 .progress-track{flex:1;height:4px;background:var(--bg3);border-radius:2px;}
@@ -50,6 +50,7 @@ input[type=text],input[type=file],select,textarea{font-size:13px;padding:7px 10p
 .btn-purple{background:var(--purple);color:white;border-color:var(--purple);}
 .btn-blue{background:#0A66C2;color:white;border-color:#0A66C2;}
 .btn-crm{background:#639922;color:white;border-color:#639922;}
+.btn-amber{background:#EF9F27;color:white;border-color:#EF9F27;}
 .btn-sm{font-size:11px;padding:3px 9px;border-radius:5px;}
 .btn:disabled{opacity:0.6;cursor:wait;}
 .contact-row{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;overflow:hidden;}
@@ -80,6 +81,7 @@ input[type=text],input[type=file],select,textarea{font-size:13px;padding:7px 10p
 .promote-bar{margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border);}
 .promote-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:4px;}
 .in-crm{margin-top:12px;font-size:12px;padding:8px 12px;border-radius:var(--radius);background:#EAF3DE;color:#27500A;}
+.no-response-bar{margin-top:12px;padding:10px 12px;border-radius:var(--radius);background:var(--amber-bg);color:var(--amber-text);display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .empty{font-size:13px;color:var(--text3);padding:40px;text-align:center;}
 .alert-green{font-size:12px;padding:8px 12px;border-radius:var(--radius);margin-bottom:12px;background:var(--green-bg);color:var(--green-text);border-left:3px solid var(--green);}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:6px;vertical-align:middle;}
@@ -98,13 +100,14 @@ var SUPABASE = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 var PROXY = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
 var FOUNDER = "Julia";
 
-var STATUS_FLOW = ["Not sent","Note sent","Connected","Replied","Booked","Irrelevant"];
+var STATUS_FLOW = ["Not sent","Note sent","Connected","Replied","Booked","No response","Irrelevant"];
 var STATUS_STYLE = {
   "Not sent":{bg:"var(--bg2)",text:"var(--text3)"},
   "Note sent":{bg:"var(--purple-bg)",text:"var(--purple-text)"},
   "Connected":{bg:"#E6F1FB",text:"#042C53"},
   "Replied":{bg:"var(--amber-bg)",text:"var(--amber-text)"},
   "Booked":{bg:"var(--green-bg)",text:"var(--green-text)"},
+  "No response":{bg:"#F1EFE8",text:"#5F5E5A"},
   "Irrelevant":{bg:"var(--bg3)",text:"var(--text3)"}
 };
 var TS_FIELD = {"Note sent":"note_sent_at","Connected":"connected_at","Replied":"replied_at","Booked":"booked_at"};
@@ -167,6 +170,7 @@ function aiReq(prompt,sys){
     .then(function(r){return r.json();})
     .then(function(d){return (d.content&&d.content[0]&&d.content[0].text)||"";});
 }
+
 function loadContacts(){
   state.phase="Loading contacts..."; render();
   dbReq("contacts?order=icp_score.desc,created_at.desc&limit=2000",{prefer:""})
@@ -174,6 +178,7 @@ function loadContacts(){
     .catch(function(){state.contacts=[];})
     .then(function(){state.phase="";render();});
 }
+
 function parseCSV(txt){
   var lines=txt.split("\n").filter(function(l){return l.trim();});
   var hdrs=lines[0].split(",").map(function(h){return h.replace(/^"|"$/g,"").trim();});
@@ -191,6 +196,7 @@ function parseCSV(txt){
     return row;
   }).filter(function(r){return r["First Name"]||r["Last Name"];});
 }
+
 function onFile(ev){
   var file=ev.target.files&&ev.target.files[0]; if(!file) return;
   var reader=new FileReader();
@@ -214,6 +220,7 @@ function onFile(ev){
   };
   reader.readAsText(file);
 }
+
 function importContacts(){
   state.importing=true; state.phase="Checking existing..."; state.progress=0; render();
   dbReq("contacts?select=id,company,contact_name&limit=2000",{prefer:""})
@@ -254,11 +261,13 @@ function importContacts(){
       nx();
     });
 }
+
 function saveBN(sid,brief,note){
   if(!sid) return Promise.resolve();
   return dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",
     body:JSON.stringify({agent08_brief:brief||"",linkedin_note:note||""})});
 }
+
 function updateStatus(sid,status){
   var tf=TS_FIELD[status], patch={outreach_status:status};
   if(tf) patch[tf]=new Date().toISOString();
@@ -268,6 +277,7 @@ function updateStatus(sid,status){
       render();
     });
 }
+
 function promoteToDeal(sid){
   state.loadingId="promote_"+sid; render();
   var c=state.contacts.filter(function(x){return x.id===sid;})[0];
@@ -295,6 +305,7 @@ function promoteToDeal(sid){
   }).catch(function(){showToast("Promote failed");})
   .then(function(){state.loadingId=null;render();});
 }
+
 function runAgent08(sid){
   state.loadingId="brief_"+sid; render();
   var c=state.contacts.filter(function(x){return x.id===sid;})[0];
@@ -308,36 +319,35 @@ function runAgent08(sid){
     return saveBN(sid,brief,c.linkedin_note||"");
   }).then(function(){showToast("Brief saved");state.loadingId=null;render();});
 }
+
 function generateNote(sid){
   state.loadingId="note_"+sid; render();
   var c=state.contacts.filter(function(x){return x.id===sid;})[0];
   if(!c){state.loadingId=null;render();return;}
-var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
-    +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
-    +"Sector: "+c.sector+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
-+(c.agent08_brief?"Key pain angle: "+c.agent08_brief.split("\n")[0]+"\n":"")
-  +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
-    +"Write a short LinkedIn message. STRICT 60 word maximum excluding the sign-off.\n"
-    +"Structure: one warm opener specific to them. One plain observation about a pain someone in their role would recognise immediately. One short easy question they can answer in one sentence.\n"
-    +"If your draft exceeds 60 words rewrite it shorter. Count every word before responding.\n"
-  +"End with just: "+FOUNDER+"\n"
-    +"Never mention MyCena or any product. Never use: regulatory nightmares, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, I wanted to reach out.\n"
-    +"No deck no link. Tone: founder to peer — warm and direct. Goal: one reply.";
+  var p="You are writing a LinkedIn connection request note on behalf of "+FOUNDER+", co-founder of MyCena.\n"
+    +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+" | Sector: "+c.sector+" | Country: "+c.country+"\n"
+    +"Keywords: "+(c.keywords||"none")+"\n"
+    +(c.agent08_brief?"Research brief:\n"+c.agent08_brief+"\n":"")
+    +"This note goes WITH the connection request before they accept. STRICT 200 character maximum.\n"
+    +"Rules: Start with first name and a dash. One specific real reference to their company sector or role. "
+    +"Low-friction reason to connect. No product mention no deck no link. Peer-to-peer founder tone. "
+    +"Never: I wanted to reach out, complex landscape, leverage, seamless. Rewrite shorter if over 200 chars.";
   aiReq(p,"Return only the note. No preamble no labels no quotes.")
     .then(function(note){
       state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{linkedin_note:note}):x;});
       return saveBN(sid,c.agent08_brief||"",note);
     }).then(function(){showToast("Note saved");state.loadingId=null;render();});
 }
+
 function generateFollowUp(sid){
   state.loadingId="followup_"+sid; render();
   var c=state.contacts.filter(function(x){return x.id===sid;})[0];
   if(!c){state.loadingId=null;render();return;}
- var p="You are personalising a LinkedIn message template on behalf of "+FOUNDER+", co-founder of MyCena.\n"
+  var p="You are personalising a LinkedIn message template on behalf of "+FOUNDER+", co-founder of MyCena.\n"
     +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
     +"Sector: "+c.sector+" | Country: "+c.country+"\n"
     +(c.agent08_brief?"Research brief:\n"+c.agent08_brief+"\n":"")
-    +"Here is the template. Replace ONLY the parts in square brackets with specific details about this contact. Do not change anything else — not the structure, not the tone, not the length.\n\n"
+    +"Here is the template. Replace ONLY the parts in square brackets with specific details about this contact. Do not change anything else.\n\n"
     +"[First name] — appreciate the connect. One thing that keeps coming up with BPO IT leads serving [their specific client sectors e.g. healthcare and finance] clients: when a contractor finishes an engagement, revoking their access properly takes days not minutes — usually because the credential was never the organisation's to control in the first place. We have been working on exactly that problem. Might be relevant to what you are dealing with.\n\n"
     +FOUNDER+"\n\n"
     +"Rules: only replace the bracketed parts. Keep every other word identical. Do not add sentences. Do not remove sentences. Do not change the ending.";
@@ -346,121 +356,6 @@ function generateFollowUp(sid){
       state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{followup_msg:msg}):x;});
       return dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_msg:msg})});
     }).then(function(){showToast("Message ready");state.loadingId=null;render();});
-}
-function markNoteSent(sid){
-  var el=document.getElementById("ns-"+sid);
-  if(!el||!el.value.trim()) return;
-  var txt=el.value.trim(), ts=new Date().toISOString();
-  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({note_sent_text:txt,note_sent_at:ts})})
-    .then(function(){
-      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{note_sent_text:txt,note_sent_at:ts}):c;});
-      showToast("Note logged"); render();
-    });
-}
-function markFollowupSent(sid){
-  var el=document.getElementById("fs-"+sid);
-  if(!el||!el.value.trim()) return;
-  var txt=el.value.trim(), ts=new Date().toISOString();
-  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_sent_text:txt,followup_sent_at:ts})})
-    .then(function(){
-      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{followup_sent_text:txt,followup_sent_at:ts}):c;});
-      showToast("Message logged"); render();
-    });
-}
-function clearSent(sid,field){
-  var patch={};
-  patch[field]="";
-  state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,patch):c;});
-  render();
-}
-function copyBtn(el){
-  var txt=uf(el.getAttribute("data-text")||"");
-  if(navigator.clipboard) navigator.clipboard.writeText(txt);
-  showToast("Copied");
-}
-function runAllTier1(){
-  var src=state.view==="import"?state.parsed:state.contacts;
-  var t1=src.filter(function(c){return c.icp_tier==="1"&&!c.agent08_brief&&!c.linkedin_note;});
-  if(!t1.length){showToast("All Tier 1 already briefed");return;}
-  state.batchRunning=true; state.batchDone=0; state.batchTotal=t1.length; state.batchCurrent=""; render();
-  var i=0;
-  function nx(){
-    if(i>=t1.length){
-      state.batchDone=t1.length; state.batchRunning=false; state.batchCurrent="";
-      showToast("Done — "+t1.length+" briefed"); render(); return;
-    }
-    var c=t1[i];
-    state.batchCurrent=c.contact_name+" at "+c.company; state.batchDone=i; render();
-    var bp="MyCena Sales Research Agent 08.\n"
-      +"Company: "+c.company+" | Sector: "+c.sector+" | Contact: "+c.contact_name+", "+c.title+"\n"
-      +"Headcount: "+c.headcount+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
-      +"Return: 1) Sector breach 2) Control Ladder 3) Objection + response 4) Why MyCena now 5) LinkedIn angle. Specific no jargon.";
-    aiReq(bp).then(function(brief){
-      var np="LinkedIn connection note for "+FOUNDER+" co-founder of MyCena.\n"
-        +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+" | Sector: "+c.sector+"\n"
-        +"Brief: "+brief+"\n"
-        +"STRICT 200 character max. No product name. Specific reference. No deck/link. Peer-to-peer. Start with first name. Rewrite if over 200 chars.";
-      return aiReq(np,"Return only the note. No preamble.").then(function(note){
-        var sid=c.id||c.supabase_id;
-        if(state.view==="import"){
-          state.parsed=state.parsed.map(function(x){return x._pid===c._pid?Object.assign({},x,{agent08_brief:brief,linkedin_note:note}):x;});
-        } else {
-          state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{agent08_brief:brief,linkedin_note:note}):x;});
-        }
-        if(sid) return saveBN(sid,brief,note);
-      });
-    }).then(function(){render();i++;nx();});
-  }
-  nx();
-}
-function filtered(){
-  var src=state.view==="import"?state.parsed:state.contacts;
-  var q=state.search.toLowerCase();
-  return src.filter(function(c){
-    var mQ=!q||(c.contact_name||"").toLowerCase().indexOf(q)>=0||(c.company||"").toLowerCase().indexOf(q)>=0||(c.title||"").toLowerCase().indexOf(q)>=0;
-    var mT=state.filterTier==="All"||c.icp_tier===state.filterTier;
-    var mS=state.filterStatus==="All"||(c.outreach_status||"Not sent")===state.filterStatus;
-    var mI=state.showIrrelevant||(c.outreach_status||"Not sent")!=="Irrelevant";
-    return mQ&&mT&&mS&&mI;
-  });
-}
-function tierStyle(t){
-  return t==="1"?{bg:"#E1F5EE",text:"#1D9E75"}:t==="2"?{bg:"#FAEEDA",text:"#EF9F27"}:{bg:"#F1EFE8",text:"#888780"};
-}
-
-function markNoteSent(sid){
-  var el=document.getElementById("ns-"+sid);
-  if(!el||!el.value.trim()) return;
-  var txt=el.value.trim(), ts=new Date().toISOString();
-  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({note_sent_text:txt,note_sent_at:ts})})
-    .then(function(){
-      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{note_sent_text:txt,note_sent_at:ts}):c;});
-      showToast("Note logged"); render();
-    });
-}
-
-function markFollowupSent(sid){
-  var el=document.getElementById("fs-"+sid);
-  if(!el||!el.value.trim()) return;
-  var txt=el.value.trim(), ts=new Date().toISOString();
-  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_sent_text:txt,followup_sent_at:ts})})
-    .then(function(){
-      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{followup_sent_text:txt,followup_sent_at:ts}):c;});
-      showToast("Message logged"); render();
-    });
-}
-
-function clearSent(sid,field){
-  var patch={};
-  patch[field]="";
-  state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,patch):c;});
-  render();
-}
-
-function copyBtn(el){
-  var txt=uf(el.getAttribute("data-text")||"");
-  if(navigator.clipboard) navigator.clipboard.writeText(txt);
-  showToast("Copied");
 }
 
 function generateFollowUp2(sid){
@@ -482,6 +377,88 @@ function generateFollowUp2(sid){
     }).then(function(){showToast("Second follow-up ready");state.loadingId=null;render();});
 }
 
+function generateFollowUp3(sid){
+  state.loadingId="followup3_"+sid; render();
+  var c=state.contacts.filter(function(x){return x.id===sid;})[0];
+  if(!c){state.loadingId=null;render();return;}
+  var p="You are writing a final LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena. This is the third and last touch.\n"
+    +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
+    +"Sector: "+c.sector+" | Country: "+c.country+"\n"
+    +(c.followup2_sent_text?"Second message sent:\n"+c.followup2_sent_text+"\n":"")
+    +"This is the final message. Offer something of value and leave the door open with no pressure.\n"
+    +"Use this template exactly, replacing only the bracketed part:\n\n"
+    +"[First name] — one last note. We have put together a short breakdown of how BPOs serving [their specific client sectors] clients are calculating their credential exposure — the actual cost per reset, per SLA breach, per contractor offboarding. Happy to send it over if useful. Either way, no more messages from me.\n\n"
+    +FOUNDER+"\n\n"
+    +"Rules: only replace the bracketed parts. Keep every other word identical.";
+  aiReq(p,"Return only the message. No preamble no labels no quotes.")
+    .then(function(msg){
+      state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{followup3_msg:msg}):x;});
+      return dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup3_msg:msg})});
+    }).then(function(){showToast("Final message ready");state.loadingId=null;render();});
+}
+
+function markNoteSent(sid){
+  var el=document.getElementById("ns-"+sid);
+  if(!el||!el.value.trim()) return;
+  var txt=el.value.trim(), ts=new Date().toISOString();
+  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({note_sent_text:txt,note_sent_at:ts})})
+    .then(function(){
+      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{note_sent_text:txt,note_sent_at:ts}):c;});
+      showToast("Note logged"); render();
+    });
+}
+
+function markFollowupSent(sid){
+  var el=document.getElementById("fs-"+sid);
+  if(!el||!el.value.trim()) return;
+  var txt=el.value.trim(), ts=new Date().toISOString();
+  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_sent_text:txt,followup_sent_at:ts})})
+    .then(function(){
+      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{followup_sent_text:txt,followup_sent_at:ts}):c;});
+      showToast("Message logged"); render();
+    });
+}
+
+function markFollowup2Sent(sid){
+  var el=document.getElementById("f2s-"+sid);
+  if(!el||!el.value.trim()) return;
+  var txt=el.value.trim(), ts=new Date().toISOString();
+  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup2_sent_text:txt,followup2_sent_at:ts})})
+    .then(function(){
+      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{followup2_sent_text:txt,followup2_sent_at:ts}):c;});
+      showToast("Second message logged"); render();
+    });
+}
+
+function markFollowup3Sent(sid){
+  var el=document.getElementById("f3s-"+sid);
+  if(!el||!el.value.trim()) return;
+  var txt=el.value.trim(), ts=new Date().toISOString();
+  dbReq("contacts?id=eq."+sid,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup3_sent_text:txt,followup3_sent_at:ts})})
+    .then(function(){
+      state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,{followup3_sent_text:txt,followup3_sent_at:ts}):c;});
+      showToast("Final message logged"); render();
+    });
+}
+
+function clearSent(sid,field){
+  var patch={};
+  patch[field]="";
+  state.contacts=state.contacts.map(function(c){return c.id===sid?Object.assign({},c,patch):c;});
+  render();
+}
+
+function copyBtn(el){
+  var txt=uf(el.getAttribute("data-text")||"");
+  if(navigator.clipboard) navigator.clipboard.writeText(txt);
+  showToast("Copied");
+}
+
+function moveToNoResponse(sid){
+  updateStatus(sid,"No response");
+  showToast("Moved to No response");
+}
+
 function runAllTier1(){
   var src=state.view==="import"?state.parsed:state.contacts;
   var t1=src.filter(function(c){return c.icp_tier==="1"&&!c.agent08_brief&&!c.linkedin_note;});
@@ -530,6 +507,37 @@ function filtered(){
   });
 }
 
+function tierStyle(t){
+  return t==="1"?{bg:"#E1F5EE",text:"#1D9E75"}:t==="2"?{bg:"#FAEEDA",text:"#EF9F27"}:{bg:"#F1EFE8",text:"#888780"};
+}
+
+function msgSection(label, subsub, generatedMsg, sentText, sentAt, generateFn, inputId, markFn, sid, liUrl, regenLoadingId, currentLoadingId, copyDataAttr){
+  var h="";
+  h+='<div class="divider">';
+  h+='<div class="sec-title">'+label+' <span class="sec-sub">'+subsub+'</span></div>';
+  if(generatedMsg){
+    h+='<div class="note-box">'+ef(generatedMsg)+'</div>';
+    h+='<div style="display:flex;gap:6px;margin-bottom:8px">';
+    h+='<button class="btn btn-purple" onclick="copyBtn(this)" data-text="'+copyDataAttr+'" style="flex:1">Copy message</button>';
+    if(liUrl) h+='<a href="'+ef(liUrl)+'" target="_blank" rel="noopener" class="btn btn-blue">Open LI</a>';
+    h+='<button class="btn btn-sm" onclick="'+generateFn+'(\''+sid+'\')" '+(currentLoadingId?"disabled":"")+'>'+(currentLoadingId===regenLoadingId?'<span class="spinner"></span>...':"Regenerate")+'</button>';
+    h+='</div>';
+    h+='<div class="sec-title" style="font-size:11px">What you actually sent <span class="sec-sub">'+(sentAt?"· "+fd(sentAt):"")+'</span></div>';
+    if(sentText){
+      h+='<div class="sent-box">'+ef(sentText)+'</div>';
+      h+='<button class="btn btn-sm" onclick="clearSent(\''+sid+'\',\''+inputId.replace("id-","")+'_sent_text\')">Edit</button>';
+    } else {
+      h+='<textarea id="'+inputId+'" placeholder="Paste the exact message you sent..." style="height:55px;font-size:12px;margin-bottom:6px"></textarea>';
+      h+='<button class="btn btn-primary" onclick="'+markFn+'(\''+sid+'\')" style="width:100%">Mark as sent →</button>';
+    }
+  } else {
+    h+='<button class="btn btn-primary" onclick="'+generateFn+'(\''+sid+'\')" '+(currentLoadingId?"disabled":"")+' style="width:100%">'+(currentLoadingId===regenLoadingId?'<span class="spinner"></span>Writing...':"Generate →")+'</button>';
+    if(subsub) h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">'+subsub+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
 function buildCard(c){
   var sid=c.id||c.supabase_id||"";
   var isOpen=state.expanded===sid||state.expanded===c._pid;
@@ -540,10 +548,13 @@ function buildCard(c){
   var lNote=state.loadingId==="note_"+sid;
   var lFU=state.loadingId==="followup_"+sid;
   var lFU2=state.loadingId==="followup2_"+sid;
+  var lFU3=state.loadingId==="followup3_"+sid;
   var lProm=state.loadingId==="promote_"+sid;
   var canPromote=!c.deal_id&&(status==="Connected"||status==="Replied"||status==="Booked")&&sid;
   var showFU=status==="Connected"||status==="Replied"||status==="Booked";
   var showFU2=!!(c.followup_sent_text||status==="Replied");
+  var showFU3=!!(c.followup2_sent_text);
+  var showNoResponse=!!(c.followup3_sent_text)&&status!=="No response"&&status!=="Booked"&&status!=="Replied";
   var liUrl=c.linkedin_url?(c.linkedin_url.indexOf("http")===0?c.linkedin_url:"https://"+c.linkedin_url):"";
   var h="";
 
@@ -561,7 +572,9 @@ function buildCard(c){
   if(c.agent08_brief) h+='<span class="mini-badge" style="background:#E1F5EE;color:#04342C">briefed</span>';
   if(c.linkedin_note) h+='<span class="mini-badge" style="background:#EEEDFE;color:#26215C">note</span>';
   if(c.note_sent_at)  h+='<span class="mini-badge" style="background:#FAEEDA;color:#412402">sent '+fd(c.note_sent_at)+'</span>';
-  if(c.followup_sent_at) h+='<span class="mini-badge" style="background:#E6F1FB;color:#042C53">msg '+fd(c.followup_sent_at)+'</span>';
+  if(c.followup_sent_at) h+='<span class="mini-badge" style="background:#E6F1FB;color:#042C53">msg1 '+fd(c.followup_sent_at)+'</span>';
+  if(c.followup2_sent_at) h+='<span class="mini-badge" style="background:#E6F1FB;color:#042C53">msg2 '+fd(c.followup2_sent_at)+'</span>';
+  if(c.followup3_sent_at) h+='<span class="mini-badge" style="background:#F1EFE8;color:#5F5E5A">msg3 '+fd(c.followup3_sent_at)+'</span>';
   if(c.deal_id)       h+='<span class="mini-badge" style="background:#EAF3DE;color:#27500A">in CRM</span>';
   if(c.linkedin_url)  h+='<span style="font-size:11px;color:#0A66C2;font-weight:500">LI</span>';
   h+='</div>';
@@ -625,8 +638,16 @@ function buildCard(c){
       h+='<div class="sent-box">'+ef(c.note_sent_text)+'</div>';
       h+='<button class="btn btn-sm" onclick="clearSent(\''+sid+'\',\'note_sent_text\')">Edit</button>';
       if(c.followup_sent_text){
-        h+='<div class="sec-title" style="margin-top:10px">First message sent <span class="sec-sub">· '+fd(c.followup_sent_at)+'</span></div>';
+        h+='<div class="sec-title" style="margin-top:10px;font-size:11px">First message sent <span class="sec-sub">· '+fd(c.followup_sent_at)+'</span></div>';
         h+='<div class="sent-box">'+ef(c.followup_sent_text)+'</div>';
+      }
+      if(c.followup2_sent_text){
+        h+='<div class="sec-title" style="margin-top:10px;font-size:11px">Second message sent <span class="sec-sub">· '+fd(c.followup2_sent_at)+'</span></div>';
+        h+='<div class="sent-box">'+ef(c.followup2_sent_text)+'</div>';
+      }
+      if(c.followup3_sent_text){
+        h+='<div class="sec-title" style="margin-top:10px;font-size:11px">Final message sent <span class="sec-sub">· '+fd(c.followup3_sent_at)+'</span></div>';
+        h+='<div class="sent-box">'+ef(c.followup3_sent_text)+'</div>';
       }
     } else {
       h+='<textarea id="ns-'+sid+'" placeholder="Paste the exact note you sent..." style="height:55px;font-size:12px;margin-bottom:6px"></textarea>';
@@ -642,7 +663,6 @@ function buildCard(c){
     h+='<div style="font-size:12px;color:var(--text3)">Import contacts first.</div>';
   }
   h+='</div>';
-
   h+='</div>';
 
   if(showFU){
@@ -657,8 +677,7 @@ function buildCard(c){
       h+=lFU?'<span class="spinner"></span>...':"Regenerate";
       h+='</button>';
       h+='</div>';
-      h+='<div class="divider">';
-      h+='<div class="sec-title">What you actually sent <span class="sec-sub">'+(c.followup_sent_at?"· "+fd(c.followup_sent_at):"")+'</span></div>';
+      h+='<div class="sec-title" style="font-size:11px">What you actually sent <span class="sec-sub">'+(c.followup_sent_at?"· "+fd(c.followup_sent_at):"")+'</span></div>';
       if(c.followup_sent_text){
         h+='<div class="sent-box">'+ef(c.followup_sent_text)+'</div>';
         h+='<button class="btn btn-sm" onclick="clearSent(\''+sid+'\',\'followup_sent_text\')">Edit</button>';
@@ -666,12 +685,11 @@ function buildCard(c){
         h+='<textarea id="fs-'+sid+'" placeholder="Paste the exact message you sent..." style="height:55px;font-size:12px;margin-bottom:6px"></textarea>';
         h+='<button class="btn btn-primary" onclick="markFollowupSent(\''+sid+'\')" style="width:100%">Mark as sent →</button>';
       }
-      h+='</div>';
     } else {
       h+='<button class="btn btn-primary" onclick="generateFollowUp(\''+sid+'\')" '+(state.loadingId?"disabled":"")+' style="width:100%">';
       h+=lFU?'<span class="spinner"></span>Writing...':"Generate follow-up message →";
       h+='</button>';
-      h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">Personalised message to send after they accept. You send it manually on LinkedIn.</div>';
+      h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">Personalised message to send after they accept.</div>';
     }
     h+='</div>';
 
@@ -687,12 +705,56 @@ function buildCard(c){
         h+=lFU2?'<span class="spinner"></span>...':"Regenerate";
         h+='</button>';
         h+='</div>';
+        h+='<div class="sec-title" style="font-size:11px">What you actually sent <span class="sec-sub">'+(c.followup2_sent_at?"· "+fd(c.followup2_sent_at):"")+'</span></div>';
+        if(c.followup2_sent_text){
+          h+='<div class="sent-box">'+ef(c.followup2_sent_text)+'</div>';
+          h+='<button class="btn btn-sm" onclick="clearSent(\''+sid+'\',\'followup2_sent_text\')">Edit</button>';
+        } else {
+          h+='<textarea id="f2s-'+sid+'" placeholder="Paste the exact message you sent..." style="height:55px;font-size:12px;margin-bottom:6px"></textarea>';
+          h+='<button class="btn btn-primary" onclick="markFollowup2Sent(\''+sid+'\')" style="width:100%">Mark as sent →</button>';
+        }
       } else {
         h+='<button class="btn btn-primary" onclick="generateFollowUp2(\''+sid+'\')" '+(state.loadingId?"disabled":"")+' style="width:100%">';
         h+=lFU2?'<span class="spinner"></span>Writing...':"Generate second follow-up →";
         h+='</button>';
         h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">More direct ask. References your first message.</div>';
       }
+      h+='</div>';
+    }
+
+    if(showFU3){
+      h+='<div class="divider">';
+      h+='<div class="sec-title">Final message <span class="sec-sub">(value offer + exit)</span></div>';
+      if(c.followup3_msg){
+        h+='<div class="note-box">'+ef(c.followup3_msg)+'</div>';
+        h+='<div style="display:flex;gap:6px;margin-bottom:8px">';
+        h+='<button class="btn btn-purple" onclick="copyBtn(this)" data-text="'+ef(c.followup3_msg)+'" style="flex:1">Copy message</button>';
+        if(liUrl) h+='<a href="'+ef(liUrl)+'" target="_blank" rel="noopener" class="btn btn-blue">Open LI</a>';
+        h+='<button class="btn btn-sm" onclick="generateFollowUp3(\''+sid+'\')" '+(state.loadingId?"disabled":"")+'>';
+        h+=lFU3?'<span class="spinner"></span>...':"Regenerate";
+        h+='</button>';
+        h+='</div>';
+        h+='<div class="sec-title" style="font-size:11px">What you actually sent <span class="sec-sub">'+(c.followup3_sent_at?"· "+fd(c.followup3_sent_at):"")+'</span></div>';
+        if(c.followup3_sent_text){
+          h+='<div class="sent-box">'+ef(c.followup3_sent_text)+'</div>';
+          h+='<button class="btn btn-sm" onclick="clearSent(\''+sid+'\',\'followup3_sent_text\')">Edit</button>';
+        } else {
+          h+='<textarea id="f3s-'+sid+'" placeholder="Paste the exact message you sent..." style="height:55px;font-size:12px;margin-bottom:6px"></textarea>';
+          h+='<button class="btn btn-primary" onclick="markFollowup3Sent(\''+sid+'\')" style="width:100%">Mark as sent →</button>';
+        }
+      } else {
+        h+='<button class="btn btn-primary" onclick="generateFollowUp3(\''+sid+'\')" '+(state.loadingId?"disabled":"")+' style="width:100%">';
+        h+=lFU3?'<span class="spinner"></span>Writing...':"Generate final message →";
+        h+='</button>';
+        h+='<div style="font-size:11px;color:var(--text3);margin-top:4px">Offer value. Leave the door open. No more messages after this.</div>';
+      }
+      h+='</div>';
+    }
+
+    if(showNoResponse){
+      h+='<div class="no-response-bar">';
+      h+='<span style="font-size:12px">All 3 messages sent with no reply. Move to No response?</span>';
+      h+='<button class="btn btn-amber btn-sm" onclick="moveToNoResponse(\''+sid+'\')">Move to No response</button>';
       h+='</div>';
     }
   }
