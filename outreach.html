@@ -29,27 +29,22 @@
   }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); font-size: 14px; min-height: 100vh; }
   .app { max-width: 960px; margin: 0 auto; padding: 20px; }
-
   .header { display:flex; align-items:center; justify-content:space-between; background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:14px 18px; margin-bottom:14px; }
   .logo { width:28px; height:28px; border-radius:7px; background:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .badge { font-size:11px; padding:2px 8px; border-radius:4px; background:var(--green-bg); color:var(--green-text); font-weight:500; }
-
   .tabs { display:flex; gap:6px; }
   .tab { font-size:12px; padding:6px 14px; border-radius:var(--radius); border:0.5px solid var(--border2); background:var(--bg2); color:var(--text); cursor:pointer; font-family:inherit; transition:background 0.15s; }
   .tab.active { background:var(--green); color:white; border-color:var(--green); }
-
   .metrics { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px; }
   .metric { background:var(--bg2); border-radius:var(--radius); padding:10px 12px; cursor:pointer; transition:background 0.15s; }
   .metric:hover { background:var(--bg3); }
   .metric.active { background:var(--green-bg); }
   .metric-label { font-size:11px; color:var(--text2); margin-bottom:3px; }
   .metric-value { font-size:22px; font-weight:500; }
-
   .card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin-bottom:10px; }
   .bar { display:flex; align-items:center; gap:10px; background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:12px 14px; margin-bottom:14px; }
   .progress-track { flex:1; height:4px; background:var(--bg3); border-radius:2px; }
   .progress-fill { height:100%; border-radius:2px; transition:width 0.3s; }
-
   .toolbar { display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
   input[type=text], input[type=file], select, textarea {
     font-size:13px; padding:7px 10px; border-radius:var(--radius); border:0.5px solid var(--border2);
@@ -58,7 +53,6 @@
   input[type=text]:focus, select:focus, textarea:focus { outline:2px solid var(--purple); outline-offset:1px; }
   input[type=file] { padding:6px 8px; cursor:pointer; }
   .search { width:220px; }
-
   .btn { font-size:12px; padding:7px 14px; border-radius:var(--radius); border:0.5px solid var(--border2); background:var(--bg2); color:var(--text); cursor:pointer; font-family:inherit; transition:background 0.15s; white-space:nowrap; }
   .btn:hover { background:var(--bg3); }
   .btn-primary { background:var(--green); color:white; border-color:var(--green); }
@@ -67,7 +61,6 @@
   .btn-crm { background:#639922; color:white; border-color:#639922; }
   .btn-sm { font-size:11px; padding:3px 9px; border-radius:5px; }
   .btn:disabled { opacity:0.6; cursor:wait; }
-
   .contact-row { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); margin-bottom:8px; overflow:hidden; }
   .contact-row.open { border-color:var(--green); }
   .contact-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; }
@@ -78,36 +71,30 @@
   .tag { font-size:11px; padding:2px 6px; border-radius:4px; background:var(--bg2); color:var(--text2); white-space:nowrap; }
   .status-pill { font-size:11px; padding:2px 7px; border-radius:4px; font-weight:500; white-space:nowrap; }
   .mini-badge { font-size:10px; padding:1px 5px; border-radius:3px; }
-
   .contact-body { border-top:0.5px solid var(--border); padding:14px; }
   .status-row { margin-bottom:14px; }
   .status-btns { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
   .status-btn { font-size:11px; padding:4px 10px; border-radius:5px; border:0.5px solid var(--border2); cursor:pointer; font-family:inherit; background:var(--bg2); color:var(--text2); transition:background 0.15s; }
   .status-btn.active { font-weight:500; }
-
+  .status-date { font-size:10px; color:var(--text3); margin-top:2px; text-align:center; }
   .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .section-title { font-size:12px; font-weight:500; color:var(--text2); margin-bottom:8px; }
   .brief-text { font-size:12px; line-height:1.7; white-space:pre-wrap; }
   .note-box { font-size:13px; line-height:1.7; padding:10px; background:var(--bg2); border-radius:var(--radius); margin-bottom:6px; }
   .char-count { font-size:11px; color:var(--text3); margin-bottom:8px; }
   .char-count.over { color:#E24B4A; }
-
   .promote-bar { margin-top:14px; padding-top:12px; border-top:0.5px solid var(--border); }
   .promote-hint { font-size:11px; color:var(--text3); text-align:center; margin-top:4px; }
   .in-crm { margin-top:12px; font-size:12px; padding:8px 12px; border-radius:var(--radius); background:#EAF3DE; color:#27500A; }
-
   .empty { font-size:13px; color:var(--text3); padding:40px; text-align:center; }
   .alert { font-size:12px; padding:8px 12px; border-radius:var(--radius); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
   .alert-green { background:var(--green-bg); color:var(--green-text); border-left:3px solid var(--green); }
   .alert-amber { background:var(--amber-bg); color:var(--amber-text); border-left:3px solid #EF9F27; }
-
   .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; margin-right:6px; vertical-align:middle; }
   .spinner-dark { border-color:rgba(0,0,0,0.1); border-top-color:var(--text2); }
   @keyframes spin { to { transform:rotate(360deg); } }
-
   .toast { position:fixed; bottom:20px; right:20px; background:#1D9E75; color:white; font-size:12px; padding:8px 14px; border-radius:var(--radius); font-family:inherit; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:999; }
   .toast.show { opacity:1; }
-
   @media (max-width:600px) {
     .metrics { grid-template-columns:repeat(3,1fr); }
     .two-col { grid-template-columns:1fr; }
@@ -119,7 +106,6 @@
   <div class="empty"><span class="spinner spinner-dark"></span> Loading...</div>
 </div>
 <div class="toast" id="toast"></div>
-
 <script>
 const SUPABASE = "https://mycena-crm-proxy.julia-aa4.workers.dev";
 const PROXY    = "https://mycena-crm-proxy.julia-aa4.workers.dev/anthropic";
@@ -133,6 +119,7 @@ const STATUS_STYLE = {
   "Booked":      {bg:"var(--green-bg)",   text:"var(--green-text)"},
   "Irrelevant":  {bg:"var(--bg3)",        text:"var(--text3)"},
 };
+const TS_FIELD = {"Note sent":"note_sent_at","Connected":"connected_at","Replied":"replied_at","Booked":"booked_at"};
 const SECTOR_MAP = {
   "financial services":"Financial services","banking":"Financial services","insurance":"Financial services",
   "bpo":"BPO","business process outsourcing":"BPO","outsourcing":"BPO",
@@ -149,6 +136,7 @@ const ICP_TITLES = ["ciso","chief information security officer","vp information 
 const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const mapSector = ind => { const l=(ind||"").toLowerCase(); for(const[k,v]of Object.entries(SECTOR_MAP)){if(l.includes(k))return v;} return "Other"; };
 const mapHC = n => !n?"500–2k":n<500?"<500":n<2000?"500–2k":n<10000?"2k–10k":"10k+";
+const fmtDate = iso => iso ? new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short"}) : "";
 const icpScore = r => {
   let s=0;
   const t=(r["Title"]||"").toLowerCase();
@@ -166,10 +154,9 @@ let state = {
   showIrrelevant:false,
   expanded:null, phase:"", progress:0, importing:false, imported:false,
   importedCount:0, skippedCount:0, batchRunning:false, batchDone:0, batchTotal:0, batchCurrent:"",
-  loadingId:null, copiedId:null,
+  loadingId:null,
 };
 
-// ── API helpers ──────────────────────────────────────────────────────────────
 async function supabase(path, opts={}) {
   const res = await fetch(`${SUPABASE}/${path}`, {
     method: opts.method||"GET",
@@ -177,8 +164,7 @@ async function supabase(path, opts={}) {
     body: opts.body,
   });
   if (res.status===204) return null;
-  const data = await res.json();
-  return data;
+  return res.json();
 }
 
 async function claude(prompt, system) {
@@ -195,7 +181,6 @@ function toast(msg) {
   setTimeout(()=>t.classList.remove("show"),2500);
 }
 
-// ── load contacts from Supabase ──────────────────────────────────────────────
 async function loadContacts() {
   state.phase="Loading contacts..."; render();
   try {
@@ -205,7 +190,6 @@ async function loadContacts() {
   state.phase=""; render();
 }
 
-// ── parse CSV ────────────────────────────────────────────────────────────────
 function parseCSV(text) {
   const lines=text.split("\n").filter(l=>l.trim());
   const headers=lines[0].split(",").map(h=>h.replace(/^"|"$/g,"").trim());
@@ -224,7 +208,6 @@ function onFile(e) {
   const reader=new FileReader();
   reader.onload=ev=>{
     const rows=parseCSV(ev.target.result);
-    const score_val = r => icpScore(r);
     state.parsed = rows.map((r,i)=>{
       const sc=icpScore(r);
       return {
@@ -244,7 +227,6 @@ function onFile(e) {
   reader.readAsText(file);
 }
 
-// ── import to Supabase ───────────────────────────────────────────────────────
 async function importContacts() {
   state.importing=true; state.phase="Checking existing contacts..."; state.progress=0; render();
   let existing=[];
@@ -287,7 +269,6 @@ async function importContacts() {
   state.phase=""; render();
 }
 
-// ── save brief + note to contact ─────────────────────────────────────────────
 async function saveBriefNote(sid, brief, note) {
   if(!sid) return;
   await supabase(`contacts?id=eq.${sid}`,{
@@ -296,9 +277,8 @@ async function saveBriefNote(sid, brief, note) {
   });
 }
 
-// ── update status ─────────────────────────────────────────────────────────────
 async function updateStatus(sid, status) {
-  const tsField={"Note sent":"note_sent_at","Connected":"connected_at","Replied":"replied_at","Booked":"booked_at"}[status];
+  const tsField=TS_FIELD[status];
   const patch={outreach_status:status};
   if(tsField) patch[tsField]=new Date().toISOString();
   await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify(patch)});
@@ -306,7 +286,6 @@ async function updateStatus(sid, status) {
   render();
 }
 
-// ── promote to CRM deal ───────────────────────────────────────────────────────
 async function promoteToDeal(sid) {
   state.loadingId=`promote_${sid}`; render();
   const c=state.contacts.find(x=>x.id===sid); if(!c) return;
@@ -336,7 +315,6 @@ async function promoteToDeal(sid) {
   state.loadingId=null; render();
 }
 
-// ── Agent 08 ──────────────────────────────────────────────────────────────────
 async function runAgent08(sid) {
   state.loadingId=`brief_${sid}`; render();
   const c=state.contacts.find(x=>x.id===sid); if(!c) return;
@@ -350,7 +328,6 @@ Return: 1) Sector breach + relevance 2) Control Ladder position + why 3) Top obj
   state.loadingId=null; render();
 }
 
-// ── LinkedIn note ─────────────────────────────────────────────────────────────
 async function generateNote(sid) {
   state.loadingId=`note_${sid}`; render();
   const c=state.contacts.find(x=>x.id===sid); if(!c) return;
@@ -358,7 +335,7 @@ async function generateNote(sid) {
 Contact: ${c.contact_name}, ${c.title} at ${c.company} | Sector: ${c.sector} | Country: ${c.country}
 Keywords: ${c.keywords||"none"}
 ${c.agent08_brief?`Brief:\n${c.agent08_brief}`:""}
-Rules: STRICT 200 character maximum — count every character including spaces. Never name the product. Reference something specific and real about their company or sector. No deck/link/case study. One low-friction reason to connect. Peer-to-peer tone. Start with their first name. If your draft exceeds 200 characters, rewrite it shorter before responding.`,
+Rules: STRICT 200 character maximum. Never name the product. Reference something specific and real. No deck/link. Low-friction CTA. Peer-to-peer tone. Start with first name. Rewrite if over 200 chars.`,
     "Return only the LinkedIn note. No preamble, no labels, no quotes.");
   state.contacts=state.contacts.map(x=>x.id===sid?{...x,linkedin_note:note}:x);
   await saveBriefNote(sid,c.agent08_brief||"",note);
@@ -366,7 +343,6 @@ Rules: STRICT 200 character maximum — count every character including spaces. 
   state.loadingId=null; render();
 }
 
-// ── batch run Tier 1 ──────────────────────────────────────────────────────────
 async function runAllTier1() {
   const src = state.view==="import" ? state.parsed : state.contacts;
   const tier1 = src.filter(c=>c.icp_tier==="1"&&!c.agent08_brief&&!c.linkedin_note);
@@ -382,7 +358,7 @@ Return: 1) Sector breach 2) Control Ladder 3) Objection + response 4) Why MyCena
     const note=await claude(`LinkedIn connection note for MyCena founder.
 Contact: ${c.contact_name}, ${c.title} at ${c.company} | Sector: ${c.sector}
 Brief: ${brief}
-Rules: STRICT 200 character maximum — count every character. No product name. Specific reference. No deck/link. Low-friction CTA. Peer-to-peer. Start with first name. Rewrite if over 200 chars.`,
+Rules: STRICT 200 character maximum. No product name. Specific reference. No deck/link. Low-friction CTA. Peer-to-peer. Start with first name. Rewrite if over 200 chars.`,
       "Return only the note. No preamble.");
     const sid=c.id||c.supabase_id;
     if(state.view==="import"){
@@ -401,36 +377,25 @@ Rules: STRICT 200 character maximum — count every character. No product name. 
 async function generateFollowUp(sid) {
   state.loadingId=`followup_${sid}`; render();
   const c=state.contacts.find(x=>x.id===sid); if(!c) return;
-  const msg=await claude(`You are MyCena's Post-Connection Message Agent. Write the first LinkedIn message to send after a connection request has been accepted.
-
+  const msg=await claude(`You are MyCena's Post-Connection Message Agent. Write the first LinkedIn message to send after a connection is accepted.
 Contact: ${c.contact_name}, ${c.title} at ${c.company}
 Sector: ${c.sector} | Country: ${c.country}
 Keywords: ${c.keywords||"none"}
 ${c.agent08_brief?`Research brief:\n${c.agent08_brief}`:""}
 ${c.linkedin_note?`Connection note sent:\n${c.linkedin_note}`:""}
-
-Rules:
-- 3 sentences maximum
-- Open with a genuine one-line thank you — not "Thanks for connecting!" — make it specific
-- Second sentence: one observation or question that references something real about their company, sector, or a recent event — no pitch
-- Third sentence: a soft, open-ended invitation to continue the conversation — not "I'd love to show you what we do" or "can we book a call"
-- Never mention the product by name
-- Never attach a deck, link, or case study
-- The goal is a reply — not a meeting
-- Warm, peer-to-peer tone — write as the founder, not a salesperson
-
-Return only the message text. No subject line, no preamble, no labels.`,
-    "Return only the LinkedIn follow-up message. No preamble, no labels, no quotes.");
+Rules: 3 sentences max. Open with a specific one-line thank you. Second sentence: one observation or question referencing something real about their company or sector — no pitch. Third sentence: soft open-ended invitation to continue — not a meeting ask. Never mention the product by name. No deck/link. Goal is a reply not a meeting. Warm peer-to-peer tone.`,
+    "Return only the message. No subject line, no preamble, no labels.");
   state.contacts=state.contacts.map(x=>x.id===sid?{...x,followup_msg:msg}:x);
   await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({notes:(c.notes||"")+(c.notes?"\n\n":"")+`--- Follow-up message ---\n${msg}`})});
   toast("Follow-up message ready");
   state.loadingId=null; render();
 }
+
+function copyNote(text) {
   navigator.clipboard?.writeText(text);
   toast("✓ Copied to clipboard");
+}
 
-
-// ── filtered contacts ─────────────────────────────────────────────────────────
 function filtered() {
   const src = state.view==="import" ? state.parsed : state.contacts;
   const q=state.search.toLowerCase();
@@ -443,7 +408,6 @@ function filtered() {
   });
 }
 
-// ── render helpers ────────────────────────────────────────────────────────────
 function tierStyle(t) {
   return t==="1"?{bg:"#E1F5EE",text:"#1D9E75"}:t==="2"?{bg:"#FAEEDA",text:"#EF9F27"}:{bg:"#F1EFE8",text:"#888780"};
 }
@@ -488,7 +452,12 @@ function renderContactCard(c) {
               ${STATUS_FLOW.map(s=>{
                 const active=status===s;
                 const sst=STATUS_STYLE[s];
-                return `<button class="status-btn${active?" active":""}" style="${active?`background:${sst.bg};color:${sst.text};border-color:${sst.text}`:""}" onclick="setStatus('${sid}','${s}')">${esc(s)}</button>`;
+                const tsField=TS_FIELD[s];
+                const dateStr=tsField&&c[tsField]?fmtDate(c[tsField]):"";
+                return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <button class="status-btn${active?" active":""}" style="${active?`background:${sst.bg};color:${sst.text};border-color:${sst.text}`:""}" onclick="setStatus('${sid}','${s}')">${esc(s)}</button>
+                  ${dateStr?`<span class="status-date">${dateStr}</span>`:""}
+                </div>`;
               }).join("")}
             </div>
           </div>`:""}
@@ -595,7 +564,6 @@ function renderMetrics(src) {
   </div>`;
 }
 
-// ── event handlers ────────────────────────────────────────────────────────────
 function genFollowUp(sid) { generateFollowUp(sid); }
 function regenFollowUp(sid) { generateFollowUp(sid); }
 function toggleExpand(id) { state.expanded=state.expanded==id?null:id; render(); }
@@ -606,11 +574,9 @@ function regenNote(sid) { generateNote(sid); }
 function promote(sid) { promoteToDeal(sid); }
 function setStatusFilter(s) { state.filterStatus=state.filterStatus===s?"All":s; render(); }
 
-// ── main render ───────────────────────────────────────────────────────────────
 function render() {
   const src = state.view==="import" ? state.parsed : state.contacts;
   const filt = filtered();
-
   const tier1c  = src.filter(c=>c.icp_tier==="1").length;
   const tier2c  = src.filter(c=>c.icp_tier==="2").length;
   const tier3c  = src.filter(c=>c.icp_tier==="3").length;
@@ -641,7 +607,6 @@ function render() {
           ${[{l:"Total",v:state.parsed.length},{l:"Tier 1",v:tier1c,c:"#1D9E75"},{l:"Tier 2",v:tier2c,c:"#EF9F27"},{l:"Tier 3",v:tier3c,c:"#888780"},{l:"Briefed",v:briefed,c:"var(--purple)"}]
             .map(m=>`<div style="background:var(--bg2);border-radius:var(--radius);padding:10px 12px"><div style="font-size:11px;color:var(--text2);margin-bottom:3px">${m.l}</div><div style="font-size:22px;font-weight:500;color:${m.c||"var(--text)"}">${m.v}</div></div>`).join("")}
         </div>
-
         ${!state.imported?`
           <div class="bar">
             ${state.importing?`
@@ -657,9 +622,7 @@ function render() {
         `:`
           <div class="alert alert-green">✓ ${state.importedCount} new contacts saved · ${state.skippedCount} already existed and linked.</div>
         `}
-
         ${renderBatchBar(state.parsed)}
-
         <div class="toolbar">
           <input type="text" class="search" placeholder="Search name, company, title..." value="${esc(state.search)}" oninput="setSearch(this.value)">
           <div style="display:flex;gap:4px">
