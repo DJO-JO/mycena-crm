@@ -336,14 +336,17 @@ function generateFollowUp(sid){
  var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
     +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
     +"Sector: "+c.sector+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
-+(c.agent08_brief?"Key pain angle: "+c.agent08_brief.split("\n")[0]+"\n":"")
-   +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
-    +"Write a short LinkedIn message. STRICT 60 word maximum excluding the sign-off.\n"
-    +"Structure: one warm opener specific to them. One plain observation about a pain someone in their role would recognise immediately. One short easy question they can answer in one sentence.\n"
-    +"If your draft exceeds 60 words rewrite it shorter. Count every word before responding.\n"
-   +"End with just: "+FOUNDER+"\n"
-    +"Never mention MyCena or any product. Never use: regulatory nightmares, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, I wanted to reach out.\n"
-    +"No deck no link. Tone: founder to peer — warm and direct. Goal: one reply.";
+    +(c.agent08_brief?"Key pain angle: "+c.agent08_brief.split("\n")[0]+"\n":"")
+    +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
+    +"Write a LinkedIn message. STRICT 60 word maximum excluding sign-off.\n"
+    +"Structure:\n"
+    +"- Line 1: warm opener with their first name and a dash. One specific genuine observation about their company or role — never Thanks for connecting.\n"
+    +"- Line 2: one plain sentence describing a specific pain a BPO IT leader serving healthcare or finance clients would immediately recognise. Make it concrete not abstract.\n"
+    +"- Line 3: one sentence hinting you have worked on this problem — do not name the product or describe it. End with a soft warm closing like: Happy to share what we have found if it is useful. Or: Might be relevant to what you are dealing with.\n"
+    +"- Final line: just the name "+FOUNDER+"\n"
+    +"Never mention MyCena or any product by name. Never use: regulatory, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, worth a conversation.\n"
+    +"No deck no link. Tone: founder to peer — warm specific direct. Goal: a reply not a meeting.\n"
+    +"Count every word before responding. If over 60 words rewrite shorter.";
   aiReq(p,"Return only the message. No preamble no labels no quotes.")
     .then(function(msg){
       state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{followup_msg:msg}):x;});
