@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSP Credential Exposure Calculator — MyCena</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#6b6b66;--text3:#9b9b96;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --mycena-dark:#151515;--mycena-charcoal:#3A3A38;
+  --mycena-blue:#002662;--mycena-gold:#D8B26F;
+  --mycena-silver:#B2B4B3;
+  --red-bg:#FCEBEB;--red-text:#501313;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:'Manrope',sans-serif;background:var(--bg3);color:var(--text);font-size:14px;min-height:100vh;padding:24px 16px;}
+.wrap{max-width:680px;margin:0 auto;}
+.calc-header{background:var(--mycena-dark);color:#ffffff;border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
+.calc-header .logo{display:flex;align-items:center;margin-bottom:18px;}
+.calc-header h1{font-family:'Bai Jamjuree',sans-serif;font-size:20px;font-weight:600;color:#ffffff;margin-bottom:6px;}
+.calc-header p{font-size:13px;color:var(--mycena-silver);line-height:1.5;}
+.incident-bar{background:var(--red-bg);border-left:3px solid #E24B4A;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--red-text);line-height:1.6;border-radius:0 var(--radius) var(--radius) 0;}
+.section{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
+.section-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:6px;letter-spacing:0.02em;}
+.section-vs{font-size:11px;color:var(--text3);margin-bottom:14px;padding-left:34px;font-style:italic;}
+.section-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-charcoal);color:#ffffff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Manrope',sans-serif;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:11px;color:var(--text2);font-family:'Manrope',sans-serif;}
+.field input{font-size:13px;padding:8px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'Manrope',sans-serif;width:100%;}
+.field input:focus{outline:2px solid var(--mycena-blue);outline-offset:1px;}
+.field .hint{font-size:11px;color:var(--text3);line-height:1.4;}
+.multiplier{font-size:11px;padding:6px 10px;background:#FAEEDA;color:#412402;border-radius:var(--radius);margin-bottom:10px;border-left:2px solid #D8B26F;}
+.section-total{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);margin-top:4px;}
+.section-total-label{font-size:12px;color:var(--text2);}
+.section-total-value{font-size:16px;font-weight:500;font-family:'Bai Jamjuree',sans-serif;}
+.total-card{background:var(--mycena-dark);border-radius:var(--radius-lg);padding:22px 28px;margin:20px 0 12px;}
+.total-label{font-size:12px;color:var(--mycena-silver);margin-bottom:6px;font-family:'Manrope',sans-serif;}
+.total-value{font-family:'Bai Jamjuree',sans-serif;font-size:36px;font-weight:600;color:#ffffff;margin-bottom:4px;}
+.total-sub{font-size:12px;color:#6b6b66;font-family:'Manrope',sans-serif;}
+.multiplier-callout{background:var(--mycena-blue);border-radius:var(--radius-lg);padding:16px 20px;margin:12px 0;color:white;}
+.multiplier-callout h3{font-family:'Bai Jamjuree',sans-serif;font-size:14px;font-weight:600;color:white;margin-bottom:6px;}
+.multiplier-callout p{font-size:12px;color:#B2B4B3;line-height:1.6;}
+.multiplier-callout .big{font-size:28px;font-weight:600;font-family:'Bai Jamjuree',sans-serif;color:var(--mycena-gold);margin:8px 0 4px;}
+.proof-section{background:var(--bg2);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;}
+.proof-title{font-family:'Bai Jamjuree',sans-serif;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;}
+.proof-item{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);}
+.proof-item:last-child{border-bottom:none;padding-bottom:0;}
+.proof-dot{width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0;margin-top:5px;}
+.proof-text{font-size:12px;color:var(--text2);line-height:1.6;font-family:'Manrope',sans-serif;}
+.proof-text strong{color:var(--text);}
+.mycena-section{border:0.5px solid var(--mycena-blue);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
+.mycena-title{display:flex;align-items:center;gap:10px;font-family:'Bai Jamjuree',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;letter-spacing:0.02em;}
+.mycena-num{width:24px;height:24px;border-radius:50%;background:var(--mycena-blue);color:white;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Manrope',sans-serif;}
+.mycena-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;font-family:'Manrope',sans-serif;}
+.mycena-row:last-child{border-bottom:none;padding-bottom:0;}
+.mycena-row-label{color:var(--text2);}
+.mycena-row-value{font-weight:500;}
+.saving{color:var(--mycena-blue);font-family:'Bai Jamjuree',sans-serif;font-size:18px;font-weight:600;}
+.disclaimer{font-size:11px;color:var(--text3);line-height:1.7;padding:12px 0;font-family:'Manrope',sans-serif;}
+.cta{background:var(--mycena-blue);color:white;border-radius:var(--radius-lg);padding:18px 24px;text-align:center;margin-top:4px;}
+.cta h2{font-family:'Bai Jamjuree',sans-serif;font-size:15px;font-weight:600;color:white;margin-bottom:6px;letter-spacing:0.02em;}
+.cta p{font-size:12px;color:#B2B4B3;margin-bottom:14px;line-height:1.5;font-family:'Manrope',sans-serif;}
+.cta a{display:inline-block;background:var(--mycena-gold);color:var(--mycena-dark);font-size:13px;font-weight:600;padding:10px 24px;border-radius:var(--radius);text-decoration:none;font-family:'Manrope',sans-serif;}
+.cta a:hover{opacity:0.9;}
+@media(max-width:520px){.field-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="calc-header">
+    <div class="logo">
+      <svg width="200" height="45" viewBox="0 0 1000 225" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M172.034 160.299L86.0159 224.167L0 160.299L58.3159 122.648L86.0159 145.579L113.72 122.648L172.034 160.299Z" fill="white"/><path d="M113.72 17.7608V49.3638L141.122 67.0643V35.2455L172.033 55.113V128.026L113.72 90.3759L86.0146 113.236L58.3159 90.3759L0.00133946 128.026V55.113L30.9133 35.2455V67.0643L58.3159 49.3638V17.7608L86.0159 0L113.72 17.7608Z" fill="white"/><path d="M877.102 135.334L929.049 34.1875H947.472L999.998 135.334H973.988L962.789 113.226H912.287L901.016 135.334H877.102ZM921.752 94.9477H953.686L937.791 63.7368L921.752 94.9477Z" fill="white"/><path d="M752.391 135.334V34.1875H769.297L838.006 101.667V34.1875H858.453V135.334H841.546L772.909 68.2884V135.334H752.391Z" fill="white"/><path d="M632.352 135.334V34.1875H724.397V53.6221H654.46V74.1404H705.732V92.997H654.46V115.9H725.842V135.334H632.352Z" fill="white"/><path d="M506.961 53.5535C506.961 46.1361 508.984 40.8861 513.03 37.8035C517.076 34.721 523.53 33.1797 532.393 33.1797H578.705C587.615 33.1797 594.094 34.721 598.14 37.8035C602.186 40.8861 604.209 46.1361 604.209 53.5535V67.4973H582.1V52.9755H529.069V116.553H582.678V100.442H604.787V115.108C604.787 122.911 602.788 128.402 598.79 131.581C594.84 134.76 588.338 136.349 579.283 136.349H532.393C523.289 136.349 516.763 134.76 512.813 131.581C508.912 128.402 506.961 122.911 506.961 115.108V53.5535Z" fill="white"/><path d="M421.47 135.334V91.3353L373.352 34.1875H403.841L433.391 72.3342L463.085 34.1875H489.818L443.578 91.2631V135.334H421.47Z" fill="white"/><path d="M235.594 135.334V34.1875H257.364L296.596 91.2631L334.888 34.1875H354.756V135.334H332.648V69.5166L295.006 125.581L257.292 70.6725V135.334H235.594Z" fill="white"/><path d="M978.398 197.764V166.277H998.515V170.585H982.968V179.419H995.891V183.726H982.968V193.457H998.515V197.764H978.398Z" fill="white"/><path d="M908.625 197.764V166.277H913.195V193.457H927.452V197.764H908.625Z" fill="white"/><path d="M833.633 197.764V166.277H846.009C848.006 166.277 849.682 166.686 851.038 167.502C852.394 168.318 853.414 169.375 854.099 170.672C854.784 171.955 855.127 173.311 855.127 174.739C855.127 176.474 854.697 177.961 853.837 179.2C852.992 180.439 851.847 181.285 850.404 181.737L850.36 180.665C852.372 181.161 853.917 182.13 854.996 183.573C856.075 185.002 856.614 186.671 856.614 188.581C856.614 190.432 856.242 192.043 855.499 193.413C854.77 194.783 853.698 195.855 852.284 196.627C850.885 197.385 849.187 197.764 847.19 197.764H833.633ZM838.268 193.413H846.49C847.525 193.413 848.451 193.216 849.267 192.823C850.098 192.429 850.747 191.868 851.213 191.139C851.694 190.396 851.935 189.514 851.935 188.493C851.935 187.546 851.723 186.693 851.301 185.935C850.892 185.162 850.295 184.557 849.508 184.12C848.735 183.668 847.824 183.442 846.774 183.442H838.268V193.413ZM838.268 179.135H845.943C846.789 179.135 847.547 178.967 848.217 178.632C848.903 178.282 849.442 177.786 849.836 177.145C850.244 176.489 850.448 175.702 850.448 174.783C850.448 173.559 850.04 172.553 849.223 171.766C848.407 170.979 847.314 170.585 845.943 170.585H838.268V179.135Z" fill="white"/><path d="M755.422 197.764L765.655 166.277H772.237L782.47 197.764H777.725L768.301 169.032H769.482L760.167 197.764H755.422ZM760.735 190.658V186.372H777.179V190.658H760.735Z" fill="white"/><path d="M679.344 197.764V166.277H683.914V179.856H699.657V166.277H704.249V197.764H699.657V184.164H683.914V197.764H679.344Z" fill="white"/><path d="M615.371 198.418C613.112 198.418 611.071 198.031 609.249 197.259C607.441 196.472 605.947 195.357 604.766 193.913C603.6 192.456 602.842 190.728 602.492 188.731L607.259 188.01C607.74 189.934 608.746 191.435 610.276 192.514C611.807 193.578 613.593 194.11 615.634 194.11C616.902 194.11 618.068 193.913 619.132 193.52C620.196 193.112 621.049 192.536 621.691 191.792C622.347 191.034 622.674 190.131 622.674 189.081C622.674 188.512 622.572 188.01 622.368 187.572C622.179 187.135 621.909 186.756 621.559 186.435C621.224 186.1 620.809 185.816 620.313 185.582C619.832 185.335 619.3 185.123 618.717 184.948L610.648 182.565C609.861 182.332 609.059 182.033 608.243 181.668C607.427 181.289 606.676 180.801 605.991 180.203C605.32 179.591 604.774 178.84 604.351 177.951C603.928 177.047 603.717 175.954 603.717 174.671C603.717 172.732 604.212 171.093 605.204 169.751C606.209 168.396 607.565 167.375 609.271 166.69C610.976 165.99 612.886 165.641 615 165.641C617.128 165.67 619.03 166.049 620.707 166.778C622.398 167.507 623.797 168.556 624.905 169.926C626.027 171.282 626.8 172.929 627.223 174.868L622.325 175.699C622.106 174.518 621.64 173.505 620.925 172.66C620.211 171.8 619.336 171.144 618.301 170.692C617.266 170.225 616.144 169.985 614.934 169.97C613.768 169.941 612.696 170.116 611.72 170.495C610.758 170.874 609.985 171.406 609.402 172.091C608.833 172.776 608.549 173.563 608.549 174.453C608.549 175.327 608.804 176.034 609.314 176.574C609.825 177.113 610.451 177.543 611.195 177.864C611.953 178.17 612.704 178.425 613.447 178.629L619.263 180.269C619.992 180.473 620.816 180.75 621.734 181.1C622.667 181.435 623.564 181.909 624.424 182.521C625.298 183.133 626.02 183.95 626.589 184.97C627.157 185.976 627.441 187.244 627.441 188.775C627.441 190.364 627.121 191.763 626.479 192.973C625.838 194.168 624.956 195.174 623.833 195.991C622.726 196.792 621.443 197.397 619.985 197.805C618.527 198.214 616.989 198.418 615.371 198.418Z" fill="white"/><path d="M545.602 197.764V166.277H550.172V197.764H545.602Z" fill="white"/><path d="M466.883 197.764V166.277H471.453V179.856H487.196V166.277H491.788V197.764H487.196V184.164H471.453V197.764H466.883Z" fill="white"/><path d="M392.227 197.764V166.277H404.953C405.259 166.277 405.638 166.292 406.09 166.321C406.541 166.336 406.972 166.379 407.38 166.452C409.129 166.729 410.587 167.327 411.753 168.245C412.934 169.164 413.816 170.323 414.399 171.722C414.982 173.121 415.273 174.667 415.273 176.358C415.273 178.063 414.982 179.616 414.399 181.015C413.816 182.414 412.934 183.573 411.753 184.492C410.587 185.41 409.129 186.008 407.38 186.285C406.972 186.343 406.534 186.387 406.068 186.416C405.616 186.445 405.244 186.46 404.953 186.46H396.797V197.764H392.227ZM396.797 182.13H404.778C405.069 182.13 405.39 182.116 405.74 182.086C406.104 182.057 406.447 182.006 406.767 181.933C407.7 181.715 408.451 181.314 409.02 180.731C409.588 180.133 409.996 179.448 410.244 178.675C410.492 177.903 410.616 177.13 410.616 176.358C410.616 175.585 410.492 174.82 410.244 174.062C409.996 173.289 409.588 172.611 409.02 172.028C408.451 171.43 407.7 171.022 406.767 170.804C406.447 170.716 406.104 170.658 405.74 170.629C405.39 170.6 405.069 170.585 404.778 170.585H396.797V182.13Z" fill="white"/><path d="M314.125 197.764V166.277H318.761L334.264 189.674V166.277H338.899V197.764H334.264L318.761 174.346V197.764H314.125Z" fill="white"/><path d="M248.223 198.42C245.759 198.42 243.58 197.917 241.685 196.912C239.805 195.891 238.332 194.47 237.268 192.648C236.204 190.811 235.672 188.654 235.672 186.175V166.299L240.307 166.277V185.935C240.307 187.276 240.533 188.457 240.985 189.477C241.437 190.498 242.042 191.35 242.8 192.035C243.558 192.721 244.404 193.238 245.337 193.588C246.284 193.938 247.246 194.113 248.223 194.113C249.214 194.113 250.176 193.938 251.109 193.588C252.057 193.224 252.91 192.699 253.668 192.014C254.426 191.328 255.023 190.476 255.461 189.455C255.912 188.435 256.138 187.261 256.138 185.935V166.277H260.774V186.175C260.774 188.639 260.242 190.789 259.178 192.626C258.114 194.463 256.634 195.891 254.739 196.912C252.859 197.917 250.687 198.42 248.223 198.42Z" fill="white"/></svg>
+    </div>
+    <h1>MSP credential exposure calculator</h1>
+    <p>Managed service providers · CTO and IT Director risk assessment · One compromised technician credential can expose every client environment simultaneously.</p>
+  </div>
+
+  <div class="incident-bar">
+    <strong>The MSP risk multiplier:</strong> Kaseya (2021) — one credential compromise cascaded through 60 MSPs to hit 1,500+ downstream client companies. ConnectWise (2024) — shared remote access credentials created blast radius amplification across hundreds of MSP client bases. The attack surface is not your organisation. It is every client you manage.
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">1</span>Client breach notification cascade</div>
+    <div class="section-vs">Equivalent to BPO helpdesk resets — but multiplied across every client environment</div>
+    <div class="multiplier" id="multiplier1">Enter your client count below to see your blast radius.</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Number of managed client environments</label>
+        <input type="number" id="clients" placeholder="e.g. 25" oninput="calc()">
+        <span class="hint">Each client environment = separate breach notification obligation</span>
+      </div>
+      <div class="field">
+        <label>Average technicians per client environment</label>
+        <input type="number" id="techsPerClient" placeholder="3" value="3" oninput="calc()">
+        <span class="hint">With credential sprawl each tech has access to multiple clients</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Cost per breach notification per client (£)</label>
+        <input type="number" id="notifyCost" placeholder="4500" value="4500" oninput="calc()">
+        <span class="hint">Legal, communication, emergency credential rotation · avg £4,500 per client</span>
+      </div>
+      <div class="field">
+        <label>Estimated credential incidents per year</label>
+        <input type="number" id="incidents" placeholder="2" value="2" oninput="calc()">
+        <span class="hint">Technician departure, shared password exposure, phishing</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual breach notification exposure</span>
+      <span class="section-total-value" id="s1">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">2</span>Contract renegotiation and client loss</div>
+    <div class="section-vs">Equivalent to BPO SLA penalties — but total relationship loss, not service credits</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Average annual contract value per client (£)</label>
+        <input type="number" id="contractValue" placeholder="e.g. 60000" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Estimated client churn after a security incident (%)</label>
+        <input type="number" id="churnPct" placeholder="15" value="15" oninput="calc()">
+        <span class="hint">Industry avg 15–30% client churn post-incident</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Insurance premium increase post-incident (£/year)</label>
+        <input type="number" id="insuranceIncrease" placeholder="e.g. 8000" oninput="calc()">
+        <span class="hint">Cyber insurance uplift after credential incident</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual contract and insurance exposure</span>
+      <span class="section-total-value" id="s2">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">3</span>Multi-client access provisioning overhead</div>
+    <div class="section-vs">Equivalent to BPO contractor offboarding — but a many-to-many matrix, not one-to-one</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Total technicians and engineers</label>
+        <input type="number" id="techs" placeholder="e.g. 20" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Annual technician turnover (%)</label>
+        <input type="number" id="techTurnover" placeholder="25" value="25" oninput="calc()">
+        <span class="hint">Each departure requires access revocation across all client environments</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Hours to provision or deprovision one technician across all clients</label>
+        <input type="number" id="provisionHours" placeholder="8" value="8" oninput="calc()">
+        <span class="hint">Manual access management across client environments</span>
+      </div>
+      <div class="field">
+        <label>IT staff hourly rate (£)</label>
+        <input type="number" id="hourlyRate" placeholder="75" value="75" oninput="calc()">
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual provisioning overhead</span>
+      <span class="section-total-value" id="s3">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">4</span>Portfolio-wide compliance overhead</div>
+    <div class="section-vs">Equivalent to BPO audit overhead — but multiplied across every client's framework</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Number of clients requiring compliance evidence</label>
+        <input type="number" id="complianceClients" placeholder="e.g. 10" oninput="calc()">
+        <span class="hint">SOX, HIPAA, PCI, ISO27001 — each client may require different framework evidence</span>
+      </div>
+      <div class="field">
+        <label>Hours per client per audit cycle for credential evidence</label>
+        <input type="number" id="auditHours" placeholder="12" value="12" oninput="calc()">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Audit cycles per year</label>
+        <input type="number" id="auditCycles" placeholder="2" value="2" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>IT staff hourly rate (£)</label>
+        <input type="number" id="auditRate" placeholder="75" value="75" oninput="calc()">
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual compliance overhead</span>
+      <span class="section-total-value" id="s4">—</span>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <div class="total-label">Your total annual operational exposure</div>
+    <div class="total-value" id="total">Enter your numbers above</div>
+    <div class="total-sub" id="totalSub">Operational costs only · excludes breach liability, regulatory fines, reputational damage</div>
+  </div>
+
+  <div class="multiplier-callout" id="blastRadius" style="display:none">
+    <h3>Your blast radius</h3>
+    <div class="big" id="blastNum">—</div>
+    <p>client environments exposed if a single technician credential is compromised. This is the MSP risk that BPO, enterprise, and government organisations do not face at the same scale.</p>
+  </div>
+
+  <div class="proof-section">
+    <div class="proof-title">MSP incident proof points</div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>Kaseya VSA (2021):</strong> REvil ransomware exploited MSP management platform credentials. One point of compromise cascaded through 60 MSPs to hit 1,500+ downstream companies. Mass contract cancellations followed.</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>ConnectWise ScreenConnect (2024):</strong> Shared remote access credentials created blast radius amplification across hundreds of MSPs and thousands of end clients. Emergency mass password resets triggered widespread SLA breaches.</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>SolarWinds MSP Division (2019):</strong> Single credential compromise of MSP-specific tools enabled cross-client data harvesting across email archives and remote access systems. Regulatory investigations followed for multiple MSPs.</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>IBM Cost of a Data Breach 2024:</strong> Average breach cost $4.88M. MSPs face this exposure multiplied by client count. 80%+ of breaches involve compromised credentials — the entry point MyCena eliminates.</div>
+    </div>
+  </div>
+
+  <div class="mycena-section">
+    <div class="mycena-title"><span class="mycena-num">M</span>MyCena economics</div>
+    <div class="field-row" style="margin-bottom:14px">
+      <div class="field">
+        <label>MyCena annual licence cost (£)</label>
+        <input type="number" id="mycenaCost" placeholder="Contact us for pricing" oninput="calc()">
+        <span class="hint">Headcount and client environment-based pricing · contact hello@mycena.co</span>
+      </div>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">Your annual exposure</span>
+      <span class="mycena-row-value" id="mExposure">—</span>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">MyCena annual cost</span>
+      <span class="mycena-row-value" id="mCost">—</span>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">Net annual saving</span>
+      <span class="mycena-row-value saving" id="mSaving">—</span>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">Payback period</span>
+      <span class="mycena-row-value" id="mPayback">—</span>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    This calculation covers operational exposure only: breach notification costs, client contract and insurance exposure, technician provisioning overhead, and compliance preparation. It excludes average breach cost (£3.9M per incident), regulatory fines under GDPR/HIPAA/PCI, reputational damage, and the cascading effect of multi-client exposure. Full exposure for an MSP is materially higher than the figure shown — each client environment multiplies your liability.
+  </div>
+
+  <div class="cta">
+    <h2>Book a Board-Level Risk Assessment</h2>
+    <p>We will calculate your specific MSP exposure figure — including your blast radius across your full client portfolio — before the call ends. 45 minutes. No deck. No obligation.</p>
+    <a href="https://mycena.co" target="_blank">Book your assessment at mycena.co</a>
+  </div>
+
+</div>
+<script>
+function fmt(n){
+  if(!n&&n!==0) return '—';
+  return '£'+Math.round(n).toLocaleString('en-GB');
+}
+function calc(){
+  var clients=parseFloat(document.getElementById('clients').value)||0;
+  var techsPerClient=parseFloat(document.getElementById('techsPerClient').value)||3;
+  var notifyCost=parseFloat(document.getElementById('notifyCost').value)||4500;
+  var incidents=parseFloat(document.getElementById('incidents').value)||2;
+  var contractValue=parseFloat(document.getElementById('contractValue').value)||0;
+  var churnPct=parseFloat(document.getElementById('churnPct').value)||15;
+  var insuranceIncrease=parseFloat(document.getElementById('insuranceIncrease').value)||0;
+  var techs=parseFloat(document.getElementById('techs').value)||0;
+  var techTurnover=parseFloat(document.getElementById('techTurnover').value)||25;
+  var provisionHours=parseFloat(document.getElementById('provisionHours').value)||8;
+  var hourlyRate=parseFloat(document.getElementById('hourlyRate').value)||75;
+  var complianceClients=parseFloat(document.getElementById('complianceClients').value)||0;
+  var auditHours=parseFloat(document.getElementById('auditHours').value)||12;
+  var auditCycles=parseFloat(document.getElementById('auditCycles').value)||2;
+  var auditRate=parseFloat(document.getElementById('auditRate').value)||75;
+  var mycenaCost=parseFloat(document.getElementById('mycenaCost').value)||0;
+
+  var s1=clients*notifyCost*incidents;
+  var s2=(contractValue*clients*(churnPct/100))+insuranceIncrease;
+  var s3=techs*(techTurnover/100)*provisionHours*hourlyRate;
+  var s4=complianceClients*auditHours*auditCycles*auditRate;
+  var total=s1+s2+s3+s4;
+
+  document.getElementById('s1').textContent=clients?fmt(s1):'—';
+  document.getElementById('s2').textContent=contractValue?fmt(s2):'—';
+  document.getElementById('s3').textContent=techs?fmt(s3):'—';
+  document.getElementById('s4').textContent=complianceClients?fmt(s4):'—';
+
+  if(clients){
+    var blastRadius=clients*techsPerClient;
+    document.getElementById('multiplier1').textContent='Blast radius: '+Math.round(blastRadius)+' credential access points across your client base. One compromised technician credential exposes all of them simultaneously.';
+    document.getElementById('blastRadius').style.display='block';
+    document.getElementById('blastNum').textContent=Math.round(clients)+' client environments';
+  }
+
+  var hasData=clients||contractValue||techs||complianceClients;
+  if(hasData){
+    document.getElementById('total').textContent=fmt(total);
+    document.getElementById('totalSub').textContent='per year · operational costs only · excludes breach liability and regulatory fines';
+    document.getElementById('mExposure').textContent=fmt(total);
+    if(mycenaCost){
+      var saving=total-mycenaCost;
+      var paybackMonths=mycenaCost>0&&total>0?Math.round((mycenaCost/total)*12):0;
+      document.getElementById('mCost').textContent=fmt(mycenaCost);
+      document.getElementById('mSaving').textContent=saving>0?fmt(saving):'—';
+      document.getElementById('mPayback').textContent=paybackMonths>0?paybackMonths+' months':'—';
+    }
+  } else {
+    document.getElementById('total').textContent='Enter your numbers above';
+    document.getElementById('totalSub').textContent='Operational costs only · excludes breach liability, regulatory fines, reputational damage';
+  }
+}
+</script>
+</body>
+</html>
