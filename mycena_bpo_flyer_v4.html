@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCena — BPO Credential Control Flyer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;display:flex;justify-content:center;padding:40px 16px;font-family:'Bai Jamjuree',system-ui,sans-serif;}
+.flyer{background:#151515;color:#fff;width:600px;padding:48px 44px 40px;border-radius:4px;}
+.logo-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px;}
+.logo-mark{display:flex;align-items:center;gap:10px;}
+.logo-name{font-size:15px;font-weight:600;letter-spacing:0.12em;color:#fff;}
+.logo-tag{font-size:10px;letter-spacing:0.18em;color:#B2B4B3;text-transform:uppercase;font-family:'Manrope',sans-serif;}
+.pill{display:inline-block;background:#002662;color:#D8B26F;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:16px;font-family:'Manrope',sans-serif;}
+h1{font-size:28px;font-weight:600;line-height:1.25;color:#fff;margin-bottom:14px;letter-spacing:-0.01em;}
+h1 span{color:#D8B26F;}
+.sub{font-size:14px;color:#B2B4B3;line-height:1.65;font-family:'Manrope',sans-serif;}
+.rule{height:1px;background:rgba(255,255,255,0.12);margin:28px 0;}
+.stats-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#B2B4B3;font-family:'Manrope',sans-serif;margin-bottom:8px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:16px;}
+.stat{background:#0a0a0a;padding:16px 14px;}
+.stat:first-child{border-radius:3px 0 0 3px;}
+.stat:last-child{border-radius:0 3px 3px 0;}
+.stat-num{font-size:22px;font-weight:600;color:#D8B26F;line-height:1;}
+.stat-desc{font-size:11px;color:#B2B4B3;margin-top:5px;line-height:1.4;font-family:'Manrope',sans-serif;}
+.scale-note{background:rgba(0,38,98,0.3);border-left:2px solid #002662;padding:10px 14px;border-radius:0 3px 3px 0;margin-bottom:28px;}
+.scale-note p{font-size:12px;color:#B2B4B3;font-family:'Manrope',sans-serif;line-height:1.6;}
+.scale-note strong{color:#fff;}
+.scale-note em{color:#D8B26F;font-style:normal;}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+.col-blue{background:#002662;padding:20px 18px;border-radius:3px;}
+.col-dark{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:20px 18px;border-radius:3px;}
+.col-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#D8B26F;margin-bottom:10px;font-weight:600;font-family:'Manrope',sans-serif;}
+.col-body{font-size:13px;color:#fff;line-height:1.65;font-family:'Manrope',sans-serif;}
+.col-body2{font-size:13px;color:#B2B4B3;line-height:1.65;margin-top:10px;font-family:'Manrope',sans-serif;}
+.breaches{background:#0a0a0a;padding:20px 18px;border-radius:3px;margin-bottom:28px;border-left:3px solid #D8B26F;}
+.breach-title{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#D8B26F;margin-bottom:14px;font-weight:600;font-family:'Manrope',sans-serif;}
+.breach-rows{display:flex;flex-direction:column;gap:14px;}
+.breach-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;}
+.breach-divider{height:1px;background:rgba(255,255,255,0.08);}
+.breach-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;}
+.breach-desc{font-size:12px;color:#B2B4B3;font-family:'Manrope',sans-serif;line-height:1.5;}
+.breach-cost{font-size:14px;font-weight:600;color:#D8B26F;text-align:right;white-space:nowrap;}
+.breach-year{font-size:10px;color:#B2B4B3;font-family:'Manrope',sans-serif;text-align:right;}
+.cta-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.cta-head{font-size:16px;font-weight:600;color:#fff;margin-bottom:4px;}
+.cta-sub{font-size:13px;color:#B2B4B3;font-family:'Manrope',sans-serif;}
+.cta-btn{background:#D8B26F;color:#151515;font-size:13px;font-weight:600;padding:12px 24px;border-radius:3px;letter-spacing:0.04em;font-family:'Bai Jamjuree',sans-serif;text-decoration:none;white-space:nowrap;}
+@media print{body{padding:0;}@page{margin:0;size:A4;}}
+</style>
+</head>
+<body>
+<div class="flyer">
+
+  <!-- Logo bar -->
+  <div class="logo-bar">
+    <div class="logo-mark">
+      <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="4" fill="#002662"/>
+        <path d="M20 8L32 16V24L20 32L8 24V16L20 8Z" fill="none" stroke="#D8B26F" stroke-width="2"/>
+        <path d="M20 14L27 18V22L20 26L13 22V18L20 14Z" fill="#D8B26F"/>
+      </svg>
+      <span class="logo-name">MYCENA</span>
+    </div>
+    <span class="logo-tag">Credential Control</span>
+  </div>
+
+  <!-- Headline -->
+  <div class="pill">For BPOs serving financial institutions</div>
+  <h1>Your agents control your clients' credentials.<br><span>That's the risk.</span></h1>
+  <p class="sub">MyCena gives your organisation — not your employees — control of every credential that touches your banking clients' systems.</p>
+
+  <div class="rule"></div>
+
+  <!-- Stats -->
+  <p class="stats-label">Measured figures · 1,000-agent BPO serving Tier 1 banks</p>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">300–400</div>
+      <div class="stat-desc">credential resets per month</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">£7k–£12k</div>
+      <div class="stat-desc">direct IT cost per month</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">2 weeks</div>
+      <div class="stat-desc">to full deployment</div>
+    </div>
+  </div>
+
+  <!-- Scale note -->
+  <div class="scale-note">
+    <p>At 7,000 agents this scales to <strong>£50k–£84k/month</strong> in IT cost alone, plus <strong>£40k–£80k/year</strong> in SLA penalty exposure — a combined <em>£980k annual exposure.</em></p>
+  </div>
+
+  <!-- Two columns -->
+  <div class="cols">
+    <div class="col-blue">
+      <div class="col-label">The problem</div>
+      <p class="col-body">No employer asks staff to make their own office key. Yet every BPO asks agents to hold and share credentials to your banking clients' systems.</p>
+      <p class="col-body2">One agent. One sale. Unlimited exposure.</p>
+    </div>
+    <div class="col-dark">
+      <div class="col-label">The solution</div>
+      <p class="col-body">MyCena generates and injects credentials invisibly. Agents access systems normally — but never see or share a credential.</p>
+      <p class="col-body2">Software overlay. No infrastructure change.</p>
+    </div>
+  </div>
+
+  <!-- Breaches -->
+  <div class="breaches">
+    <div class="breach-title">It happened to firms like yours</div>
+    <div class="breach-rows">
+      <div class="breach-row">
+        <div>
+          <div class="breach-name">Conduent — BPO, US government clients</div>
+          <div class="breach-desc">Compromised credentials. Benefit payments disrupted across multiple US states.</div>
+        </div>
+        <div>
+          <div class="breach-cost">$136.8M</div>
+          <div class="breach-year">2025</div>
+        </div>
+      </div>
+      <div class="breach-divider"></div>
+      <div class="breach-row">
+        <div>
+          <div class="breach-name">Capita — BPO, NHS &amp; pension clients</div>
+          <div class="breach-desc">Exposed credentials via unsecured storage. 90+ client organisations affected.</div>
+        </div>
+        <div>
+          <div class="breach-cost">£25M+</div>
+          <div class="breach-year">2023</div>
+        </div>
+      </div>
+      <div class="breach-divider"></div>
+      <div class="breach-row">
+        <div>
+          <div class="breach-name">Kaseya VSA — MSP platform attack</div>
+          <div class="breach-desc">MSP credentials weaponised to hit 1,500 downstream businesses in hours.</div>
+        </div>
+        <div>
+          <div class="breach-cost">$70M</div>
+          <div class="breach-year">2021</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <!-- CTA -->
+  <div class="cta-row">
+    <div>
+      <div class="cta-head">Book a 30-minute conversation</div>
+      <div class="cta-sub">No deck. No pitch. Just your numbers.</div>
+    </div>
+    <a class="cta-btn" href="https://mycena.co" target="_blank">mycena.co</a>
+  </div>
+
+</div>
+</body>
+</html>
