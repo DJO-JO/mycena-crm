@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credential Exposure Calculator — MyCena</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#6b6b66;--text3:#9b9b96;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --green:#1D9E75;--green-bg:#E1F5EE;--green-text:#04342C;
+  --red-bg:#FCEBEB;--red-text:#501313;
+  --radius:8px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1a;--bg2:#242422;--bg3:#2c2c2a;
+  --text:#e8e6de;--text2:#9b9996;--text3:#6b6b66;
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);
+  --green-bg:#04342C;--green-text:#9FE1CB;
+  --red-bg:#501313;--red-text:#F09595;
+}}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg3);color:var(--text);font-size:14px;min-height:100vh;padding:24px 16px;}
+.wrap{max-width:680px;margin:0 auto;}
+.calc-header{background:#1a1a18;color:#e8e6de;border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:20px;}
+.calc-header .logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.calc-header .logo-mark{width:32px;height:32px;border-radius:8px;background:var(--green);display:flex;align-items:center;justify-content:center;}
+.calc-header .logo-name{font-size:15px;font-weight:500;color:#e8e6de;}
+.calc-header h1{font-size:20px;font-weight:500;color:#e8e6de;margin-bottom:6px;}
+.calc-header p{font-size:13px;color:#9b9b96;line-height:1.5;}
+.incident-bar{background:var(--red-bg);border-left:3px solid #E24B4A;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--red-text);line-height:1.6;border-radius:0 var(--radius) var(--radius) 0;}
+.section{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
+.section-title{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;margin-bottom:16px;}
+.section-num{width:24px;height:24px;border-radius:50%;background:#1a1a18;color:#e8e6de;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:11px;color:var(--text2);}
+.field input{font-size:13px;padding:8px 10px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-family:inherit;width:100%;}
+.field input:focus{outline:2px solid var(--green);outline-offset:1px;}
+.field .hint{font-size:11px;color:var(--text3);line-height:1.4;}
+.section-total{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);margin-top:4px;}
+.section-total-label{font-size:12px;color:var(--text2);}
+.section-total-value{font-size:16px;font-weight:500;}
+.total-card{background:#1a1a18;border-radius:var(--radius-lg);padding:22px 28px;margin:20px 0 12px;}
+.total-label{font-size:12px;color:#9b9b96;margin-bottom:6px;}
+.total-value{font-size:36px;font-weight:500;color:#e8e6de;margin-bottom:4px;}
+.total-sub{font-size:12px;color:#6b6b66;}
+.proof-section{background:var(--bg2);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:12px;}
+.proof-title{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em;}
+.proof-item{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);}
+.proof-item:last-child{border-bottom:none;padding-bottom:0;}
+.proof-dot{width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0;margin-top:5px;}
+.proof-text{font-size:12px;color:var(--text2);line-height:1.6;}
+.proof-text strong{color:var(--text);}
+.mycena-section{border:0.5px solid var(--green);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:12px;}
+.mycena-title{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;margin-bottom:14px;}
+.mycena-num{width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mycena-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+.mycena-row:last-child{border-bottom:none;padding-bottom:0;}
+.mycena-row-label{color:var(--text2);}
+.mycena-row-value{font-weight:500;}
+.saving{color:var(--green);font-size:18px;}
+.disclaimer{font-size:11px;color:var(--text3);line-height:1.7;padding:12px 0;}
+.cta{background:var(--green);color:white;border-radius:var(--radius-lg);padding:18px 24px;text-align:center;margin-top:4px;}
+.cta h2{font-size:15px;font-weight:500;color:white;margin-bottom:6px;}
+.cta p{font-size:12px;color:#9FE1CB;margin-bottom:14px;line-height:1.5;}
+.cta a{display:inline-block;background:white;color:#04342C;font-size:13px;font-weight:500;padding:10px 24px;border-radius:var(--radius);text-decoration:none;font-family:inherit;}
+.cta a:hover{opacity:0.9;}
+@media(max-width:520px){.field-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="calc-header">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/>
+          <rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".7"/>
+          <rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".7"/>
+          <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".4"/>
+        </svg>
+      </div>
+      <span class="logo-name">MyCena</span>
+    </div>
+    <h1>Credential exposure calculator</h1>
+    <p>BPO operations · CFO risk assessment · Enter your numbers to calculate your specific annual exposure from credential-related operational cost.</p>
+  </div>
+
+  <div class="incident-bar">
+    <strong>Reference point:</strong> A leading BPO serving Tier 1 banking clients estimated £65,000/month in credential-related operational cost before MyCena deployment — before factoring in breach liability. The investment paid for itself before the end of month one.
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">1</span>Helpdesk reset costs</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Total headcount (agents)</label>
+        <input type="number" id="headcount" placeholder="e.g. 1000" oninput="calc()">
+        <span class="hint">Average BPO agent generates 1.7 password reset tickets per month</span>
+      </div>
+      <div class="field">
+        <label>Cost per ticket (£)</label>
+        <input type="number" id="ticketCost" placeholder="47" value="47" oninput="calc()">
+        <span class="hint">Industry average £47 · range £25–70 including IT time and user downtime</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual helpdesk reset cost</span>
+      <span class="section-total-value" id="s1">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">2</span>SLA penalty exposure</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Monthly client revenue (£)</label>
+        <input type="number" id="clientRev" placeholder="e.g. 500000" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Credential-related SLA incidents per quarter</label>
+        <input type="number" id="slaInc" placeholder="5" value="5" oninput="calc()">
+        <span class="hint">BPO average 5.2 per quarter</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Average penalty per incident (% of monthly revenue)</label>
+        <input type="number" id="penaltyPct" placeholder="1" value="1" oninput="calc()">
+        <span class="hint">Typical contractual range 0.5–2%</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual SLA penalty exposure</span>
+      <span class="section-total-value" id="s2">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">3</span>Contractor offboarding lag</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Active contractors and third-party vendors</label>
+        <input type="number" id="contractors" placeholder="e.g. 50" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Annual contractor turnover (%)</label>
+        <input type="number" id="turnover" placeholder="40" value="40" oninput="calc()">
+        <span class="hint">Percentage who leave or rotate each year</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Average daily contractor rate (£)</label>
+        <input type="number" id="dayRate" placeholder="e.g. 350" oninput="calc()">
+        <span class="hint">IBM 2024: average 3.2 days of ghost access after departure</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual ghost access cost</span>
+      <span class="section-total-value" id="s3">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="section-num">4</span>Audit preparation overhead</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Audit cycles per year requiring credential evidence</label>
+        <input type="number" id="audits" placeholder="e.g. 3" oninput="calc()">
+        <span class="hint">SOX, PCI, GDPR, client security audits</span>
+      </div>
+      <div class="field">
+        <label>IT staff hourly rate (£)</label>
+        <input type="number" id="hourlyRate" placeholder="95" value="95" oninput="calc()">
+        <span class="hint">Average 47 hours of IT preparation per audit cycle</span>
+      </div>
+    </div>
+    <div class="section-total">
+      <span class="section-total-label">Annual audit preparation overhead</span>
+      <span class="section-total-value" id="s4">—</span>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <div class="total-label">Your total annual operational exposure</div>
+    <div class="total-value" id="total">Enter your numbers above</div>
+    <div class="total-sub" id="totalSub">Operational costs only · excludes breach liability, insurance increases, regulatory fines</div>
+  </div>
+
+  <div class="proof-section">
+    <div class="proof-title">Proof points</div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>Colonial Pipeline:</strong> $4.4M ransom paid after a single compromised credential gave attackers access to critical infrastructure. The credential cost nothing to steal.</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>M&S:</strong> £300M+ revenue impact in 5 weeks following a credential-based attack. Board-level crisis triggered by an access control failure.</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-dot"></div>
+      <div class="proof-text"><strong>IBM Cost of a Data Breach 2024:</strong> Average breach cost $4.88M globally. BPO sector runs 18% above the global mean. Over 80% of breaches involve compromised or stolen credentials.</div>
+    </div>
+  </div>
+
+  <div class="mycena-section">
+    <div class="mycena-title"><span class="mycena-num">M</span>MyCena economics</div>
+    <div class="field-row" style="margin-bottom:14px">
+      <div class="field">
+        <label>MyCena annual licence cost (£)</label>
+        <input type="number" id="mycenaCost" placeholder="Contact us for pricing" oninput="calc()">
+        <span class="hint">Headcount-based pricing · contact hello@mycena.co</span>
+      </div>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">Your annual exposure</span>
+      <span class="mycena-row-value" id="mExposure">—</span>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">MyCena annual cost</span>
+      <span class="mycena-row-value" id="mCost">—</span>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">Net annual saving</span>
+      <span class="mycena-row-value saving" id="mSaving">—</span>
+    </div>
+    <div class="mycena-row">
+      <span class="mycena-row-label">Payback period</span>
+      <span class="mycena-row-value" id="mPayback">—</span>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    This calculation covers operational exposure only: helpdesk costs, SLA penalties, contractor ghost access, and audit overhead. It excludes average breach cost (£3.9M), cyber insurance premium increases, regulatory fines under GDPR, PCI DSS, or SOX, and reputational impact on client retention. Full exposure is materially higher than the figure shown above.
+  </div>
+
+  <div class="cta">
+    <h2>Book a Board-Level Risk Assessment</h2>
+    <p>We will calculate your specific exposure figure using your actual numbers before the call ends. 45 minutes. No deck. No obligation.</p>
+    <a href="https://mycena.co" target="_blank">Book your assessment at mycena.co</a>
+  </div>
+
+</div>
+<script>
+function fmt(n){
+  if(!n&&n!==0) return '—';
+  return '£'+Math.round(n).toLocaleString('en-GB');
+}
+function calc(){
+  var headcount=parseFloat(document.getElementById('headcount').value)||0;
+  var ticketCost=parseFloat(document.getElementById('ticketCost').value)||47;
+  var clientRev=parseFloat(document.getElementById('clientRev').value)||0;
+  var slaInc=parseFloat(document.getElementById('slaInc').value)||0;
+  var penaltyPct=parseFloat(document.getElementById('penaltyPct').value)||0;
+  var contractors=parseFloat(document.getElementById('contractors').value)||0;
+  var turnover=parseFloat(document.getElementById('turnover').value)||0;
+  var dayRate=parseFloat(document.getElementById('dayRate').value)||0;
+  var audits=parseFloat(document.getElementById('audits').value)||0;
+  var hourlyRate=parseFloat(document.getElementById('hourlyRate').value)||95;
+  var mycenaCost=parseFloat(document.getElementById('mycenaCost').value)||0;
+
+  var s1=headcount*1.7*ticketCost*12;
+  var s2=clientRev*(penaltyPct/100)*slaInc*4;
+  var s3=contractors*(turnover/100)*dayRate*3.2;
+  var s4=audits*47*hourlyRate;
+  var total=s1+s2+s3+s4;
+
+  document.getElementById('s1').textContent=headcount?fmt(s1):'—';
+  document.getElementById('s2').textContent=clientRev?fmt(s2):'—';
+  document.getElementById('s3').textContent=(contractors&&dayRate)?fmt(s3):'—';
+  document.getElementById('s4').textContent=audits?fmt(s4):'—';
+
+  var hasData=headcount||clientRev||(contractors&&dayRate)||audits;
+  if(hasData){
+    document.getElementById('total').textContent=fmt(total);
+    document.getElementById('totalSub').textContent='per year · operational costs only · excludes breach liability and regulatory fines';
+    document.getElementById('mExposure').textContent=fmt(total);
+    if(mycenaCost){
+      var saving=total-mycenaCost;
+      var paybackMonths=mycenaCost>0&&total>0?Math.round((mycenaCost/total)*12):0;
+      document.getElementById('mCost').textContent=fmt(mycenaCost);
+      document.getElementById('mSaving').textContent=saving>0?fmt(saving):'—';
+      document.getElementById('mPayback').textContent=paybackMonths>0?paybackMonths+' months':'—';
+    }
+  } else {
+    document.getElementById('total').textContent='Enter your numbers above';
+    document.getElementById('totalSub').textContent='Operational costs only · excludes breach liability, insurance increases, regulatory fines';
+  }
+}
+</script>
+</body>
+</html>
