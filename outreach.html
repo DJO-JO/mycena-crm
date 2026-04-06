@@ -332,18 +332,16 @@ function generateFollowUp(sid){
   state.loadingId="followup_"+sid; render();
   var c=state.contacts.filter(function(x){return x.id===sid;})[0];
   if(!c){state.loadingId=null;render();return;}
-  var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
+ var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
     +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
     +"Sector: "+c.sector+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
     +(c.agent08_brief?"Research brief:\n"+c.agent08_brief+"\n":"")
     +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
-    +"Rules: 3-4 sentences max. Start with first name and a dash. "
-    +"Sentence 1: warm genuine opener specific to them never Thanks for connecting. "
-    +"Sentence 2: one specific pain someone in their role at a BPO would immediately recognise. "
-    +"Sentence 3: one warm curious question about whether that pain is real for them. "
-    +"End with just: "+FOUNDER+". "
-    +"Never mention MyCena or any product. Never: complex landscape, grappling, I wanted to reach out, Best regards, leverage, seamless, would love to. "
-    +"No deck link or case study. Tone: founder to peer warm specific genuinely curious. Goal: a reply not a meeting.";
+    +"Write a short LinkedIn message. STRICT 60 word maximum excluding the sign-off.\n"
+    +"Structure: one warm opener specific to them. One plain observation about a pain someone in their role would recognise immediately. One short easy question they can answer in one sentence.\n"
+    +"End with just: "+FOUNDER+"\n"
+    +"Never mention MyCena or any product. Never use: regulatory nightmares, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, I wanted to reach out.\n"
+    +"No deck no link. Tone: founder to peer — warm and direct. Goal: one reply.";
   aiReq(p,"Return only the message. No preamble no labels no quotes.")
     .then(function(msg){
       state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{followup_msg:msg}):x;});
