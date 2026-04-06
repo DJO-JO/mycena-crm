@@ -312,14 +312,16 @@ function generateNote(sid){
   state.loadingId="note_"+sid; render();
   var c=state.contacts.filter(function(x){return x.id===sid;})[0];
   if(!c){state.loadingId=null;render();return;}
-  var p="You are writing a LinkedIn connection request note on behalf of "+FOUNDER+", co-founder of MyCena.\n"
-    +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+" | Sector: "+c.sector+" | Country: "+c.country+"\n"
-    +"Keywords: "+(c.keywords||"none")+"\n"
+var p="You are writing a LinkedIn message on behalf of "+FOUNDER+", co-founder of MyCena, sent after a connection is accepted.\n"
+    +"Contact: "+c.contact_name+", "+c.title+" at "+c.company+"\n"
+    +"Sector: "+c.sector+" | Country: "+c.country+" | Keywords: "+(c.keywords||"none")+"\n"
     +(c.agent08_brief?"Research brief:\n"+c.agent08_brief+"\n":"")
-    +"This note goes WITH the connection request before they accept. STRICT 200 character maximum.\n"
-    +"Rules: Start with first name and a dash. One specific real reference to their company sector or role. "
-    +"Low-friction reason to connect. No product mention no deck no link. Peer-to-peer founder tone. "
-    +"Never: I wanted to reach out, complex landscape, leverage, seamless. Rewrite shorter if over 200 chars.";
+    +(c.linkedin_note?"Connection note sent:\n"+c.linkedin_note+"\n":"")
+    +"Write a short LinkedIn message. STRICT 60 word maximum excluding the sign-off.\n"
+    +"Structure: one warm opener specific to them. One plain observation about a pain someone in their role would recognise immediately. One short easy question they can answer in one sentence.\n"
+    +"End with just: "+FOUNDER+"\n"
+    +"Never mention MyCena or any product. Never use: regulatory nightmares, blind spot, scale operations, sensitive environments, complex landscape, leverage, seamless, would love to, I wanted to reach out.\n"
+    +"No deck no link. Tone: founder to peer — warm and direct. Goal: one reply.";
   aiReq(p,"Return only the note. No preamble no labels no quotes.")
     .then(function(note){
       state.contacts=state.contacts.map(function(x){return x.id===sid?Object.assign({},x,{linkedin_note:note}):x;});
