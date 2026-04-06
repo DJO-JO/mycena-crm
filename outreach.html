@@ -485,13 +485,18 @@ function renderContactCard(c) {
           <div class="status-row">
             <div class="section-title">Outreach status</div>
             <div class="status-btns">
-              ${STATUS_FLOW.map(s=>{
-                const active=status===s;
-                const sst=STATUS_STYLE[s];
-                return `<button class="status-btn${active?" active":""}" style="${active?`background:${sst.bg};color:${sst.text};border-color:${sst.text}`:""}" onclick="setStatus('${sid}','${s}')">${esc(s)}</button>`;
-              }).join("")}
-            </div>
-          </div>`:""}
+										  ${STATUS_FLOW.map(s=>{
+										    const active=status===s;
+										    const sst=STATUS_STYLE[s];
+										    const tsField={"Note sent":"note_sent_at","Connected":"connected_at","Replied":"replied_at","Booked":"booked_at"}[s];
+										    const tsVal=tsField&&c[tsField]?new Date(c[tsField]).toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"";
+										    return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+										      <button class="status-btn${active?" active":""}" style="${active?`background:${sst.bg};color:${sst.text};border-color:${sst.text}`:""}" onclick="setStatus('${sid}','${s}')">${esc(s)}</button>
+										      ${tsVal?`<span style="font-size:10px;color:var(--text3)">${tsVal}</span>`:""}
+										    </div>`;
+										  }).join("")}
+												</div>
+        		  </div>`:""}
 
           <div class="two-col">
             <div>
