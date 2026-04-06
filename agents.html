@@ -180,6 +180,25 @@ const agentState = {
   "12":{ mode:"Ad variants", platform:"LinkedIn", campaignType:"Conversion — bottom of funnel", format:"Single image ad", segment:"CISO direct", sector:"Financial services", ladder:"2 — Aware but undefended", incident:"", hypothesis:"", brief:"" },
 };
 
+// ── FIX: patch-only re-render helpers ────────────────────────────────────────
+// Instead of oninput → full re-render, text inputs/textareas use:
+//   oninput="liveField(this,'01','topic')"   — updates state silently, no re-render
+//   onchange="setField(...)"                 — for selects (already safe, no focus issue)
+//   onblur="syncField(this,'01','topic')"    — belt-and-braces sync on blur
+
+function liveField(el, id, f) {
+  agentState[id][f] = el.value;
+  // special handling: mode change on agent 04 needs asset list refresh
+  if (id==="04" && f==="mode") {
+    agentState[id].assetType = ASSET_MAP_04[el.value][0];
+    render();
+  }
+}
+function syncField(el, id, f) {
+  // Belt-and-braces: make sure state matches DOM on blur
+  agentState[id][f] = el.value;
+}
+
 // ── API ───────────────────────────────────────────────────────────────────────
 async function callClaude(userPrompt, systemPrompt) {
   const body = { model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:userPrompt}] };
@@ -329,8 +348,6 @@ async function buildPrompts(id, sharedContext) {
   }
   if (id==="02") {
     const angleInstruction = s.angle ? `PRIORITY INSTRUCTION: The user has specified a specific angle — you MUST build the entire piece around this:\n"${s.angle}"\nDo not deviate from this angle. It is the spine of everything you write.\n\n` : "";
-
-    // Run Agent 05 (audience motivation), Agent 06 (verified data), and angle fact-check in parallel
     const [c5, c6, verifiedFacts] = await Promise.all([
       callClaude(p05ctx(s.role, s.sector)),
       callClaude(p06ctx(s.sector, "", s.ladder)),
@@ -339,7 +356,6 @@ async function buildPrompts(id, sharedContext) {
         "Return a structured fact-check. Label each claim VERIFIED, UNVERIFIED, or DISTORTED with corrections where needed."
       ) : Promise.resolve("")
     ]);
-
     return {
       sys: `You are the Content & Thought Leadership Agent for MyCena.\n${angleInstruction}${BRAND_RULES}${intel}\n\nSALES BRIEFING (audience motivation):\n${c5}\n\nDATA & INTELLIGENCE BRIEFING (verified sector proof):\n${c6}\n\n${verifiedFacts ? `FACT-CHECK OF YOUR ANGLE (CRITICAL — follow this strictly):\n${verifiedFacts}\n\nYou MUST:\n- Only use figures marked VERIFIED\n- Replace any DISTORTED figures with the corrected versions above\n- Remove any UNVERIFIED claims entirely or flag them as unconfirmed\n- Never invent figures not present in the angle or the data briefing above\n` : ""}Never open with "In today's rapidly evolving threat landscape."\nChecklist before finishing: named incident + VERIFIED cost figure / physical key analogy / single audience / Ladder stage identified / no hypotheticals / no invented figures / CTA = Board-Level Risk Assessment.\nRespond in ${lang}.`,
       user: `${s.angle ? `ANGLE TO FOLLOW (use only verified figures from the fact-check above):\n${s.angle}\n\n` : ""}Content type: ${s.ctype}\nAudience: ${s.role}\nSector: ${s.sector}\nControl Ladder: ${s.ladder}`
@@ -432,6 +448,27 @@ function fld(labelHtml, inputHtml) {
   return `<div class="field" style="margin-bottom:12px"><label class="field-label">${labelHtml}</label>${inputHtml}</div>`;
 }
 
+// ── text / textarea input builders (no-rerender versions) ────────────────────
+// All text inputs and textareas use liveField (oninput, no rerender) + syncField (onblur).
+// Selects still use onchange → setField → render() which is fine (no focus to lose).
+
+function textInput(id, f, placeholder, type="text", extraStyle="") {
+  const v = esc(agentState[id][f]||"");
+  return `<input type="${type}" value="${v}" placeholder="${esc(placeholder)}"
+    oninput="liveField(this,'${id}','${f}')"
+    onblur="syncField(this,'${id}','${f}')"
+    ${extraStyle?`style="${extraStyle}"`:""}
+  >`;
+}
+function textArea(id, f, placeholder, height="70px") {
+  const v = esc(agentState[id][f]||"");
+  return `<textarea placeholder="${esc(placeholder)}"
+    oninput="liveField(this,'${id}','${f}')"
+    onblur="syncField(this,'${id}','${f}')"
+    style="height:${height}"
+  >${v}</textarea>`;
+}
+
 // ── panel renderer ────────────────────────────────────────────────────────────
 function renderPanel(id) {
   const s=agentState[id], ag=AGENTS.find(a=>a.id===id);
@@ -447,8 +484,8 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('01','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       ${s.mode==="Generation"?`<div class="field"><label class="field-label">Content type</label><select onchange="setField('01','ctype',this.value)">${sel(CTYPES_01,s.ctype)}</select></div>`:""}`;
     textareaHtml=s.mode==="Generation"
-      ?fld("Topic / brief",`<textarea placeholder="e.g. LinkedIn post for BPO IT Directors — focus on SLA risk..." oninput="setField('01','topic',this.value)">${esc(s.topic)}</textarea>`)
-      :fld("Content to review",`<textarea style="height:110px" placeholder="Paste copy to audit against brand rules..." oninput="setField('01','review',this.value)">${esc(s.review)}</textarea>`);
+      ?fld("Topic / brief", textArea(id,"topic","e.g. LinkedIn post for BPO IT Directors — focus on SLA risk..."))
+      :fld("Content to review", textArea(id,"review","Paste copy to audit against brand rules...","110px"));
   }
   if (id==="02") {
     fieldsHtml=`
@@ -456,7 +493,7 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('02','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Content type</label><select onchange="setField('02','ctype',this.value)">${sel(CTYPES_02,s.ctype)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('02','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>`;
-    textareaHtml=fld("Angle / focus <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Anchor on Kaseya — third-party access as the entry point..." oninput="setField('02','angle',this.value)">${esc(s.angle)}</textarea>`);
+    textareaHtml=fld("Angle / focus <span class='field-opt'>(optional)</span>", textArea(id,"angle","e.g. Anchor on Kaseya — third-party access as the entry point..."));
   }
   if (id==="03") {
     fieldsHtml=`
@@ -465,7 +502,7 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Channel</label><select onchange="setField('03','channel',this.value)">${sel(CHANNELS_03,s.channel)}</select></div>
       <div class="field"><label class="field-label">Campaign type</label><select onchange="setField('03','campaign',this.value)">${sel(CAMPAIGNS_03,s.campaign)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('03','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>`;
-    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Reactive LinkedIn ad after M&S breach — target retail CISOs..." oninput="setField('03','brief',this.value)">${esc(s.brief)}</textarea>`);
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>", textArea(id,"brief","e.g. Reactive LinkedIn ad after M&S breach — target retail CISOs..."));
   }
   if (id==="04") {
     const assetOpts=ASSET_MAP_04[s.mode]||[];
@@ -475,8 +512,8 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Asset type</label><select onchange="setField('04','assetType',this.value)">${sel(assetOpts,s.assetType)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('04','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Press target</label><select onchange="setField('04','pressTarget',this.value)">${sel(["Security press","Business press (FT/BBC/Times)","Trade press","Both"],s.pressTarget)}</select></div>
-      ${s.mode==="Reactive — breach response"?`<div class="field full"><label class="field-label">Incident / news hook</label><textarea style="height:60px" placeholder="e.g. Major UK retailer hit by ransomware..." oninput="setField('04','incident',this.value)">${esc(s.incident)}</textarea></div>`:""}`;
-    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CEO interview on Sky News..." oninput="setField('04','brief',this.value)">${esc(s.brief)}</textarea>`);
+      ${s.mode==="Reactive — breach response"?`<div class="field full"><label class="field-label">Incident / news hook</label>${textArea(id,"incident","e.g. Major UK retailer hit by ransomware...","60px")}</div>`:""}`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>", textArea(id,"brief","e.g. CEO interview on Sky News..."));
   }
   if (id==="05") {
     fieldsHtml=`
@@ -485,20 +522,22 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Asset type</label><select onchange="setField('05','assetType',this.value)">${sel(ASSETS_05,s.assetType)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('05','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
       <div class="field"><label class="field-label">Headcount</label><select onchange="setField('05','headcount',this.value)">${sel(HEADCOUNTS,s.headcount)}</select></div>
-      <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.dealValue)}" placeholder="e.g. 85000" oninput="setField('05','dealValue',this.value)"></div>
-      <div class="field"><label class="field-label">Exposure figure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('05','exposure',this.value)"></div>`;
-    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. CISO on board but CFO blocked it..." oninput="setField('05','brief',this.value)">${esc(s.brief)}</textarea>`);
+      <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label>${textInput(id,"dealValue","e.g. 85000","number")}</div>
+      <div class="field"><label class="field-label">Exposure figure (£) <span class='field-opt'>opt</span></label>${textInput(id,"exposure","e.g. 780000","number")}</div>`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>", textArea(id,"brief","e.g. CISO on board but CFO blocked it..."));
   }
   if (id==="06") {
     modesHtml=pills(MODES_06,s.mode,id,"mode",color);
     fieldsHtml=`
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('06','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Headcount</label><select onchange="setField('06','headcount',this.value)">${sel(HEADCOUNTS,s.headcount)}</select></div>
-      ${s.mode==="Exposure calculation"?`<div class="field"><label class="field-label">Monthly credential tickets <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.ticketVol)}" placeholder="e.g. 320" oninput="setField('06','ticketVol',this.value)"></div><div class="field"><label class="field-label">Staff hourly rate (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.hourlyRate)}" placeholder="e.g. 35" oninput="setField('06','hourlyRate',this.value)"></div>`:""}
-      ${s.mode==="Incident deep-dive"?`<div class="field full"><label class="field-label">Incident to analyse</label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S May 2025, Colonial Pipeline..." oninput="setField('06','incident',this.value)"></div>`:""}
-      <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.dealValue)}" placeholder="e.g. 85000" oninput="setField('06','dealValue',this.value)"></div>
-      <div class="field"><label class="field-label">Known exposure (£) <span class='field-opt'>opt</span></label><input type="number" value="${esc(s.exposure)}" placeholder="e.g. 780000" oninput="setField('06','exposure',this.value)"></div>`;
-    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. Need exposure figure to anchor CFO one-pager..." oninput="setField('06','brief',this.value)">${esc(s.brief)}</textarea>`);
+      ${s.mode==="Exposure calculation"?`
+        <div class="field"><label class="field-label">Monthly credential tickets <span class='field-opt'>opt</span></label>${textInput(id,"ticketVol","e.g. 320","number")}</div>
+        <div class="field"><label class="field-label">Staff hourly rate (£) <span class='field-opt'>opt</span></label>${textInput(id,"hourlyRate","e.g. 35","number")}</div>`:""}
+      ${s.mode==="Incident deep-dive"?`<div class="field full"><label class="field-label">Incident to analyse</label>${textInput(id,"incident","e.g. M&S May 2025, Colonial Pipeline...")}</div>`:""}
+      <div class="field"><label class="field-label">Deal value (£) <span class='field-opt'>opt</span></label>${textInput(id,"dealValue","e.g. 85000","number")}</div>
+      <div class="field"><label class="field-label">Known exposure (£) <span class='field-opt'>opt</span></label>${textInput(id,"exposure","e.g. 780000","number")}</div>`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>", textArea(id,"brief","e.g. Need exposure figure to anchor CFO one-pager..."));
   }
   if (id==="07") {
     const showDeal=["Deal health check","Conversion analysis"].includes(s.mode);
@@ -508,18 +547,22 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('07','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Buyer role</label><select onchange="setField('07','role',this.value)">${sel(ROLES,s.role)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('07','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
-      ${showDeal?`<div class="field"><label class="field-label">Deal stage</label><select onchange="setField('07','dealStage',this.value)">${sel(STAGES_CRM,s.dealStage)}</select></div><div class="field"><label class="field-label">Risk rating</label><select onchange="setField('07','risk',this.value)">${sel(RISKS,s.risk)}</select></div><div class="field"><label class="field-label">Days since last activity</label><input type="number" value="${esc(s.daysIdle)}" placeholder="e.g. 14" oninput="setField('07','daysIdle',this.value)"></div><div class="field"><label class="field-label">Last activity <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.lastAct)}" placeholder="e.g. Sent CFO one-pager" oninput="setField('07','lastAct',this.value)"></div>`:""}
-      ${showContent?`<div class="field full"><label class="field-label">${s.mode==="Brand drift audit"?"Content to audit":"Agent output to improve"}</label><textarea style="height:100px" placeholder="${s.mode==="Brand drift audit"?"Paste copy to score...":"Paste agent output to diagnose..."}" oninput="setField('07','content',this.value)">${esc(s.content)}</textarea></div>`:""}`;
-    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${showDeal?"e.g. CISO engaged but quiet after board deck...":"e.g. Check for IAM/PAM framing drift..."}" oninput="setField('07','brief',this.value)">${esc(s.brief)}</textarea>`);
+      ${showDeal?`
+        <div class="field"><label class="field-label">Deal stage</label><select onchange="setField('07','dealStage',this.value)">${sel(STAGES_CRM,s.dealStage)}</select></div>
+        <div class="field"><label class="field-label">Risk rating</label><select onchange="setField('07','risk',this.value)">${sel(RISKS,s.risk)}</select></div>
+        <div class="field"><label class="field-label">Days since last activity</label>${textInput(id,"daysIdle","e.g. 14","number")}</div>
+        <div class="field"><label class="field-label">Last activity <span class='field-opt'>opt</span></label>${textInput(id,"lastAct","e.g. Sent CFO one-pager")}</div>`:""}
+      ${showContent?`<div class="field full"><label class="field-label">${s.mode==="Brand drift audit"?"Content to audit":"Agent output to improve"}</label>${textArea(id,"content",s.mode==="Brand drift audit"?"Paste copy to score...":"Paste agent output to diagnose...","100px")}</div>`:""}`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>", textArea(id,"brief",showDeal?"e.g. CISO engaged but quiet after board deck...":"e.g. Check for IAM/PAM framing drift..."));
   }
   if (id==="11") {
     modesHtml=pills(MODES_11,s.mode,id,"mode",color);
     extraHtml=`<div style="font-size:11px;padding:8px 12px;border-radius:7px;background:var(--green-bg);color:var(--green-text);margin-bottom:12px;border-left:3px solid #1D9E75">Pulls live CRM data from Supabase automatically before running.</div>`;
     fieldsHtml=`
       <div class="field"><label class="field-label">Primary sector focus <span class='field-opt'>opt</span></label><select onchange="setField('11','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
-      <div class="field"><label class="field-label">Campaign context <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.campaignContext)}" placeholder="e.g. Financial services sequence outperforming..." oninput="setField('11','campaignContext',this.value)"></div>
-      <div class="field"><label class="field-label">Ads context <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.adsContext)}" placeholder="e.g. CISO segment CPL dropped 30%..." oninput="setField('11','adsContext',this.value)"></div>`;
-    textareaHtml=fld("Additional context <span class='field-opt'>(optional)</span>",`<textarea placeholder="e.g. 3 fast closes in healthcare this month — check if breakout signal..." oninput="setField('11','brief',this.value)">${esc(s.brief)}</textarea>`);
+      <div class="field"><label class="field-label">Campaign context <span class='field-opt'>opt</span></label>${textInput(id,"campaignContext","e.g. Financial services sequence outperforming...")}</div>
+      <div class="field"><label class="field-label">Ads context <span class='field-opt'>opt</span></label>${textInput(id,"adsContext","e.g. CISO segment CPL dropped 30%...")}</div>`;
+    textareaHtml=fld("Additional context <span class='field-opt'>(optional)</span>", textArea(id,"brief","e.g. 3 fast closes in healthcare this month — check if breakout signal..."));
   }
   if (id==="12") {
     modesHtml=pills(MODES_12,s.mode,id,"mode",color);
@@ -531,9 +574,9 @@ function renderPanel(id) {
       <div class="field"><label class="field-label">Audience segment</label><select onchange="setField('12','segment',this.value)">${sel(SEGMENTS_12,s.segment)}</select></div>
       <div class="field"><label class="field-label">Sector</label><select onchange="setField('12','sector',this.value)">${sel(SECTORS,s.sector)}</select></div>
       <div class="field"><label class="field-label">Control Ladder stage</label><select onchange="setField('12','ladder',this.value)">${sel(LADDER,s.ladder)}</select></div>
-      <div class="field full"><label class="field-label">Incident hook <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.incident)}" placeholder="e.g. M&S £300M, Colonial Pipeline $4.4M..." oninput="setField('12','incident',this.value)"></div>
-      ${s.mode==="Test brief"?`<div class="field full"><label class="field-label">Hypothesis to test <span class='field-opt'>opt</span></label><input type="text" value="${esc(s.hypothesis)}" placeholder="e.g. Incident-led headlines outperform deployment-speed headlines..." oninput="setField('12','hypothesis',this.value)"></div>`:""}`;
-    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>",`<textarea placeholder="${s.mode==="Ad variants"?"e.g. Focus on SLA penalty risk for BPO...":"e.g. Test physical key analogy vs named incident..."}" oninput="setField('12','brief',this.value)">${esc(s.brief)}</textarea>`);
+      <div class="field full"><label class="field-label">Incident hook <span class='field-opt'>opt</span></label>${textInput(id,"incident","e.g. M&S £300M, Colonial Pipeline $4.4M...")}</div>
+      ${s.mode==="Test brief"?`<div class="field full"><label class="field-label">Hypothesis to test <span class='field-opt'>opt</span></label>${textInput(id,"hypothesis","e.g. Incident-led headlines outperform deployment-speed headlines...")}</div>`:""}`;
+    textareaHtml=fld("Brief / context <span class='field-opt'>(optional)</span>", textArea(id,"brief",s.mode==="Ad variants"?"e.g. Focus on SLA penalty risk for BPO...":"e.g. Test physical key analogy vs named incident..."));
   }
 
   const contributors=state.loadedContext[id]||[];
