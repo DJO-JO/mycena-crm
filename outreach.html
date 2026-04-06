@@ -331,12 +331,21 @@ Return: 1) Sector breach + relevance 2) Control Ladder position + why 3) Top obj
 async function generateNote(sid) {
   state.loadingId=`note_${sid}`; render();
   const c=state.contacts.find(x=>x.id===sid); if(!c) return;
-  const note=await claude(`LinkedIn connection note for MyCena founder.
+  const note=await claude(`You are writing a LinkedIn connection request note on behalf of Julia, co-founder of MyCena.
 Contact: ${c.contact_name}, ${c.title} at ${c.company} | Sector: ${c.sector} | Country: ${c.country}
 Keywords: ${c.keywords||"none"}
-${c.agent08_brief?`Brief:\n${c.agent08_brief}`:""}
-Rules: STRICT 200 character maximum. Never name the product. Reference something specific and real. No deck/link. Low-friction CTA. Peer-to-peer tone. Start with first name. Rewrite if over 200 chars.`,
-    "Return only the LinkedIn note. No preamble, no labels, no quotes.");
+${c.agent08_brief?`Research brief:\n${c.agent08_brief}`:""}
+
+This note is sent WITH the connection request — before they have accepted. It must be under 200 characters including spaces.
+
+Rules:
+- Start with their first name followed by a dash e.g. "Barbara —"
+- Reference one specific and real thing about their company, sector, or role — nothing generic
+- One low-friction reason to connect — no product mention, no deck, no link
+- Peer-to-peer tone — founder to peer, not salesperson to prospect
+- Never use: "I wanted to reach out", "complex landscape", "leverage", "seamless", "Best regards"
+- STRICT 200 character maximum — count every character including spaces. Rewrite shorter if over 200.`,
+    "Return only the connection note. No preamble, no labels, no quotes.");
   state.contacts=state.contacts.map(x=>x.id===sid?{...x,linkedin_note:note}:x);
   await saveBriefNote(sid,c.agent08_brief||"",note);
   toast("Note saved to contact");
@@ -377,21 +386,49 @@ Rules: STRICT 200 character maximum. No product name. Specific reference. No dec
 async function generateFollowUp(sid) {
   state.loadingId=`followup_${sid}`; render();
   const c=state.contacts.find(x=>x.id===sid); if(!c) return;
-  const msg=await claude(`You are MyCena's Post-Connection Message Agent. Write the first LinkedIn message to send after a connection is accepted.
+  const msg=await claude(`You are writing a LinkedIn message on behalf of Julia, co-founder of MyCena, sent immediately after a connection request is accepted.
+
 Contact: ${c.contact_name}, ${c.title} at ${c.company}
 Sector: ${c.sector} | Country: ${c.country}
 Keywords: ${c.keywords||"none"}
 ${c.agent08_brief?`Research brief:\n${c.agent08_brief}`:""}
-${c.linkedin_note?`Connection note sent:\n${c.linkedin_note}`:""}
-Rules: 3 sentences max. Open with a specific one-line thank you. Second sentence: one observation or question referencing something real about their company or sector — no pitch. Third sentence: soft open-ended invitation to continue — not a meeting ask. Never mention the product by name. No deck/link. Goal is a reply not a meeting. Warm peer-to-peer tone.`,
-    "Return only the message. No subject line, no preamble, no labels.");
+
+Rules:
+- 3–4 sentences maximum
+- Start with their first name followed by a dash e.g. "Barbara —"
+- Sentence 1: one warm genuine opener specific to them or their company — never "Thanks for connecting"
+- Sentence 2: describe one specific pain that someone in their role at a BPO would immediately recognise — specific to their sector and company size
+- Sentence 3: ask one warm curious question about whether that pain is real for them
+- End with just: Julia
+- Never mention MyCena or any product by name
+- Never use: "complex landscape", "grappling", "I wanted to reach out", "Best regards", "leverage", "seamless", "would love to"
+- No deck, link, or case study
+- Tone: founder talking to peer — warm, specific, genuinely curious
+- Goal: a reply, not a meeting`,
+    "Return only the message. No preamble, no labels, no quotes.");
   state.contacts=state.contacts.map(x=>x.id===sid?{...x,followup_msg:msg}:x);
-  await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({notes:(c.notes||"")+(c.notes?"\n\n":"")+`--- Follow-up message ---\n${msg}`})});
+  await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_msg:msg})});
   toast("Follow-up message ready");
   state.loadingId=null; render();
 }
 
-function copyNote(text) {
+async function markNoteSent(sid, text) {
+  if(!text.trim()) return;
+  const ts=new Date().toISOString();
+  await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({note_sent_text:text,note_sent_at:ts})});
+  state.contacts=state.contacts.map(c=>c.id===sid?{...c,note_sent_text:text,note_sent_at:ts}:c);
+  toast("✓ Connection note logged");
+  render();
+}
+
+async function markFollowupSent(sid, text) {
+  if(!text.trim()) return;
+  const ts=new Date().toISOString();
+  await supabase(`contacts?id=eq.${sid}`,{method:"PATCH",prefer:"return=minimal",body:JSON.stringify({followup_sent_text:text,followup_sent_at:ts})});
+  state.contacts=state.contacts.map(c=>c.id===sid?{...c,followup_sent_text:text,followup_sent_at:ts}:c);
+  toast("✓ Follow-up message logged");
+  render();
+}
   const decoded = text.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"');
   navigator.clipboard?.writeText(decoded);
   toast("✓ Copied to clipboard");
@@ -480,14 +517,24 @@ function renderContactCard(c) {
               ${c.linkedin_note?`
                 <div class="note-box">${esc(c.linkedin_note)}</div>
                 <div class="char-count${c.linkedin_note.length>200?" over":""}">${c.linkedin_note.length}/200 chars</div>
-                <div style="display:flex;gap:6px;margin-bottom:6px">
+                <div style="display:flex;gap:6px;margin-bottom:10px">
                   <button class="btn btn-purple" onclick="copyNote(this.dataset.text)" data-text="${esc(c.linkedin_note)}" style="flex:1">Copy note</button>
                   ${c.linkedin_url?`<a href="${esc(c.linkedin_url.startsWith("http")?c.linkedin_url:"https://"+c.linkedin_url)}" target="_blank" rel="noopener" class="btn btn-blue">Open LI →</a>`:""}
                 </div>
                 ${sid?`<button class="btn" onclick="regenNote('${sid}')" ${state.loadingId?"disabled":""} style="width:100%;font-size:11px">${loadingNote?`<span class="spinner"></span>Regenerating...`:"Regenerate"}</button>`:""}
+                <div style="margin-top:10px">
+                  <div class="section-title" style="margin-bottom:4px">What you actually sent ${c.note_sent_at?`<span style="color:var(--text3);font-weight:400">· sent ${fmtDate(c.note_sent_at)}</span>`:""}</div>
+                  ${c.note_sent_text?`
+                    <div class="note-box" style="font-size:12px">${esc(c.note_sent_text)}</div>
+                    <button class="btn btn-sm" onclick="state.contacts=state.contacts.map(x=>x.id==='${sid}'?{...x,note_sent_text:'',note_sent_at:''}:x);render()">Edit</button>
+                  `:`
+                    <textarea id="note-sent-${sid}" placeholder="Paste the exact note you sent..." style="height:60px;font-size:12px"></textarea>
+                    <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="markNoteSent('${sid}',document.getElementById('note-sent-${sid}').value)">Mark as sent →</button>
+                  `}
+                </div>
               `:sid?`
                 <button class="btn btn-purple" onclick="genNote('${sid}')" ${state.loadingId?"disabled":""} style="width:100%">
-                  ${loadingNote?`<span class="spinner"></span>Generating...`:"Generate LinkedIn note →"}
+                  ${loadingNote?`<span class="spinner"></span>Generating...`:"Generate connection note →"}
                 </button>
                 ${!c.agent08_brief?`<div style="font-size:11px;color:var(--text3);margin-top:6px">Tip: run Agent 08 first for a better note.</div>`:""}
               `:`<div style="font-size:12px;color:var(--text3)">Import contacts first.</div>`}
@@ -499,10 +546,20 @@ function renderContactCard(c) {
             <div class="section-title">First message after connecting</div>
             ${c.followup_msg?`
               <div class="note-box">${esc(c.followup_msg)}</div>
-              <div style="display:flex;gap:6px">
+              <div style="display:flex;gap:6px;margin-bottom:6px">
                 <button class="btn btn-purple" onclick="copyNote(this.dataset.text)" data-text="${esc(c.followup_msg)}" style="flex:1">Copy message</button>
                 ${c.linkedin_url?`<a href="${esc(c.linkedin_url.startsWith("http")?c.linkedin_url:"https://"+c.linkedin_url)}" target="_blank" rel="noopener" class="btn btn-blue">Open LI →</a>`:""}
                 <button class="btn btn-sm" onclick="regenFollowUp('${sid}')" ${state.loadingId?"disabled":""}>Regenerate</button>
+              </div>
+              <div style="margin-top:10px">
+                <div class="section-title" style="margin-bottom:4px">What you actually sent ${c.followup_sent_at?`<span style="color:var(--text3);font-weight:400">· sent ${fmtDate(c.followup_sent_at)}</span>`:""}</div>
+                ${c.followup_sent_text?`
+                  <div class="note-box" style="font-size:12px">${esc(c.followup_sent_text)}</div>
+                  <button class="btn btn-sm" onclick="state.contacts=state.contacts.map(x=>x.id==='${sid}'?{...x,followup_sent_text:'',followup_sent_at:''}:x);render()">Edit</button>
+                `:`
+                  <textarea id="followup-sent-${sid}" placeholder="Paste the exact message you sent..." style="height:60px;font-size:12px"></textarea>
+                  <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="markFollowupSent('${sid}',document.getElementById('followup-sent-${sid}').value)">Mark as sent →</button>
+                `}
               </div>
             `:`
               <button class="btn btn-primary" onclick="genFollowUp('${sid}')" ${state.loadingId?"disabled":""} style="width:100%">
