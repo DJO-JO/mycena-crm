@@ -7,47 +7,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:#0a0a0a;display:flex;justify-content:center;padding:40px 16px;font-family:'Bai Jamjuree',system-ui,sans-serif;}
-.flyer{background:#151515;color:#fff;width:600px;padding:48px 44px 40px;border-radius:4px;}
+body{background:#e8e6de;display:flex;justify-content:center;padding:40px 16px;font-family:'Bai Jamjuree',system-ui,sans-serif;}
+.flyer{background:#ffffff;color:#1a1a18;width:600px;padding:48px 44px 40px;border-radius:4px;border:0.5px solid rgba(0,0,0,0.08);}
+
+/* Logo */
 .logo-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px;}
 .logo-mark{display:flex;align-items:center;gap:10px;}
-.logo-name{font-size:15px;font-weight:600;letter-spacing:0.12em;color:#fff;}
-.logo-tag{font-size:10px;letter-spacing:0.18em;color:#B2B4B3;text-transform:uppercase;font-family:'Manrope',sans-serif;}
+.logo-name{font-size:15px;font-weight:600;letter-spacing:0.12em;color:#151515;}
+.logo-tag{font-size:10px;letter-spacing:0.18em;color:#6b6b66;text-transform:uppercase;font-family:'Manrope',sans-serif;}
+
+/* Pill */
 .pill{display:inline-block;background:#002662;color:#D8B26F;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:16px;font-family:'Manrope',sans-serif;}
-h1{font-size:28px;font-weight:600;line-height:1.25;color:#fff;margin-bottom:14px;letter-spacing:-0.01em;}
-h1 span{color:#D8B26F;}
-.sub{font-size:14px;color:#B2B4B3;line-height:1.65;font-family:'Manrope',sans-serif;}
-.rule{height:1px;background:rgba(255,255,255,0.12);margin:28px 0;}
-.stats-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#B2B4B3;font-family:'Manrope',sans-serif;margin-bottom:8px;}
+
+/* Headline */
+h1{font-size:28px;font-weight:600;line-height:1.25;color:#151515;margin-bottom:14px;letter-spacing:-0.01em;}
+h1 span{color:#002662;}
+.sub{font-size:14px;color:#6b6b66;line-height:1.65;font-family:'Manrope',sans-serif;}
+
+/* Rule */
+.rule{height:1px;background:rgba(0,0,0,0.1);margin:28px 0;}
+
+/* Stats */
+.stats-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#9b9b96;font-family:'Manrope',sans-serif;margin-bottom:8px;}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:16px;}
-.stat{background:#0a0a0a;padding:16px 14px;}
+.stat{background:#f5f5f3;padding:16px 14px;}
 .stat:first-child{border-radius:3px 0 0 3px;}
 .stat:last-child{border-radius:0 3px 3px 0;}
-.stat-num{font-size:22px;font-weight:600;color:#D8B26F;line-height:1;}
-.stat-desc{font-size:11px;color:#B2B4B3;margin-top:5px;line-height:1.4;font-family:'Manrope',sans-serif;}
-.scale-note{background:rgba(0,38,98,0.3);border-left:2px solid #002662;padding:10px 14px;border-radius:0 3px 3px 0;margin-bottom:28px;}
-.scale-note p{font-size:12px;color:#B2B4B3;font-family:'Manrope',sans-serif;line-height:1.6;}
-.scale-note strong{color:#fff;}
-.scale-note em{color:#D8B26F;font-style:normal;}
+.stat-num{font-size:22px;font-weight:600;color:#002662;line-height:1;}
+.stat-desc{font-size:11px;color:#6b6b66;margin-top:5px;line-height:1.4;font-family:'Manrope',sans-serif;}
+
+/* Scale note */
+.scale-note{background:#f0f3f8;border-left:2px solid #002662;padding:10px 14px;border-radius:0 3px 3px 0;margin-bottom:28px;}
+.scale-note p{font-size:12px;color:#6b6b66;font-family:'Manrope',sans-serif;line-height:1.6;}
+.scale-note strong{color:#151515;}
+.scale-note em{color:#002662;font-style:normal;font-weight:600;}
+
+/* Two cols */
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
 .col-blue{background:#002662;padding:20px 18px;border-radius:3px;}
-.col-dark{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:20px 18px;border-radius:3px;}
+.col-light{background:#f5f5f3;border:0.5px solid rgba(0,0,0,0.1);padding:20px 18px;border-radius:3px;}
 .col-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#D8B26F;margin-bottom:10px;font-weight:600;font-family:'Manrope',sans-serif;}
-.col-body{font-size:13px;color:#fff;line-height:1.65;font-family:'Manrope',sans-serif;}
-.col-body2{font-size:13px;color:#B2B4B3;line-height:1.65;margin-top:10px;font-family:'Manrope',sans-serif;}
-.breaches{background:#0a0a0a;padding:20px 18px;border-radius:3px;margin-bottom:28px;border-left:3px solid #D8B26F;}
-.breach-title{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#D8B26F;margin-bottom:14px;font-weight:600;font-family:'Manrope',sans-serif;}
+.col-label-dark{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#002662;margin-bottom:10px;font-weight:600;font-family:'Manrope',sans-serif;}
+.col-body-white{font-size:13px;color:#ffffff;line-height:1.65;font-family:'Manrope',sans-serif;}
+.col-body2-white{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.65;margin-top:10px;font-family:'Manrope',sans-serif;}
+.col-body{font-size:13px;color:#1a1a18;line-height:1.65;font-family:'Manrope',sans-serif;}
+.col-body2{font-size:13px;color:#6b6b66;line-height:1.65;margin-top:10px;font-family:'Manrope',sans-serif;}
+
+/* Breaches */
+.breaches{background:#f5f5f3;border:0.5px solid rgba(0,0,0,0.1);padding:20px 18px;border-radius:3px;margin-bottom:28px;border-left:3px solid #002662;}
+.breach-title{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#002662;margin-bottom:14px;font-weight:600;font-family:'Manrope',sans-serif;}
 .breach-rows{display:flex;flex-direction:column;gap:14px;}
 .breach-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;}
-.breach-divider{height:1px;background:rgba(255,255,255,0.08);}
-.breach-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;}
-.breach-desc{font-size:12px;color:#B2B4B3;font-family:'Manrope',sans-serif;line-height:1.5;}
-.breach-cost{font-size:14px;font-weight:600;color:#D8B26F;text-align:right;white-space:nowrap;}
-.breach-year{font-size:10px;color:#B2B4B3;font-family:'Manrope',sans-serif;text-align:right;}
+.breach-divider{height:1px;background:rgba(0,0,0,0.07);}
+.breach-name{font-size:13px;font-weight:600;color:#151515;margin-bottom:3px;}
+.breach-desc{font-size:12px;color:#6b6b66;font-family:'Manrope',sans-serif;line-height:1.5;}
+.breach-cost{font-size:14px;font-weight:600;color:#002662;text-align:right;white-space:nowrap;}
+.breach-year{font-size:10px;color:#9b9b96;font-family:'Manrope',sans-serif;text-align:right;}
+
+/* CTA */
 .cta-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
-.cta-head{font-size:16px;font-weight:600;color:#fff;margin-bottom:4px;}
-.cta-sub{font-size:13px;color:#B2B4B3;font-family:'Manrope',sans-serif;}
-.cta-btn{background:#D8B26F;color:#151515;font-size:13px;font-weight:600;padding:12px 24px;border-radius:3px;letter-spacing:0.04em;font-family:'Bai Jamjuree',sans-serif;text-decoration:none;white-space:nowrap;}
+.cta-head{font-size:16px;font-weight:600;color:#151515;margin-bottom:4px;}
+.cta-sub{font-size:13px;color:#6b6b66;font-family:'Manrope',sans-serif;}
+.cta-btn{background:#002662;color:#ffffff;font-size:13px;font-weight:600;padding:12px 24px;border-radius:3px;letter-spacing:0.04em;font-family:'Bai Jamjuree',sans-serif;text-decoration:none;white-space:nowrap;}
+
 @media print{body{padding:0;}@page{margin:0;size:A4;}}
 </style>
 </head>
@@ -100,11 +122,11 @@ h1 span{color:#D8B26F;}
   <div class="cols">
     <div class="col-blue">
       <div class="col-label">The problem</div>
-      <p class="col-body">No employer asks staff to make their own office key. Yet every BPO asks agents to hold and share credentials to your banking clients' systems.</p>
-      <p class="col-body2">One agent. One sale. Unlimited exposure.</p>
+      <p class="col-body-white">No employer asks staff to make their own office key. Yet every BPO asks agents to hold and share credentials to your banking clients' systems.</p>
+      <p class="col-body2-white">One agent. One sale. Unlimited exposure.</p>
     </div>
-    <div class="col-dark">
-      <div class="col-label">The solution</div>
+    <div class="col-light">
+      <div class="col-label-dark">The solution</div>
       <p class="col-body">MyCena generates and injects credentials invisibly. Agents access systems normally — but never see or share a credential.</p>
       <p class="col-body2">Software overlay. No infrastructure change.</p>
     </div>
