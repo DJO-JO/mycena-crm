@@ -179,22 +179,29 @@ function loadContacts(){
     .then(function(){state.phase="";render();});
 }
 
-function parseCSV(txt){
-  var lines=txt.split("\n").filter(function(l){return l.trim();});
-  var hdrs=lines[0].split(",").map(function(h){return h.replace(/^"|"$/g,"").trim();});
-  return lines.slice(1).map(function(line){
-    var vals=[],cur="",inQ=false;
-    for(var i=0;i<line.length;i++){
-      var ch=line[i];
-      if(ch==='"'){inQ=!inQ;}
-      else if(ch===","&&!inQ){vals.push(cur.trim());cur="";}
-      else cur+=ch;
+function parseCSV(text) {
+  // Normalise Windows line endings
+  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(l => l.trim());
+
+  // Quoted-aware field splitter (reused for headers too)
+  function splitLine(line) {
+    const vals = []; let cur = ""; let inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { vals.push(cur.trim()); cur = ""; }
+      else cur += ch;
     }
     vals.push(cur.trim());
-    var row={};
-    hdrs.forEach(function(h,i){row[h]=(vals[i]||"").replace(/^"|"$/g,"");});
+    return vals.map(v => v.replace(/^"|"$/g, ""));
+  }
+
+  const headers = splitLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = splitLine(line);
+    const row = {};
+    headers.forEach((h, i) => { row[h] = vals[i] || ""; });
     return row;
-  }).filter(function(r){return r["First Name"]||r["Last Name"];});
+  }).filter(r => r["First Name"] || r["Last Name"]);
 }
 
 function onFile(ev){
