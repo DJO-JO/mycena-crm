@@ -225,26 +225,53 @@ function parseCSV(text) {
     const row={};
     headers.forEach((h,i)=>{row[h]=vals[i]||"";});
     return row;
-  }).filter(r=>r["First Name"]||r["Last Name"]);
+  }).filter(r=>Object.values(r).some(v=>v));
 }
 
 function onFile(e) {
   const file=e.target.files?.[0]; if(!file) return;
-  e.target.value=""; // reset so same file can be re-selected
   const reader=new FileReader();
   reader.onload=ev=>{
-    const rows=parseCSV(ev.target.result);
-    const score_val = r => icpScore(r);
+    e.target.value=""; // reset after read so same file can be re-selected
+    const text=ev.target.result;
+    // Detect actual headers to handle Apollo column name variants
+    const firstLine=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n")[0]||"";
+    const rawHeaders=firstLine.split(",").map(h=>h.replace(/^"|"$/g,"").trim());
+    const col=(...candidates)=>{
+      for(const c of candidates){
+        const found=rawHeaders.find(h=>h.toLowerCase()===c.toLowerCase());
+        if(found) return found;
+      }
+      return candidates[0];
+    };
+    const F_FIRST = col("First Name","first_name","FirstName");
+    const F_LAST  = col("Last Name","last_name","LastName");
+    const F_TITLE = col("Title","Job Title","title");
+    const F_CO    = col("Company Name","Company","company","Organization Name");
+    const F_IND   = col("Industry","industry");
+    const F_EMP   = col("# Employees","Employees","employees","Number of Employees");
+    const F_LI    = col("Person Linkedin Url","LinkedIn URL","linkedin_url","LinkedIn");
+    const F_EMAIL = col("Email","email","Email Address");
+    const F_CTRY  = col("Country","country");
+    const F_KW    = col("Keywords","keywords","Tags");
+    const rows=parseCSV(text);
+    if(rows.length===0){ toast("No contacts found — check CSV columns"); return; }
     state.parsed = rows.map((r,i)=>{
-      const sc=icpScore(r);
+      const rMapped={
+        "First Name":r[F_FIRST]||"","Last Name":r[F_LAST]||"",
+        "Title":r[F_TITLE]||"","Industry":r[F_IND]||"",
+        "# Employees":r[F_EMP]||"","Person Linkedin Url":r[F_LI]||"",
+      };
+      const sc=icpScore(rMapped);
       return {
-        _pid:i, first_name:r["First Name"]||"", last_name:r["Last Name"]||"",
-        contact_name:`${r["First Name"]||""} ${r["Last Name"]||""}`.trim(),
-        title:r["Title"]||"", company:r["Company Name"]||"",
-        sector:mapSector(r["Industry"]||""), headcount:mapHC(parseInt(r["# Employees"])||0),
-        linkedin_url:r["Person Linkedin Url"]||"", email:r["Email"]||"",
-        country:r["Country"]||"", industry_raw:r["Industry"]||"",
-        keywords:r["Keywords"]||"", icp_tier:sc>=5?"1":sc>=3?"2":"3",
+        _pid:i,
+        first_name:r[F_FIRST]||"", last_name:r[F_LAST]||"",
+        contact_name:((r[F_FIRST]||"")+" "+(r[F_LAST]||"")).trim(),
+        title:r[F_TITLE]||"", company:r[F_CO]||"",
+        sector:mapSector(r[F_IND]||""), headcount:mapHC(parseInt(r[F_EMP])||0),
+        linkedin_url:r[F_LI]||"", email:r[F_EMAIL]||"",
+        country:r[F_CTRY]||"", industry_raw:r[F_IND]||"",
+        keywords:r[F_KW]||"", icp_tier:sc>=5?"1":sc>=3?"2":"3",
         icp_score:sc, source:"Apollo", outreach_status:"Not sent",
         agent08_brief:"", linkedin_note:"", notes:"", supabase_id:null,
       };
