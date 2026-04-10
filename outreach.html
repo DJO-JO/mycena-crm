@@ -221,8 +221,16 @@ function parseCSV(text) {
     vals.push(cur.trim());
     return vals.map(v=>v.replace(/^"|"$/g,""));
   }
-  const headers=splitLine(lines[0]);
-  return lines.slice(1).map(line=>{
+  // Skip preamble rows — find the real header row by looking for "First Name" or "Last Name"
+  let headerIdx=0;
+  for(let i=0;i<Math.min(lines.length,10);i++){
+    const low=lines[i].toLowerCase();
+    if(low.includes("first name")||low.includes("firstname")||low.includes("first_name")){
+      headerIdx=i; break;
+    }
+  }
+  const headers=splitLine(lines[headerIdx]);
+  return lines.slice(headerIdx+1).map(line=>{
     const vals=splitLine(line);
     const row={};
     headers.forEach((h,i)=>{row[h]=vals[i]||"";});
