@@ -665,6 +665,12 @@ function render() {
       ${state.phase?`<div class="empty"><span class="spinner spinner-dark"></span> ${esc(state.phase)}</div>`:`
         ${renderMetrics(state.contacts)}
         ${renderBatchBar(state.contacts)}
+        ${state.contacts.some(c=>!c.contact_name)?`
+          <div class="alert alert-amber" style="justify-content:space-between;margin-bottom:10px">
+            <span>⚠ ${state.contacts.filter(c=>!c.contact_name).length} contacts with no name detected.</span>
+            <button class="btn" onclick="deleteEmptyContacts()" style="flex-shrink:0;background:var(--red-bg);color:var(--red-text);border-color:var(--red-text)">Delete empty contacts</button>
+          </div>
+        `:""}
         <div class="toolbar">
           <input type="text" class="search" placeholder="Search name, company, title..." value="${esc(state.search)}" oninput="setSearch(this.value)">
           <div style="display:flex;gap:4px">
@@ -676,6 +682,21 @@ function render() {
       `}
     `}
   `;
+}
+
+async function deleteEmptyContacts() {
+  if(!confirm("Delete all contacts with no name from Supabase?")) return;
+  state.phase="Deleting empty contacts..."; render();
+  try {
+    // Delete where contact_name is empty or null
+    await supabase("contacts?or=(contact_name.is.null,contact_name.eq.)", {method:"DELETE", prefer:"return=minimal"});
+    toast("✓ Empty contacts deleted");
+    // Reload contacts list
+    await loadContacts();
+  } catch(e) {
+    toast("Delete failed — check connection");
+    state.phase=""; render();
+  }
 }
 
 async function undoImport() {
