@@ -70,6 +70,7 @@
 
   .contact-row { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); margin-bottom:8px; overflow:hidden; }
   .contact-row.open { border-color:var(--green); }
+  .contact-row.selected { background:var(--green-bg); border-color:var(--green); }
   .contact-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; }
   .contact-header:hover { background:var(--bg2); }
   .tier-badge { font-size:11px; padding:2px 6px; border-radius:4px; font-weight:500; flex-shrink:0; }
@@ -165,7 +166,7 @@ let state = {
   view:"import", contacts:[], parsed:[], search:"", filterTier:"All", filterStatus:"All",
   expanded:null, phase:"", progress:0, importing:false, imported:false,
   importedCount:0, skippedCount:0, batchRunning:false, batchDone:0, batchTotal:0, batchCurrent:"",
-  loadingId:null, copiedId:null, undoing:false,
+  loadingId:null, copiedId:null, undoing:false, selectedIds:new Set(), selectMode:false,
 };
 
 // ── API helpers ──────────────────────────────────────────────────────────────
@@ -469,9 +470,12 @@ function renderContactCard(c) {
   const loadingPromote=state.loadingId===`promote_${sid}`;
   const canPromote=!c.deal_id&&["Connected","Replied","Booked"].includes(status)&&sid;
 
+  const rowId = sid||String(c._pid);
+  const isSelected = state.selectMode && state.selectedIds.has(rowId);
   return `
-    <div class="contact-row${isOpen?" open":""}">
-      <div class="contact-header" onclick="toggleExpand('${sid||c._pid}')">
+    <div class="contact-row${isOpen?" open":""}${isSelected?" selected":""}">
+      <div class="contact-header" onclick="${state.selectMode?`toggleSelect('${rowId}')`:`toggleExpand('${sid||c._pid}')`}" style="${state.selectMode?"cursor:pointer":""}">
+        ${state.selectMode?`<input type="checkbox" ${isSelected?"checked":""} style="width:15px;height:15px;flex-shrink:0;accent-color:var(--green)" onclick="event.stopPropagation();toggleSelect('${rowId}')">`:""}
         <span class="tier-badge" style="background:${ts.bg};color:${ts.text}">T${esc(c.icp_tier)}</span>
         <div style="flex:1;min-width:0">
           <div class="contact-name">${esc(c.contact_name)}</div>
@@ -677,11 +681,58 @@ function render() {
             ${["All","1","2","3"].map(t=>`<button class="btn btn-sm${state.filterTier===t?" btn-primary":""}" onclick="setTierFilter('${t}')">${t==="All"?"All":`T${t}`}</button>`).join("")}
           </div>
           <span style="font-size:11px;color:var(--text3);margin-left:auto">${filt.length} shown</span>
+          <button class="btn btn-sm${state.selectMode?" btn-primary":""}" onclick="toggleSelectMode()" style="${state.selectMode?"":""}">
+            ${state.selectMode?"✕ Cancel":"☑ Select"}
+          </button>
         </div>
+        ${state.selectMode?`
+          <div class="bar" style="margin-bottom:10px">
+            <span style="font-size:12px;color:var(--text2)">${state.selectedIds.size} selected</span>
+            <button class="btn btn-sm" onclick="selectAll()">Select all ${filt.length}</button>
+            <button class="btn btn-sm" onclick="selectNone()">None</button>
+            <button class="btn btn-sm" onclick="deleteSelected()" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red-text);margin-left:auto" ${state.selectedIds.size===0?"disabled":""}>
+              🗑 Delete ${state.selectedIds.size>0?state.selectedIds.size+" selected":""}
+            </button>
+          </div>
+        `:""}
         ${filt.length?filt.map(c=>renderContactCard(c)).join(""):`<div class="empty">No contacts found.</div>`}
       `}
     `}
   `;
+}
+
+async function toggleSelectMode() {
+  state.selectMode=!state.selectMode;
+  state.selectedIds=new Set();
+  render();
+}
+function toggleSelect(id) {
+  if(state.selectedIds.has(id)) state.selectedIds.delete(id);
+  else state.selectedIds.add(id);
+  render();
+}
+function selectAll() {
+  const filt=filtered();
+  filt.forEach(c=>state.selectedIds.add(c.id||c.supabase_id||String(c._pid)));
+  render();
+}
+function selectNone() { state.selectedIds=new Set(); render(); }
+
+async function deleteSelected() {
+  const ids=[...state.selectedIds];
+  if(!ids.length){ toast("No contacts selected"); return; }
+  if(!confirm(`Permanently delete ${ids.length} contact${ids.length>1?"s":""}?`)) return;
+  state.phase=`Deleting ${ids.length} contacts...`; render();
+  let deleted=0;
+  for(const id of ids){
+    try {
+      await supabase(`contacts?id=eq.${id}`,{method:"DELETE",prefer:"return=minimal"});
+      deleted++;
+    } catch(e){}
+  }
+  toast(`✓ ${deleted} contacts deleted`);
+  state.selectedIds=new Set(); state.selectMode=false; state.phase="";
+  await loadContacts();
 }
 
 async function deleteEmptyContacts() {
