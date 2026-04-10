@@ -165,7 +165,7 @@ let state = {
   view:"import", contacts:[], parsed:[], search:"", filterTier:"All", filterStatus:"All",
   expanded:null, phase:"", progress:0, importing:false, imported:false,
   importedCount:0, skippedCount:0, batchRunning:false, batchDone:0, batchTotal:0, batchCurrent:"",
-  loadingId:null, copiedId:null,
+  loadingId:null, copiedId:null, undoing:false,
 };
 
 // ── API helpers ──────────────────────────────────────────────────────────────
@@ -207,7 +207,10 @@ async function loadContacts() {
 // ── parse CSV ────────────────────────────────────────────────────────────────
 function parseCSV(text) {
   const lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(l=>l.trim());
+  // Auto-detect delimiter: tab-separated or comma-separated
+  const delim=lines[0].includes("\t") ? "\t" : ",";
   function splitLine(line){
+    if(delim==="\t") return line.split("\t").map(v=>v.replace(/^"|"$/g,"").trim());
     const vals=[]; let cur=""; let inQ=false;
     for(const ch of line){
       if(ch==='"'){inQ=!inQ;}
@@ -641,7 +644,10 @@ function render() {
             `}
           </div>
         `:`
-          <div class="alert alert-green">✓ ${state.importedCount} new contacts saved · ${state.skippedCount} already existed and linked.</div>
+          <div class="alert alert-green" style="justify-content:space-between">
+            <span>✓ ${state.importedCount} new contacts saved · ${state.skippedCount} already existed and linked.</span>
+            ${state.importedCount>0?`<button class="btn" onclick="undoImport()" ${state.undoing?"disabled":""} style="flex-shrink:0;background:var(--red-bg);color:var(--red-text);border-color:var(--red-text)">${state.undoing?'<span class="spinner" style="border-top-color:var(--red-text)"></span>Undoing...':"↩ Undo import"}</button>`:""}
+          </div>
         `}
 
         ${renderBatchBar(state.parsed)}
@@ -670,6 +676,24 @@ function render() {
       `}
     `}
   `;
+}
+
+async function undoImport() {
+  const ids = state.parsed.map(c=>c.supabase_id).filter(Boolean);
+  if(!ids.length){ toast("Nothing to undo — no Supabase IDs found"); return; }
+  if(!confirm(`Delete ${ids.length} contacts from Supabase? This cannot be undone.`)) return;
+  state.undoing=true; render();
+  let deleted=0;
+  for(const id of ids){
+    try {
+      await supabase(`contacts?id=eq.${id}`,{method:"DELETE",prefer:"return=minimal"});
+      deleted++;
+    } catch(e){}
+  }
+  state.parsed=state.parsed.map(c=>({...c,supabase_id:null}));
+  state.imported=false; state.importedCount=0; state.skippedCount=0; state.undoing=false;
+  toast(`✓ ${deleted} contacts deleted`);
+  render();
 }
 
 function setSearch(v) { state.search=v; renderKeepFocus(); }
