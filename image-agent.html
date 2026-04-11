@@ -511,11 +511,24 @@ async function downloadImage(type) {
   if (!url) return;
   const slug = _articleTitle.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60) || 'image';
   const suffix = type === 'hero' ? '-hero' : '-social';
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'mycena-' + slug + suffix + '.png';
-  a.target = '_blank';
-  a.click();
+  const filename = 'mycena-' + slug + suffix + '.png';
+  try {
+    // Route through proxy to get base64
+    const proxyRes = await fetch(PROXY + '?service=fetchimage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': _anthropicKey },
+      body: JSON.stringify({ url })
+    });
+    if (!proxyRes.ok) throw new Error('fetch failed');
+    const data = await proxyRes.json();
+    const a = document.createElement('a');
+    a.href = 'data:image/png;base64,' + data.base64;
+    a.download = filename;
+    a.click();
+  } catch(e) {
+    // Fallback: open in new tab for manual save
+    window.open(url, '_blank');
+  }
 }
 
 function copyPrompt(type) {
@@ -549,10 +562,15 @@ async function commitImage(type) {
 }
 
 async function fetchAndCommit(imageUrl, repo, token, filename) {
-  const res = await fetch(imageUrl);
-  const blob = await res.blob();
-  const base64 = await blobToBase64(blob);
-  const content = base64.split(',')[1];
+  // Fetch image via proxy to avoid CORS block on OpenAI URLs
+  const proxyRes = await fetch(PROXY + '?service=fetchimage', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': _anthropicKey },
+    body: JSON.stringify({ url: imageUrl })
+  });
+  if (!proxyRes.ok) throw new Error('Image fetch failed: ' + proxyRes.status);
+  const data = await proxyRes.json();
+  const content = data.base64;
   let sha;
   const check = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, { headers: { Authorization: 'token ' + token } });
   if (check.ok) { const ex = await check.json(); sha = ex.sha; }
