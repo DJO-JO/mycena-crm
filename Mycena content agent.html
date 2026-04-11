@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCena Content Writer Agent</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a0f1e;
+    --navy-mid: #111827;
+    --navy-light: #1a2540;
+    --accent: #4a7cfc;
+    --accent-dim: rgba(74,124,252,0.12);
+    --accent-border: rgba(74,124,252,0.3);
+    --text: #f0f4ff;
+    --text-muted: #8a9ac0;
+    --text-dim: #4a5578;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --success: #1d9e75;
+    --success-dim: rgba(29,158,117,0.12);
+    --warning: #ef9f27;
+    --warning-dim: rgba(239,159,39,0.12);
+    --danger: #e84040;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --serif: 'DM Serif Display', Georgia, serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* LAYOUT */
+  .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--navy-mid);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sidebar-logo {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .sidebar-logo span {
+    display: block;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+
+  .sidebar-nav { display: flex; flex-direction: column; gap: 3px; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+  .nav-item .nav-icon { font-size: 14px; width: 18px; text-align: center; }
+  .nav-badge { margin-left: auto; font-size: 10px; background: var(--accent); color: var(--navy); border-radius: 100px; padding: 1px 6px; font-weight: 600; display: none; }
+
+  .sidebar-stats { display: flex; flex-direction: column; gap: 6px; }
+  .stat-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; }
+  .stat-item .stat-label { color: var(--text-dim); }
+  .stat-item .stat-val { font-weight: 500; color: var(--text-muted); }
+  .stat-item .stat-val.highlight { color: var(--accent); }
+
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; margin-top: 4px; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.3s; }
+
+  .sidebar-section-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  /* MAIN */
+  .main { padding: 2rem; overflow-y: auto; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title { font-family: var(--serif); font-size: 1.6rem; color: var(--text); margin-bottom: 0.35rem; letter-spacing: -0.02em; }
+  .page-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.6; }
+
+  /* FORM ELEMENTS */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+
+  select, input[type=text], textarea {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    padding: 0.55rem 0.85rem;
+    width: 100%;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a5578'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem; }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { height: 80px; resize: vertical; }
+  select option { background: var(--navy-mid); }
+  optgroup { color: var(--text-dim); font-size: 0.75rem; }
+
+  /* CHIPS */
+  .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 0.75rem; color: var(--text-muted);
+    cursor: pointer; padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 100px; background: transparent;
+    transition: all 0.15s; user-select: none;
+  }
+  .chip input { width: 11px; height: 11px; margin: 0; accent-color: var(--accent); }
+  .chip.on { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+  .chip:hover { border-color: var(--border-hover); }
+
+  .tone-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tone-btn {
+    font-size: 0.75rem; padding: 4px 12px;
+    border: 1px solid var(--border); border-radius: 100px;
+    background: transparent; color: var(--text-muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .tone-btn.active { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+  .tone-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  /* PREVIEW CARD */
+  .preview-card {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .preview-card.visible { display: block; }
+  .preview-eyebrow { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .preview-title { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+  .preview-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .preview-tag { font-size: 0.72rem; color: var(--text-dim); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
+    color: var(--navy); background: var(--text);
+    border: none; border-radius: 8px; padding: 0.6rem 1.25rem;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--sans); font-size: 0.875rem; font-weight: 400;
+    color: var(--text-muted); background: none;
+    border: 1px solid var(--border-hover); border-radius: 8px;
+    padding: 0.6rem 1.25rem; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-accent {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
+    color: var(--accent); background: var(--accent-dim);
+    border: 1px solid var(--accent-border); border-radius: 8px;
+    padding: 0.6rem 1.25rem; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-accent:hover { background: rgba(74,124,252,0.2); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* SECTION LABEL */
+  .section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.75rem; }
+
+  /* WHITEPAPER SECTIONS */
+  .wp-sections { display: flex; flex-direction: column; gap: 5px; }
+  .wp-section-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; background: var(--navy-light);
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  .wp-section-num { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); min-width: 22px; }
+  .wp-section-name { flex: 1; font-size: 0.85rem; color: var(--text); }
+  .wp-section-words { font-size: 0.72rem; color: var(--text-dim); }
+  .wp-section-btn { font-size: 0.75rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+  .wp-section-btn:hover { background: var(--accent-dim); }
+
+  /* QUICK GRID */
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0.75rem; }
+  .quick-card {
+    padding: 1rem; background: var(--navy-light);
+    border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: all 0.15s; text-align: left;
+  }
+  .quick-card:hover { border-color: var(--accent-border); background: var(--accent-dim); }
+  .quick-card-title { font-size: 0.875rem; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .quick-card-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* QUEUE */
+  .queue-list { display: flex; flex-direction: column; gap: 5px; }
+  .queue-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: var(--navy-light);
+    border: 1px solid var(--border); border-radius: 8px;
+    transition: border-color 0.15s;
+  }
+  .queue-row:hover { border-color: var(--border-hover); }
+  .q-num { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); min-width: 22px; }
+  .q-info { flex: 1; min-width: 0; }
+  .q-title { font-size: 0.85rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .q-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 1px; }
+  .q-type { font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 100px; }
+  .q-type.blog { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+  .q-type.whitepaper { background: var(--warning-dim); color: var(--warning); border: 1px solid rgba(239,159,39,0.3); }
+  .q-gen { font-size: 0.75rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 3px 8px; border-radius: 4px; }
+  .q-gen:hover { background: var(--accent-dim); }
+  .q-del { font-size: 0.75rem; color: var(--danger); background: none; border: none; cursor: pointer; padding: 3px 8px; border-radius: 4px; }
+  .q-del:hover { background: rgba(232,64,64,0.1); }
+
+  .empty-state { padding: 2rem; text-align: center; color: var(--text-dim); font-size: 0.88rem; border: 1px dashed var(--border); border-radius: 10px; }
+
+  /* OUTPUT */
+  .output-area {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    display: none;
+  }
+  .output-area.visible { display: block; }
+  .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .output-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--success); }
+  .output-actions { display: flex; gap: 6px; }
+  .output-btn { font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: all 0.15s; }
+  .output-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  #outputText { font-size: 0.875rem; color: var(--text-muted); line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+
+  .loading-indicator { display: none; align-items: center; gap: 10px; padding: 1rem; color: var(--text-muted); font-size: 0.875rem; }
+  .loading-indicator.visible { display: flex; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    .form-grid { grid-template-columns: 1fr; }
+    .quick-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-logo">MyCena <span>Content Writer Agent</span></div>
+    </div>
+
+    <div>
+      <div class="sidebar-section-label">Content</div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showPage('blog')">
+          <span class="nav-icon">✍</span> Blog articles
+        </button>
+        <button class="nav-item" onclick="showPage('whitepaper')">
+          <span class="nav-icon">📄</span> Whitepapers
+        </button>
+        <button class="nav-item" onclick="showPage('queue')">
+          <span class="nav-icon">📋</span> Queue
+          <span class="nav-badge" id="qNavBadge"></span>
+        </button>
+      </nav>
+    </div>
+
+    <div>
+      <div class="sidebar-section-label">Progress</div>
+      <div class="sidebar-stats">
+        <div class="stat-item">
+          <span class="stat-label">Blog articles</span>
+          <span class="stat-val highlight" id="sBlog">0 / 35</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="sBlogBar" style="width:0%"></div></div>
+        <div class="stat-item" style="margin-top:6px;">
+          <span class="stat-label">Whitepapers</span>
+          <span class="stat-val highlight" id="sWp">0 / 15</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="sWpBar" style="width:0%;background:var(--warning)"></div></div>
+        <div class="stat-item" style="margin-top:6px;">
+          <span class="stat-label">Sectors covered</span>
+          <span class="stat-val" id="sSectors">0 / 7</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Total queued</span>
+          <span class="stat-val" id="sTotal">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:auto;">
+      <div class="sidebar-section-label">API</div>
+      <div class="form-group">
+        <label class="form-label">Anthropic API key</label>
+        <input type="text" id="apiKey" placeholder="sk-ant-..." style="font-size:0.75rem;" />
+      </div>
+      <p style="font-size:0.7rem;color:var(--text-dim);margin-top:6px;">Key stored in browser only. Never sent anywhere except Anthropic.</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- BLOG PAGE -->
+    <div class="page active" id="blogPage">
+      <h1 class="page-title">Blog articles</h1>
+      <p class="page-sub">35 articles across 7 sectors. Financial Times tone by default. Each article includes a breach reference, statistics, regulatory mapping, and MyCena solution — ready to publish.</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Sector</label>
+          <select id="bSector" onchange="updateBlogPreview()">
+            <option value="">Select sector...</option>
+            <option>Financial Services & Insurance</option>
+            <option>Healthcare & Life Sciences</option>
+            <option>BPO & Managed Services</option>
+            <option>Critical Infrastructure & Energy</option>
+            <option>Defense & Public Sector</option>
+            <option>MSP & Managed Services</option>
+            <option>Manufacturing & Industrial</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Article type</label>
+          <select id="bType" onchange="updateBlogPreview()">
+            <option value="">Select type...</option>
+            <option>Breach case study</option>
+            <option>Regulatory deep dive</option>
+            <option>Identity vs access explainer</option>
+            <option>Supply chain credential risk</option>
+            <option>AI credential risk</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tone</label>
+          <div class="tone-row" id="bToneRow">
+            <button class="tone-btn active" onclick="setTone('blog',this,'Financial Times')">Financial Times</button>
+            <button class="tone-btn" onclick="setTone('blog',this,'CISO briefing')">CISO briefing</button>
+            <button class="tone-btn" onclick="setTone('blog',this,'Board memo')">Board memo</button>
+            <button class="tone-btn" onclick="setTone('blog',this,'Thought leadership')">Thought leadership</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Word count</label>
+          <select id="bWords">
+            <option value="800">800 — concise</option>
+            <option value="1000" selected>1,000 — standard</option>
+            <option value="1200">1,200 — in-depth</option>
+            <option value="1500">1,500 — long form</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">News hook or specific angle (optional)</label>
+          <textarea id="bAngle" placeholder="e.g. 'Following the M&S breach in April 2026...' or 'With DORA enforcement now active...'" oninput="updateBlogPreview()"></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Include elements</label>
+          <div class="chip-row" id="bElements">
+            <label class="chip on"><input type="checkbox" checked onchange="toggleChip(this)"> Breach reference</label>
+            <label class="chip on"><input type="checkbox" checked onchange="toggleChip(this)"> Statistics & data</label>
+            <label class="chip on"><input type="checkbox" checked onchange="toggleChip(this)"> Regulatory mapping</label>
+            <label class="chip"><input type="checkbox" onchange="toggleChip(this)"> Expert quote</label>
+            <label class="chip on"><input type="checkbox" checked onchange="toggleChip(this)"> MyCena solution</label>
+            <label class="chip"><input type="checkbox" onchange="toggleChip(this)"> TPCA angle</label>
+            <label class="chip on"><input type="checkbox" checked onchange="toggleChip(this)"> SEO meta</label>
+            <label class="chip"><input type="checkbox" onchange="toggleChip(this)"> Social pull quote</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-card" id="bPreview">
+        <div class="preview-eyebrow">Article preview</div>
+        <div class="preview-title" id="bPTitle"></div>
+        <div class="preview-meta" id="bPMeta"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" id="bGenBtn" onclick="generateContent('blog')" disabled>Generate article →</button>
+        <button class="btn-ghost" id="bAddBtn" onclick="addToQueue('blog')" disabled>Add to queue</button>
+      </div>
+
+      <div class="loading-indicator" id="bLoading">
+        <div class="spinner"></div>
+        <span id="bLoadingText">Researching and writing article...</span>
+      </div>
+
+      <div class="output-area" id="bOutput">
+        <div class="output-header">
+          <div class="output-label">Article generated</div>
+          <div class="output-actions">
+            <button class="output-btn" onclick="copyOutput('bOutputText')">Copy</button>
+            <button class="output-btn" onclick="downloadOutput('bOutputText', 'blog')">Download .txt</button>
+          </div>
+        </div>
+        <div id="bOutputText"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">Quick add to queue</div>
+      <div class="quick-grid">
+        <button class="quick-card" onclick="addAllBlogs()">
+          <div class="quick-card-title">All 35 blog articles</div>
+          <div class="quick-card-sub">5 per sector · Financial Times tone · 1,000 words</div>
+        </button>
+        <button class="quick-card" onclick="addSectorBlogs()">
+          <div class="quick-card-title">All 5 for selected sector</div>
+          <div class="quick-card-sub">All article types · current settings</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- WHITEPAPER PAGE -->
+    <div class="page" id="whitepaperPage">
+      <h1 class="page-title">Whitepapers</h1>
+      <p class="page-sub">15 whitepapers across three categories — flagship, sector-specific, and regulatory. Generate in full or section by section. Each whitepaper includes executive summary, problem statement, data, solution, regulatory mapping, and ROI case.</p>
+
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Whitepaper</label>
+          <select id="wpType" onchange="updateWpPreview()">
+            <option value="">Select whitepaper...</option>
+            <optgroup label="Flagship">
+              <option>The Credential Control Gap — why IAM, PAM, SSO, MFA, and Zero Trust all leave the same vulnerability</option>
+              <option>Who Controls AI — credential risk in the age of autonomous systems</option>
+              <option>Third Party Credential Assurance — the managed service regulated clients will require from their BPOs and MSPs</option>
+            </optgroup>
+            <optgroup label="Sector">
+              <option>Financial Services Credential Risk Report 2025</option>
+              <option>Healthcare Credential Risk Report 2025</option>
+              <option>BPO & Managed Services Credential Risk Report 2025</option>
+              <option>Critical Infrastructure Credential Risk Report 2025</option>
+              <option>Defense & Public Sector Credential Risk Report 2025</option>
+              <option>MSP Credential Risk Report 2025</option>
+              <option>Manufacturing & Industrial Credential Risk Report 2025</option>
+            </optgroup>
+            <optgroup label="Regulatory">
+              <option>DORA and credential access — the structural compliance gap financial entities must close</option>
+              <option>CMMC 2.0 and credential governance — what defense contractors must evidence</option>
+              <option>HIPAA credential access requirements — the structural compliance gap healthcare must close</option>
+              <option>NIS2 and credential control — what critical infrastructure operators must demonstrate</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary audience</label>
+          <select id="wpAudience" onchange="updateWpPreview()">
+            <option>CISO & IT Director</option>
+            <option>Board & Executive</option>
+            <option>Compliance & GRC</option>
+            <option>Sales enablement</option>
+            <option>All of the above</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total length</label>
+          <select id="wpWords" onchange="updateWpSections()">
+            <option value="3000">3,000 words — concise</option>
+            <option value="4000" selected>4,000 words — standard</option>
+            <option value="5000">5,000 words — comprehensive</option>
+            <option value="6000">6,000 words — full report</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tone</label>
+          <div class="tone-row" id="wpToneRow">
+            <button class="tone-btn active" onclick="setTone('wp',this,'Board-ready')">Board-ready</button>
+            <button class="tone-btn" onclick="setTone('wp',this,'Regulatory')">Regulatory</button>
+            <button class="tone-btn" onclick="setTone('wp',this,'Technical')">Technical</button>
+            <button class="tone-btn" onclick="setTone('wp',this,'Financial Times')">Financial Times</button>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Sections — generate full whitepaper or one section at a time</label>
+          <div class="wp-sections" id="wpSections"></div>
+        </div>
+      </div>
+
+      <div class="preview-card" id="wpPreview">
+        <div class="preview-eyebrow">Whitepaper preview</div>
+        <div class="preview-title" id="wpPTitle"></div>
+        <div class="preview-meta" id="wpPMeta"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" id="wpGenBtn" onclick="generateContent('whitepaper')" disabled>Generate full whitepaper →</button>
+        <button class="btn-ghost" id="wpAddBtn" onclick="addToQueue('whitepaper')" disabled>Add to queue</button>
+      </div>
+
+      <div class="loading-indicator" id="wpLoading">
+        <div class="spinner"></div>
+        <span id="wpLoadingText">Researching and writing whitepaper...</span>
+      </div>
+
+      <div class="output-area" id="wpOutput">
+        <div class="output-header">
+          <div class="output-label">Whitepaper generated</div>
+          <div class="output-actions">
+            <button class="output-btn" onclick="copyOutput('wpOutputText')">Copy</button>
+            <button class="output-btn" onclick="downloadOutput('wpOutputText', 'whitepaper')">Download .txt</button>
+          </div>
+        </div>
+        <div id="wpOutputText"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">Quick add to queue</div>
+      <div class="quick-grid">
+        <button class="quick-card" onclick="addAllWp()">
+          <div class="quick-card-title">All 15 whitepapers</div>
+          <div class="quick-card-sub">3 flagship · 7 sector · 4 regulatory · 4,000 words each</div>
+        </button>
+        <button class="quick-card" onclick="addFlagshipWp()">
+          <div class="quick-card-title">3 flagship whitepapers</div>
+          <div class="quick-card-sub">Credential Gap · AI · TPCA · 5,000 words each</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- QUEUE PAGE -->
+    <div class="page" id="queuePage">
+      <h1 class="page-title">Content queue</h1>
+      <p class="page-sub">Generate articles and whitepapers one at a time or in sequence. Each item uses the Anthropic API to research and write the full piece.</p>
+
+      <div class="btn-row" id="qBtnRow" style="display:none;">
+        <button class="btn-primary" onclick="generateNextInQueue()">Generate next →</button>
+        <button class="btn-ghost" onclick="clearQueue()">Clear queue</button>
+      </div>
+
+      <div class="queue-list" id="queueList">
+        <div class="empty-state">Queue is empty. Add articles or whitepapers from the other tabs.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const BLOG_TITLES = {
+  'Financial Services & Insurance': {
+    'Breach case study': 'How M&S lost £300m to a credential it didn\'t control',
+    'Regulatory deep dive': 'What DORA actually requires on credential access — and why most firms fail it',
+    'Identity vs access explainer': 'Why IAM, PAM, and Zero Trust all leave the same credential gap',
+    'Supply chain credential risk': 'The BPO credential problem every financial services firm is carrying',
+    'AI credential risk': 'AI trading systems hold live credentials. Nobody governs them.'
+  },
+  'Healthcare & Life Sciences': {
+    'Breach case study': 'Change Healthcare: how one credential exposed 190 million patient records',
+    'Regulatory deep dive': 'HIPAA, HITECH, and NIS2: what they actually require on credential access',
+    'Identity vs access explainer': 'Why clinical staff controlling their own credentials is a structural HIPAA failure',
+    'Supply chain credential risk': 'Billing partners hold credentials to patient systems. That is your HIPAA liability.',
+    'AI credential risk': 'AI diagnostic tools hold patient data credentials. Who governs them?'
+  },
+  'BPO & Managed Services': {
+    'Breach case study': 'Agent fraud in BPOs: the credential problem nobody talks about',
+    'Regulatory deep dive': 'DORA, OCC/FFIEC, and HIPAA BAA: what third-party credential governance requires',
+    'Identity vs access explainer': 'Why training and policy will never stop agent credential sharing',
+    'Supply chain credential risk': 'Third Party Credential Assurance: the BPO service that wins regulated contracts',
+    'AI credential risk': 'AI collections agents hold client credentials. The BPO carries the liability.'
+  },
+  'Critical Infrastructure & Energy': {
+    'Breach case study': 'Colonial Pipeline: how one credential shut down fuel supply for the eastern United States',
+    'Regulatory deep dive': 'NIS2 and IEC 62443: what they require on operational technology credential access',
+    'Identity vs access explainer': 'Why OT and IT credential convergence is the energy sector\'s defining vulnerability',
+    'Supply chain credential risk': 'One vendor credential. Every operator they serve. The supply chain cascade.',
+    'AI credential risk': 'AI grid management systems hold operational credentials. A compromise reaches the physical grid.'
+  },
+  'Defense & Public Sector': {
+    'Breach case study': 'SolarWinds: how one vendor credential reached 18,000 organisations including the US government',
+    'Regulatory deep dive': 'CMMC 2.0 and NIST 800-171: what contractors must evidence on credential access',
+    'Identity vs access explainer': 'Why cleared personnel controlling their own credentials is a national security vulnerability',
+    'Supply chain credential risk': 'Defense Supply Chain Credential Assurance: the structural answer to SolarWinds',
+    'AI credential risk': 'AI intelligence systems hold classified credentials. Nobody governs them centrally.'
+  },
+  'MSP & Managed Services': {
+    'Breach case study': 'Kaseya: how one MSP credential reached 1,500 downstream businesses in hours',
+    'Regulatory deep dive': 'SOC 2, ISO 27001, and NIS2: what MSPs must evidence on credential governance',
+    'Identity vs access explainer': 'The PAM credential problem: why the vault is only as secure as the technician who holds the key',
+    'Supply chain credential risk': 'Client Credential Assurance: the MSP service that wins and retains regulated clients',
+    'AI credential risk': 'AI helpdesk agents and RMM scripts hold client credentials. Hardcoded. Unrotated. Ungovernable.'
+  },
+  'Manufacturing & Industrial': {
+    'Breach case study': 'NotPetya: how a supply chain credential compromise cost manufacturers $10 billion',
+    'Regulatory deep dive': 'NIS2, IEC 62443, and CMMC 2.0: what manufacturers must evidence on credential access',
+    'Identity vs access explainer': 'Why OT/IT convergence makes manufacturing credential control a production-line issue',
+    'Supply chain credential risk': 'Tier 1, 2, and 3 suppliers hold credentials to your production systems. All of them.',
+    'AI credential risk': 'AI quality control systems hold production credentials. A compromise reaches the factory floor.'
+  }
+};
+
+const WP_SECTION_TYPES = {
+  flagship: ['Executive summary','The credential control gap','Why existing tools fail','The attack surface credentials create','The structural fix: credential control','How MyCena works','Sector applications','Conclusion and next steps'],
+  sector: ['Executive summary','The sector threat landscape','Credential risks unique to this sector','Breach case study','Regulatory obligations','Third-party and supply chain risk','The structural solution','Implementation roadmap'],
+  regulatory: ['Executive summary','Regulatory requirement overview','What the regulation demands on credential access','The structural compliance gap','Credential Control vs documented compliance','How MyCena maps to each requirement','Implementation and evidence','Conclusion']
+};
+
+const ALL_WPS = [
+  { title: 'The Credential Control Gap — why IAM, PAM, SSO, MFA, and Zero Trust all leave the same vulnerability', type: 'flagship', wordCount: '5000', tone: 'Board-ready', audience: 'All of the above' },
+  { title: 'Who Controls AI — credential risk in the age of autonomous systems', type: 'flagship', wordCount: '5000', tone: 'Board-ready', audience: 'All of the above' },
+  { title: 'Third Party Credential Assurance — the managed service regulated clients will require from their BPOs and MSPs', type: 'flagship', wordCount: '5000', tone: 'Board-ready', audience: 'All of the above' },
+  { title: 'Financial Services Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'CISO & IT Director' },
+  { title: 'Healthcare Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'CISO & IT Director' },
+  { title: 'BPO & Managed Services Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'Sales enablement' },
+  { title: 'Critical Infrastructure Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'CISO & IT Director' },
+  { title: 'Defense & Public Sector Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'Compliance & GRC' },
+  { title: 'MSP Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'Sales enablement' },
+  { title: 'Manufacturing & Industrial Credential Risk Report 2025', type: 'sector', wordCount: '4000', tone: 'Board-ready', audience: 'CISO & IT Director' },
+  { title: 'DORA and credential access — the structural compliance gap financial entities must close', type: 'regulatory', wordCount: '4000', tone: 'Regulatory', audience: 'Compliance & GRC' },
+  { title: 'CMMC 2.0 and credential governance — what defense contractors must evidence', type: 'regulatory', wordCount: '4000', tone: 'Regulatory', audience: 'Compliance & GRC' },
+  { title: 'HIPAA credential access requirements — the structural compliance gap healthcare must close', type: 'regulatory', wordCount: '4000', tone: 'Regulatory', audience: 'Compliance & GRC' },
+  { title: 'NIS2 and credential control — what critical infrastructure operators must demonstrate', type: 'regulatory', wordCount: '4000', tone: 'Regulatory', audience: 'Compliance & GRC' }
+];
+
+let bTone = 'Financial Times', wpTone = 'Board-ready';
+let queue = [];
+
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(p + 'Page').classList.add('active');
+  document.querySelectorAll('.nav-item')[['blog','whitepaper','queue'].indexOf(p)].classList.add('active');
+  if (p === 'queue') renderQueue();
+}
+
+function setTone(type, btn, tone) {
+  const row = document.getElementById(type === 'blog' ? 'bToneRow' : 'wpToneRow');
+  row.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (type === 'blog') { bTone = tone; updateBlogPreview(); }
+  else { wpTone = tone; updateWpPreview(); }
+}
+
+function toggleChip(cb) { cb.parentElement.classList.toggle('on', cb.checked); }
+
+function getBlogTitle() {
+  const s = document.getElementById('bSector').value;
+  const t = document.getElementById('bType').value;
+  return (s && t) ? (BLOG_TITLES[s]?.[t] || `${t} — ${s}`) : null;
+}
+
+function updateBlogPreview() {
+  const title = getBlogTitle();
+  const s = document.getElementById('bSector').value;
+  const t = document.getElementById('bType').value;
+  const w = document.getElementById('bWords').value;
+  const prev = document.getElementById('bPreview');
+  ['bGenBtn','bAddBtn'].forEach(id => document.getElementById(id).disabled = !title);
+  if (title) {
+    prev.classList.add('visible');
+    document.getElementById('bPTitle').textContent = title;
+    document.getElementById('bPMeta').innerHTML = [bTone, w + ' words', s, t].map(x => `<span class="preview-tag">${x}</span>`).join('');
+  } else { prev.classList.remove('visible'); }
+}
+
+function getWpSectionType(title) {
+  if (!title) return 'flagship';
+  if (title.includes('Report')) return 'sector';
+  if (title.includes('DORA') || title.includes('CMMC') || title.includes('HIPAA') || title.includes('NIS2')) return 'regulatory';
+  return 'flagship';
+}
+
+function updateWpSections() {
+  const title = document.getElementById('wpType').value;
+  const total = parseInt(document.getElementById('wpWords').value) || 4000;
+  const sType = getWpSectionType(title);
+  const sections = WP_SECTION_TYPES[sType];
+  const perSection = Math.round(total / sections.length);
+  document.getElementById('wpSections').innerHTML = sections.map((s, i) => `
+    <div class="wp-section-row">
+      <div class="wp-section-num">0${i+1}</div>
+      <div class="wp-section-name">${s}</div>
+      <div class="wp-section-words">~${perSection} words</div>
+      <button class="wp-section-btn" onclick="generateSection('${s.replace(/'/g,"\\'")}', ${perSection})">Generate →</button>
+    </div>
+  `).join('');
+}
+
+function updateWpPreview() {
+  const title = document.getElementById('wpType').value;
+  const aud = document.getElementById('wpAudience').value;
+  const w = document.getElementById('wpWords').value;
+  const prev = document.getElementById('wpPreview');
+  ['wpGenBtn','wpAddBtn'].forEach(id => document.getElementById(id).disabled = !title);
+  if (title) {
+    prev.classList.add('visible');
+    document.getElementById('wpPTitle').textContent = title;
+    document.getElementById('wpPMeta').innerHTML = [wpTone, w + ' words', aud].map(x => `<span class="preview-tag">${x}</span>`).join('');
+    updateWpSections();
+  } else { prev.classList.remove('visible'); }
+}
+
+function getCheckedElements() {
+  return Array.from(document.querySelectorAll('#bElements input[type=checkbox]')).filter(cb => cb.checked).map(cb => cb.parentElement.textContent.trim());
+}
+
+function buildBlogPrompt(item) {
+  let p = `Write a ${item.wordCount}-word blog article for MyCena.\n\nTitle: "${item.title}"\nSector: ${item.sector}\nType: ${item.type}\nTone: ${item.tone}\nInclude: ${item.elements.join(', ')}`;
+  if (item.angle) p += `\nNews hook: ${item.angle}`;
+  p += `\n\nMyCena is a unique patented credential control solution. The core argument: identity ≠ access. Most organisations let users create and control their own credentials — MyCena means the organisation generates, distributes encrypted, and revokes every credential. Users never see or hold it. Access becomes unphishable.\n\nStructure the article as:\n1. Strong opening — concrete news hook or breach incident\n2. The problem in ${item.sector} language — specific and sector-relevant\n3. Data section — specific statistics with sources\n4. Why existing tools (IAM, PAM, SSO, MFA, Zero Trust) fail to solve this\n5. The structural solution — introduce MyCena naturally, not as an advertisement\n6. Implication for the reader — clear and actionable\n7. SEO meta title (60 chars max) and meta description (155 chars max)\n\nTone: ${item.tone} — authoritative, data-led, no jargon, no hype, no marketing language.`;
+  return p;
+}
+
+function buildWpPrompt(item) {
+  const sType = getWpSectionType(item.title);
+  const sections = WP_SECTION_TYPES[sType];
+  return `Write a ${item.wordCount}-word whitepaper for MyCena.\n\nTitle: "${item.title}"\nAudience: ${item.audience}\nTone: ${item.tone}\nSections: ${sections.join(' → ')}\n\nMyCena is a unique patented credential control solution. Identity ≠ access. The organisation generates, distributes encrypted, and revokes every credential. Users never see or hold it.\n\nRequirements:\n- Executive summary: 200–250 words, three key findings, board-readable\n- Each section clearly headed with ##\n- Data-led — specific statistics with sources throughout\n- Regulatory requirements mapped precisely — cite specific articles and clauses\n- MyCena introduced in the solution section only — not before\n- ROI section: quantified business case with specific numbers\n- Tone: ${item.tone} — authoritative, no marketing language, no hype\n- End with clear conclusion and single next step\n- Final page: document title, subtitle, suggested cover tagline, meta description, and suggested gate form fields`;
+}
+
+function buildSectionPrompt(sectionName, words, wpTitle, audience, tone) {
+  return `Write the "${sectionName}" section (~${words} words) for a MyCena whitepaper titled:\n"${wpTitle}"\n\nAudience: ${audience}\nTone: ${tone}\n\nMyCena is a unique patented credential control solution. Identity ≠ access. The organisation generates, distributes encrypted, and revokes every credential. Users never see or hold it.\n\nStart with ## ${sectionName} as the heading. Write substantively — this is a professional whitepaper, not a summary. Data-led, specific, authoritative. ${sectionName === 'Executive summary' ? 'Maximum 250 words. Three key findings. Board-readable.' : 'Full development of the topic — do not truncate.'}`;
+}
+
+async function generateContent(type) {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { alert('Please enter your Anthropic API key in the sidebar.'); return; }
+
+  const loading = document.getElementById(type === 'blog' ? 'bLoading' : 'wpLoading');
+  const output = document.getElementById(type === 'blog' ? 'bOutput' : 'wpOutput');
+  const outputText = document.getElementById(type === 'blog' ? 'bOutputText' : 'wpOutputText');
+
+  let prompt;
+  if (type === 'blog') {
+    const title = getBlogTitle();
+    if (!title) return;
+    prompt = buildBlogPrompt({ title, sector: document.getElementById('bSector').value, type: document.getElementById('bType').value, wordCount: document.getElementById('bWords').value, tone: bTone, angle: document.getElementById('bAngle').value, elements: getCheckedElements() });
+  } else {
+    const title = document.getElementById('wpType').value;
+    if (!title) return;
+    prompt = buildWpPrompt({ title, audience: document.getElementById('wpAudience').value, wordCount: document.getElementById('wpWords').value, tone: wpTone });
+  }
+
+  loading.classList.add('visible');
+  output.classList.remove('visible');
+  document.getElementById(type === 'blog' ? 'bGenBtn' : 'wpGenBtn').disabled = true;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content.map(c => c.text || '').join('');
+    outputText.textContent = text;
+    output.classList.add('visible');
+  } catch (err) {
+    outputText.textContent = 'Error: ' + err.message + '\n\nMake sure your API key is correct and has sufficient credits.';
+    output.classList.add('visible');
+  } finally {
+    loading.classList.remove('visible');
+    document.getElementById(type === 'blog' ? 'bGenBtn' : 'wpGenBtn').disabled = false;
+  }
+}
+
+async function generateSection(sectionName, words) {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { alert('Please enter your Anthropic API key in the sidebar.'); return; }
+  const title = document.getElementById('wpType').value;
+  if (!title) { alert('Please select a whitepaper first.'); return; }
+  const audience = document.getElementById('wpAudience').value;
+  const prompt = buildSectionPrompt(sectionName, words, title, audience, wpTone);
+  const output = document.getElementById('wpOutput');
+  const outputText = document.getElementById('wpOutputText');
+  const loading = document.getElementById('wpLoading');
+  document.getElementById('wpLoadingText').textContent = `Writing "${sectionName}" section...`;
+  loading.classList.add('visible');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content.map(c => c.text || '').join('');
+    outputText.textContent = (outputText.textContent ? outputText.textContent + '\n\n---\n\n' : '') + text;
+    output.classList.add('visible');
+  } catch (err) {
+    outputText.textContent = 'Error: ' + err.message;
+    output.classList.add('visible');
+  } finally {
+    loading.classList.remove('visible');
+    document.getElementById('wpLoadingText').textContent = 'Researching and writing whitepaper...';
+  }
+}
+
+function addToQueue(type) {
+  if (type === 'blog') {
+    const title = getBlogTitle();
+    if (!title) return;
+    queue.push({ contentType: 'blog', title, sector: document.getElementById('bSector').value, type: document.getElementById('bType').value, wordCount: document.getElementById('bWords').value, tone: bTone, angle: document.getElementById('bAngle').value, elements: getCheckedElements() });
+  } else {
+    const title = document.getElementById('wpType').value;
+    if (!title) return;
+    queue.push({ contentType: 'whitepaper', title, audience: document.getElementById('wpAudience').value, wordCount: document.getElementById('wpWords').value, tone: wpTone });
+  }
+  updateStats();
+}
+
+function addAllBlogs() {
+  Object.entries(BLOG_TITLES).forEach(([sector, types]) => {
+    Object.entries(types).forEach(([type, title]) => {
+      if (!queue.find(q => q.title === title)) queue.push({ contentType: 'blog', title, sector, type, wordCount: '1000', tone: 'Financial Times', angle: '', elements: ['Breach reference','Statistics & data','Regulatory mapping','MyCena solution','SEO meta'] });
+    });
+  });
+  updateStats();
+}
+
+function addSectorBlogs() {
+  const s = document.getElementById('bSector').value;
+  if (!s) { alert('Please select a sector first.'); return; }
+  Object.entries(BLOG_TITLES[s] || {}).forEach(([type, title]) => {
+    if (!queue.find(q => q.title === title)) queue.push({ contentType: 'blog', title, sector: s, type, wordCount: document.getElementById('bWords').value, tone: bTone, angle: '', elements: getCheckedElements() });
+  });
+  updateStats();
+}
+
+function addAllWp() {
+  ALL_WPS.forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
+  updateStats();
+}
+
+function addFlagshipWp() {
+  ALL_WPS.slice(0,3).forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
+  updateStats();
+}
+
+function removeFromQueue(i) { queue.splice(i, 1); updateStats(); renderQueue(); }
+
+async function generateFromQueue(i) {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { alert('Please enter your Anthropic API key in the sidebar.'); return; }
+  const item = queue[i];
+  const prompt = item.contentType === 'blog' ? buildBlogPrompt(item) : buildWpPrompt(item);
+  showPage(item.contentType === 'blog' ? 'blog' : 'whitepaper');
+  const outputEl = document.getElementById(item.contentType === 'blog' ? 'bOutput' : 'wpOutput');
+  const outputText = document.getElementById(item.contentType === 'blog' ? 'bOutputText' : 'wpOutputText');
+  const loading = document.getElementById(item.contentType === 'blog' ? 'bLoading' : 'wpLoading');
+  loading.classList.add('visible');
+  outputEl.classList.remove('visible');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    outputText.textContent = data.content.map(c => c.text || '').join('');
+    outputEl.classList.add('visible');
+  } catch (err) {
+    outputText.textContent = 'Error: ' + err.message;
+    outputEl.classList.add('visible');
+  } finally { loading.classList.remove('visible'); }
+}
+
+function generateNextInQueue() {
+  if (queue.length > 0) generateFromQueue(0);
+}
+
+function clearQueue() { if (confirm('Clear all ' + queue.length + ' items from the queue?')) { queue = []; updateStats(); renderQueue(); } }
+
+function renderQueue() {
+  const list = document.getElementById('queueList');
+  const btnRow = document.getElementById('qBtnRow');
+  if (queue.length === 0) {
+    list.innerHTML = '<div class="empty-state">Queue is empty. Add articles or whitepapers from the other tabs.</div>';
+    btnRow.style.display = 'none';
+    return;
+  }
+  btnRow.style.display = 'flex';
+  list.innerHTML = queue.map((item, i) => `
+    <div class="queue-row">
+      <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="q-info">
+        <div class="q-title">${item.title}</div>
+        <div class="q-sub">${item.contentType === 'blog' ? (item.sector + ' · ' + item.type) : item.audience} · ${item.wordCount} words · ${item.tone}</div>
+      </div>
+      <span class="q-type ${item.contentType}">${item.contentType === 'blog' ? 'Blog' : 'Whitepaper'}</span>
+      <button class="q-gen" onclick="generateFromQueue(${i})">Generate →</button>
+      <button class="q-del" onclick="removeFromQueue(${i})">Remove</button>
+    </div>
+  `).join('');
+}
+
+function updateStats() {
+  const blogs = queue.filter(q => q.contentType === 'blog').length;
+  const wps = queue.filter(q => q.contentType === 'whitepaper').length;
+  const sectors = new Set(queue.filter(q => q.sector).map(q => q.sector)).size;
+  document.getElementById('sBlog').textContent = blogs + ' / 35';
+  document.getElementById('sWp').textContent = wps + ' / 15';
+  document.getElementById('sSectors').textContent = sectors + ' / 7';
+  document.getElementById('sTotal').textContent = queue.length;
+  document.getElementById('sBlogBar').style.width = Math.min(100, Math.round((blogs/35)*100)) + '%';
+  document.getElementById('sWpBar').style.width = Math.min(100, Math.round((wps/15)*100)) + '%';
+  const badge = document.getElementById('qNavBadge');
+  if (queue.length > 0) { badge.textContent = queue.length; badge.style.display = 'inline'; }
+  else { badge.style.display = 'none'; }
+  if (document.getElementById('queuePage').classList.contains('active')) renderQueue();
+}
+
+function copyOutput(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard.'));
+}
+
+function downloadOutput(id, type) {
+  const text = document.getElementById(id).textContent;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mycena-' + type + '-' + Date.now() + '.txt';
+  a.click();
+}
+
+updateStats();
+</script>
+</body>
+</html>
