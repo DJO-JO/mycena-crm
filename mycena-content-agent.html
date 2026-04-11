@@ -823,7 +823,7 @@ async function generateContent(type) {
   document.getElementById(type === 'blog' ? 'bGenBtn' : 'wpGenBtn').disabled = true;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://mycena-crm-proxy.julia-aa4.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
@@ -855,7 +855,7 @@ async function generateSection(sectionName, words) {
   document.getElementById('wpLoadingText').textContent = `Writing "${sectionName}" section...`;
   loading.classList.add('visible');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://mycena-crm-proxy.julia-aa4.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
@@ -929,7 +929,7 @@ async function generateFromQueue(i) {
   loading.classList.add('visible');
   outputEl.classList.remove('visible');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://mycena-crm-proxy.julia-aa4.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
