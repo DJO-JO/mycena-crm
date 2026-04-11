@@ -756,11 +756,16 @@
       <p class="page-sub">All saved articles and whitepapers. Stored in your browser. Click any item to load and continue editing.</p>
 
       <div style="display:flex;gap:0.65rem;margin-bottom:1rem;" id="libActions">
-        <div style="display:flex;gap:6px;align-items:center;margin-left:auto;">
-          <label class="form-label" style="white-space:nowrap;">GitHub repo</label>
-          <input type="text" id="ghRepo" placeholder="username/repo" style="width:180px;font-size:12px;" />
-          <label class="form-label" style="white-space:nowrap;">Token</label>
-          <input type="password" id="ghToken" placeholder="ghp_..." style="width:160px;font-size:12px;" />
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label class="form-label">GitHub repo</label>
+            <input type="text" id="ghRepo" placeholder="username/repo" style="width:200px;font-size:12px;" oninput="saveGitHubSettings()" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label class="form-label">Personal access token</label>
+            <input type="password" id="ghToken" placeholder="ghp_..." style="width:220px;font-size:12px;" oninput="saveGitHubSettings()" />
+          </div>
+          <div id="ghSavedBadge" style="display:none;font-size:11px;color:var(--success);padding:6px 10px;background:var(--success-dim);border-radius:6px;border:1px solid rgba(15,110,86,0.2);">Settings saved</div>
         </div>
       </div>
 
@@ -1066,6 +1071,7 @@ function addToQueue(type) {
   }
   updateStats();
 updateLibBadge();
+loadGitHubSettings();
 }
 
 function addAllBlogs() {
@@ -1076,6 +1082,7 @@ function addAllBlogs() {
   });
   updateStats();
 updateLibBadge();
+loadGitHubSettings();
 }
 
 function addSectorBlogs() {
@@ -1086,22 +1093,26 @@ function addSectorBlogs() {
   });
   updateStats();
 updateLibBadge();
+loadGitHubSettings();
 }
 
 function addAllWp() {
   ALL_WPS.forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
   updateStats();
 updateLibBadge();
+loadGitHubSettings();
 }
 
 function addFlagshipWp() {
   ALL_WPS.slice(0,3).forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
   updateStats();
 updateLibBadge();
+loadGitHubSettings();
 }
 
 function removeFromQueue(i) { queue.splice(i, 1); updateStats();
-updateLibBadge(); renderQueue(); }
+updateLibBadge();
+loadGitHubSettings(); renderQueue(); }
 
 async function generateFromQueue(i) {
   const apiKey = getApiKey();
@@ -1137,7 +1148,8 @@ function generateNextInQueue() {
 }
 
 function clearQueue() { if (confirm('Clear all ' + queue.length + ' items from the queue?')) { queue = []; updateStats();
-updateLibBadge(); renderQueue(); } }
+updateLibBadge();
+loadGitHubSettings(); renderQueue(); } }
 
 function renderQueue() {
   const list = document.getElementById('queueList');
@@ -1492,6 +1504,28 @@ async function commitTextToGitHub(text, title, statusElId) {
 }
 
 
+
+// ── GITHUB SETTINGS PERSISTENCE ──
+function saveGitHubSettings() {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (repo) localStorage.setItem('mycena_gh_repo', repo);
+  if (token) localStorage.setItem('mycena_gh_token', token);
+  if (repo || token) {
+    const badge = document.getElementById('ghSavedBadge');
+    badge.style.display = 'block';
+    clearTimeout(window._ghBadgeTimer);
+    window._ghBadgeTimer = setTimeout(() => { badge.style.display = 'none'; }, 2000);
+  }
+}
+
+function loadGitHubSettings() {
+  const repo = localStorage.getItem('mycena_gh_repo');
+  const token = localStorage.getItem('mycena_gh_token');
+  if (repo) document.getElementById('ghRepo').value = repo;
+  if (token) document.getElementById('ghToken').value = token;
+}
+
 function updateStats() {
   const blogs = queue.filter(q => q.contentType === 'blog').length;
   const wps = queue.filter(q => q.contentType === 'whitepaper').length;
@@ -1526,6 +1560,7 @@ function downloadOutput(id, type) {
 
 updateStats();
 updateLibBadge();
+loadGitHubSettings();
 </script>
 </body>
 </html>
