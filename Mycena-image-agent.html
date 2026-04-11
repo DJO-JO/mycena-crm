@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCena Image Agent</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #ffffff;
+  --bg-mid: #f5f6f8;
+  --bg-light: #eef0f4;
+  --accent: #2d5be3;
+  --accent-dim: rgba(45,91,227,0.08);
+  --accent-border: rgba(45,91,227,0.25);
+  --text: #0f1623;
+  --text-muted: #4a5578;
+  --text-dim: #8a95b0;
+  --border: rgba(0,0,0,0.09);
+  --border-hover: rgba(0,0,0,0.18);
+  --success: #0f6e56;
+  --success-dim: rgba(15,110,86,0.1);
+  --danger: #a32d2d;
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --serif: 'DM Serif Display', Georgia, serif;
+}
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+.app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+.sidebar { background: var(--bg-mid); border-right: 1px solid var(--border); padding: 1.5rem 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.logo { font-family: var(--serif); font-size: 1.2rem; color: var(--text); letter-spacing: -0.02em; }
+.logo span { display: block; font-family: var(--sans); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-top: 2px; }
+
+.section-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
+.form-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+input[type=text], input[type=password], select, textarea {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: var(--sans); font-size: 0.85rem;
+  padding: 0.5rem 0.75rem; width: 100%; transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+textarea { resize: vertical; }
+
+.key-set { display: none; font-size: 12px; color: var(--success); padding: 8px 10px; background: var(--success-dim); border: 1px solid rgba(15,110,86,0.2); border-radius: 8px; align-items: center; justify-content: space-between; }
+.key-set.visible { display: flex; }
+.key-change { font-size: 11px; color: var(--text-dim); background: none; border: none; cursor: pointer; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 0.875rem; font-weight: 500; border-radius: 8px; padding: 0.6rem 1.25rem; cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center; margin-bottom: 6px; }
+.btn-primary { color: #fff; background: var(--accent); border: none; }
+.btn-primary:hover { opacity: 0.88; }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-ghost { color: var(--text-muted); background: none; border: 1px solid var(--border-hover); }
+.btn-ghost:hover { color: var(--text); border-color: rgba(0,0,0,0.25); }
+
+.style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.style-btn { font-size: 11px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text-muted); cursor: pointer; text-align: center; transition: all 0.15s; }
+.style-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+.style-btn.active { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); font-weight: 500; }
+.style-btn .style-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+
+.main { padding: 2rem; overflow-y: auto; }
+.main-title { font-family: var(--serif); font-size: 1.6rem; color: var(--text); margin-bottom: 0.35rem; letter-spacing: -0.02em; }
+.main-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.6; }
+
+.article-input { margin-bottom: 1.5rem; }
+.article-input textarea { height: 200px; font-size: 0.85rem; line-height: 1.65; }
+
+.extracted-title { background: var(--bg-mid); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 1rem; display: none; }
+.extracted-title.visible { display: flex; align-items: center; gap: 10px; }
+.extracted-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+.extracted-val { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+
+.prompt-preview { background: var(--bg-mid); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; display: none; }
+.prompt-preview.visible { display: block; }
+.prompt-label { font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.prompt-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; font-style: italic; }
+
+.btn-row { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; }
+.btn-row .btn { width: auto; flex: 1; }
+
+.loading { display: none; align-items: center; gap: 12px; padding: 1rem; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem; }
+.loading.visible { display: flex; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-steps { display: flex; flex-direction: column; gap: 2px; }
+.loading-step { font-size: 12px; color: var(--text-dim); }
+.loading-step.active { color: var(--accent); font-weight: 500; }
+.loading-step.done { color: var(--success); }
+.loading-step.done::before { content: '✓ '; }
+
+.images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.image-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.image-card-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.image-card-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.image-card-meta { font-size: 11px; color: var(--text-dim); }
+.image-card img { width: 100%; display: block; }
+.image-card-actions { padding: 10px 14px; display: flex; gap: 8px; }
+.img-btn { font-size: 12px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.img-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+.img-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.img-btn.primary:hover { opacity: 0.88; }
+
+.image-placeholder { width: 100%; aspect-ratio: 16/9; background: var(--bg-light); display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 13px; }
+.image-placeholder.square { aspect-ratio: 1/1; }
+
+.history-section { margin-top: 2rem; }
+.history-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 0.75rem; }
+.history-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #fff; border: 1px solid var(--border); border-radius: 10px; transition: border-color 0.15s; }
+.history-row:hover { border-color: var(--accent-border); }
+.history-thumb { width: 60px; height: 38px; object-fit: cover; border-radius: 4px; background: var(--bg-light); flex-shrink: 0; }
+.history-info { flex: 1; min-width: 0; }
+.history-title { font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-meta { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+.history-actions { display: flex; gap: 6px; }
+
+.error-msg { background: rgba(163,45,45,0.08); border: 1px solid rgba(163,45,45,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--danger); margin-bottom: 1rem; display: none; }
+.error-msg.visible { display: block; }
+
+.revised-prompt { background: var(--bg-mid); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 0.75rem 0; font-size: 12px; color: var(--text-muted); font-style: italic; line-height: 1.6; display: none; }
+.revised-prompt.visible { display: block; }
+.revised-prompt strong { color: var(--text-dim); font-style: normal; }
+
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+  .images-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <div>
+    <div class="logo">MyCena <span>Image Agent</span></div>
+  </div>
+
+  <div>
+    <div class="section-label">Anthropic API key</div>
+    <div id="anthropicEntry">
+      <input type="password" id="anthropicKey" placeholder="sk-ant-..." style="margin-bottom:6px;" onkeydown="if(event.key==='Enter')saveKey('anthropic')" />
+      <button class="btn btn-primary" onclick="saveKey('anthropic')" style="margin-bottom:0;">Save key</button>
+    </div>
+    <div class="key-set" id="anthropicSet">
+      <span>Anthropic key set</span>
+      <button class="key-change" onclick="clearKey('anthropic')">Change</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">OpenAI API key</div>
+    <div id="openaiEntry">
+      <input type="password" id="openaiKey" placeholder="sk-..." style="margin-bottom:6px;" onkeydown="if(event.key==='Enter')saveKey('openai')" />
+      <button class="btn btn-primary" onclick="saveKey('openai')" style="margin-bottom:0;">Save key</button>
+    </div>
+    <div class="key-set" id="openaiSet">
+      <span>OpenAI key set</span>
+      <button class="key-change" onclick="clearKey('openai')">Change</button>
+    </div>
+    <p style="font-size:0.68rem;color:var(--text-dim);margin-top:6px;">Get yours at platform.openai.com/api-keys</p>
+  </div>
+
+  <div>
+    <div class="section-label">Image style</div>
+    <div class="style-grid" id="styleGrid">
+      <button class="style-btn active" onclick="setStyle(this,'editorial')">
+        <span class="style-icon">🏢</span>Corporate clean
+      </button>
+      <button class="style-btn" onclick="setStyle(this,'abstract')">
+        <span class="style-icon">◈</span>Abstract geo
+      </button>
+      <button class="style-btn" onclick="setStyle(this,'cinematic')">
+        <span class="style-icon">🎬</span>Dark editorial
+      </button>
+      <button class="style-btn" onclick="setStyle(this,'isometric')">
+        <span class="style-icon">⬡</span>Isometric tech
+      </button>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">GitHub (optional)</div>
+    <div class="form-group">
+      <label class="form-label">Repo</label>
+      <input type="text" id="ghRepo" placeholder="username/repo" oninput="saveGhSettings()" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Token</label>
+      <input type="password" id="ghToken" placeholder="ghp_..." oninput="saveGhSettings()" />
+    </div>
+    <p style="font-size:0.68rem;color:var(--text-dim);">Images will be committed to images/ folder as base64 PNG.</p>
+  </div>
+</aside>
+
+<main class="main">
+  <h1 class="main-title">Article image generator</h1>
+  <p class="main-sub">Paste any MyCena article. The agent reads it, writes a precise image prompt, and generates a hero image (1792×1024) and social card (1024×1024) using DALL-E 3.</p>
+
+  <div class="article-input">
+    <div class="form-group">
+      <label class="form-label">Paste article text</label>
+      <textarea id="articleText" placeholder="Paste your full article here — the agent will extract the title, sector, and key themes to build the image prompt..." oninput="onArticleInput()"></textarea>
+    </div>
+  </div>
+
+  <div class="extracted-title" id="extractedTitle">
+    <span class="extracted-label">Detected title</span>
+    <span class="extracted-val" id="extractedTitleVal"></span>
+  </div>
+
+  <div class="form-group" style="margin-bottom:1rem;">
+    <label class="form-label">Custom image direction (optional)</label>
+    <input type="text" id="customDirection" placeholder="e.g. 'focus on supply chain network' or 'include a subtle lock motif'" />
+  </div>
+
+  <div class="prompt-preview" id="promptPreview">
+    <div class="prompt-label">Generated image prompt</div>
+    <div class="prompt-text" id="promptText"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="generateBtn" onclick="generateImages()" disabled>Generate hero + social card →</button>
+    <button class="btn btn-ghost" id="previewPromptBtn" onclick="previewPrompt()" disabled>Preview prompt first</button>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-steps">
+      <div class="loading-step" id="step1">Analysing article and building image prompt...</div>
+      <div class="loading-step" id="step2">Generating hero image (1792×1024)...</div>
+      <div class="loading-step" id="step3">Generating social card (1024×1024)...</div>
+    </div>
+  </div>
+
+  <div class="images-grid" id="imagesGrid" style="display:none;">
+    <div class="image-card">
+      <div class="image-card-header">
+        <span class="image-card-title">Hero image</span>
+        <span class="image-card-meta">1792 × 1024 · Blog header / LinkedIn</span>
+      </div>
+      <div id="heroContainer"><div class="image-placeholder">Hero image will appear here</div></div>
+      <div class="image-card-actions">
+        <button class="img-btn primary" id="heroDownload" onclick="downloadImage('hero')">Download</button>
+        <button class="img-btn" onclick="commitImage('hero')">Save to GitHub</button>
+        <button class="img-btn" onclick="copyPrompt('hero')">Copy prompt</button>
+      </div>
+    </div>
+    <div class="image-card">
+      <div class="image-card-header">
+        <span class="image-card-title">Social card</span>
+        <span class="image-card-meta">1024 × 1024 · Instagram / Twitter</span>
+      </div>
+      <div id="socialContainer"><div class="image-placeholder square">Social card will appear here</div></div>
+      <div class="image-card-actions">
+        <button class="img-btn primary" id="socialDownload" onclick="downloadImage('social')">Download</button>
+        <button class="img-btn" onclick="commitImage('social')">Save to GitHub</button>
+        <button class="img-btn" onclick="copyPrompt('social')">Copy prompt</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="revised-prompt" id="revisedPrompt">
+    <strong>DALL-E revised prompt:</strong> <span id="revisedPromptText"></span>
+  </div>
+
+  <div class="history-section" id="historySection" style="display:none;">
+    <div class="section-label">Generated images</div>
+    <div class="history-grid" id="historyGrid"></div>
+  </div>
+</main>
+</div>
+
+<script>
+const PROXY = 'https://mycena-crm-proxy.julia-aa4.workers.dev';
+
+let _anthropicKey = '';
+let _openaiKey = '';
+let _style = 'editorial';
+let _heroUrl = '';
+let _socialUrl = '';
+let _heroPrompt = '';
+let _socialPrompt = '';
+let _articleTitle = '';
+let history = [];
+
+// ── KEY MANAGEMENT ──
+function saveKey(type) {
+  const val = document.getElementById(type === 'anthropic' ? 'anthropicKey' : 'openaiKey').value.trim();
+  if (!val.startsWith('sk-')) { alert('That doesn\'t look like a valid API key — it should start with sk-'); return; }
+  if (type === 'anthropic') { _anthropicKey = val; try { localStorage.setItem('mycena_img_anthropic', val); } catch(e) {} }
+  else { _openaiKey = val; try { localStorage.setItem('mycena_img_openai', val); } catch(e) {} }
+  document.getElementById(type === 'anthropic' ? 'anthropicKey' : 'openaiKey').value = '';
+  document.getElementById(type + 'Entry').style.display = 'none';
+  document.getElementById(type + 'Set').classList.add('visible');
+}
+
+function clearKey(type) {
+  if (type === 'anthropic') { _anthropicKey = ''; try { localStorage.removeItem('mycena_img_anthropic'); } catch(e) {} }
+  else { _openaiKey = ''; try { localStorage.removeItem('mycena_img_openai'); } catch(e) {} }
+  document.getElementById(type + 'Entry').style.display = 'block';
+  document.getElementById(type + 'Set').classList.remove('visible');
+}
+
+function loadKeys() {
+  try {
+    const ak = localStorage.getItem('mycena_img_anthropic');
+    const ok = localStorage.getItem('mycena_img_openai');
+    if (ak) { _anthropicKey = ak; document.getElementById('anthropicEntry').style.display = 'none'; document.getElementById('anthropicSet').classList.add('visible'); }
+    if (ok) { _openaiKey = ok; document.getElementById('openaiEntry').style.display = 'none'; document.getElementById('openaiSet').classList.add('visible'); }
+  } catch(e) {}
+}
+
+function saveGhSettings() {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (repo) try { localStorage.setItem('mycena_img_gh_repo', repo); } catch(e) {}
+  if (token) try { localStorage.setItem('mycena_img_gh_token', token); } catch(e) {}
+}
+
+function loadGhSettings() {
+  try {
+    const r = localStorage.getItem('mycena_img_gh_repo');
+    const t = localStorage.getItem('mycena_img_gh_token');
+    if (r) document.getElementById('ghRepo').value = r;
+    if (t) document.getElementById('ghToken').value = t;
+  } catch(e) {}
+}
+
+function setStyle(btn, style) {
+  document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _style = style;
+  onArticleInput();
+}
+
+// ── ARTICLE ANALYSIS ──
+function extractTitle(text) {
+  const lines = text.split('\n');
+  for (const line of lines) {
+    const t = line.trim();
+    if (t.startsWith('# ')) return t.slice(2).trim();
+    if (t && !t.startsWith('#') && t.length > 15 && t.length < 200) return t.trim();
+  }
+  return null;
+}
+
+function onArticleInput() {
+  const text = document.getElementById('articleText').value.trim();
+  const title = extractTitle(text);
+  _articleTitle = title || '';
+
+  const titleEl = document.getElementById('extractedTitle');
+  if (title) {
+    titleEl.classList.add('visible');
+    document.getElementById('extractedTitleVal').textContent = title;
+  } else {
+    titleEl.classList.remove('visible');
+  }
+
+  const hasText = text.length > 100;
+  document.getElementById('generateBtn').disabled = !hasText;
+  document.getElementById('previewPromptBtn').disabled = !hasText;
+  document.getElementById('promptPreview').classList.remove('visible');
+}
+
+function getStyleDescription() {
+  const styles = {
+    editorial: 'clean corporate photography style, minimal composition, professional, light backgrounds, soft natural lighting, white and light grey tones, subtle blue accents, no people, no text',
+    abstract: 'abstract geometric shapes, minimal vector style, clean white background, blue and grey palette, overlapping translucent forms suggesting networks and connections, no text',
+    cinematic: 'dark cinematic editorial photography, dramatic single light source, deep shadows, high contrast, dark backgrounds, moody and authoritative atmosphere, no text',
+    isometric: 'clean isometric illustration, flat design, light background, precise geometric forms, professional business technology aesthetic, blue and grey palette, no text'
+  };
+  return styles[_style] || styles.editorial;
+}
+
+async function buildImagePrompt(articleText) {
+  const prompt = `You are an expert creative director for a B2B cybersecurity company called MyCena. Read this article and write a precise DALL-E 3 image prompt that creates a professional, on-brand hero image.
+
+ARTICLE:
+${articleText.slice(0, 3000)}
+
+BRAND GUIDELINES:
+- MyCena's core concept: organisations should control every credential, not users
+- Key metaphors: keys, locks, vaults, access control, networks, supply chains
+- Tone: authoritative, professional, trustworthy — never alarming or sensationalist
+- Style: ${getStyleDescription()}
+
+Write ONLY the image prompt — nothing else. No explanation, no preamble. The prompt should be 2-3 sentences describing the visual scene precisely. Do not include any text, words, letters or numbers in the image. Do not include people's faces. Focus on abstract or object-based visual metaphors that represent the article's core theme.`;
+
+  const res = await fetch(PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': _anthropicKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 300, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.content.map(c => c.text || '').join('').trim();
+}
+
+async function callDallE(prompt, size) {
+  const res = await fetch(PROXY + '?service=openai&endpoint=images/generations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-openai-key': _openaiKey },
+    body: JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size, quality: 'hd', style: 'natural' })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return { url: data.data[0].url, revisedPrompt: data.data[0].revised_prompt };
+}
+
+function setStep(stepNum) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step' + i);
+    if (i < stepNum) el.classList.add('done'), el.classList.remove('active');
+    else if (i === stepNum) el.classList.add('active'), el.classList.remove('done');
+    else el.classList.remove('active', 'done');
+  }
+}
+
+async function previewPrompt() {
+  const text = document.getElementById('articleText').value.trim();
+  if (!text || !_anthropicKey) { alert('Please paste article text and save your Anthropic key.'); return; }
+  document.getElementById('previewPromptBtn').disabled = true;
+  document.getElementById('previewPromptBtn').textContent = 'Building prompt...';
+  try {
+    const prompt = await buildImagePrompt(text);
+    _heroPrompt = prompt;
+    document.getElementById('promptText').textContent = prompt;
+    document.getElementById('promptPreview').classList.add('visible');
+  } catch(err) {
+    showError(err.message);
+  } finally {
+    document.getElementById('previewPromptBtn').disabled = false;
+    document.getElementById('previewPromptBtn').textContent = 'Preview prompt first';
+  }
+}
+
+async function generateImages() {
+  if (!_anthropicKey) { alert('Please save your Anthropic API key.'); return; }
+  if (!_openaiKey) { alert('Please save your OpenAI API key.'); return; }
+
+  const text = document.getElementById('articleText').value.trim();
+  if (!text) return;
+
+  hideError();
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('loading').classList.add('visible');
+  document.getElementById('imagesGrid').style.display = 'none';
+  document.getElementById('revisedPrompt').classList.remove('visible');
+
+  try {
+    // Step 1: Build prompt
+    setStep(1);
+    let imagePrompt = _heroPrompt;
+    if (!imagePrompt) imagePrompt = await buildImagePrompt(text);
+
+    const customDir = document.getElementById('customDirection').value.trim();
+    if (customDir) imagePrompt += ' ' + customDir + '.';
+    imagePrompt += ' No text, no words, no letters, no numbers in the image.';
+
+    _heroPrompt = imagePrompt;
+    _socialPrompt = imagePrompt;
+
+    // Step 2: Hero image
+    setStep(2);
+    document.getElementById('heroContainer').innerHTML = '<div class="image-placeholder">Generating...</div>';
+    document.getElementById('imagesGrid').style.display = 'grid';
+    const hero = await callDallE(imagePrompt, '1792x1024');
+    _heroUrl = hero.url;
+    document.getElementById('heroContainer').innerHTML = `<img src="${hero.url}" alt="Hero image" crossorigin="anonymous" />`;
+
+    // Step 3: Social card
+    setStep(3);
+    document.getElementById('socialContainer').innerHTML = '<div class="image-placeholder square">Generating...</div>';
+    const social = await callDallE(imagePrompt + ' Square composition.', '1024x1024');
+    _socialUrl = social.url;
+    document.getElementById('socialContainer').innerHTML = `<img src="${social.url}" alt="Social card" crossorigin="anonymous" />`;
+
+    // Show revised prompt
+    document.getElementById('revisedPromptText').textContent = hero.revisedPrompt;
+    document.getElementById('revisedPrompt').classList.add('visible');
+
+    // Add to history
+    const title = _articleTitle || 'Article ' + (history.length + 1);
+    history.unshift({ title, heroUrl: hero.url, socialUrl: social.url, prompt: imagePrompt, time: new Date().toLocaleTimeString() });
+    renderHistory();
+
+    // Auto-save to GitHub if configured
+    const repo = document.getElementById('ghRepo').value.trim();
+    const token = document.getElementById('ghToken').value.trim();
+    if (repo && token) {
+      commitAllToGitHub(title, hero.url, social.url).catch(() => {});
+    }
+
+  } catch(err) {
+    showError(err.message);
+  } finally {
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('generateBtn').disabled = false;
+  }
+}
+
+async function downloadImage(type) {
+  const url = type === 'hero' ? _heroUrl : _socialUrl;
+  if (!url) return;
+  const slug = _articleTitle.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60) || 'image';
+  const suffix = type === 'hero' ? '-hero' : '-social';
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mycena-' + slug + suffix + '.png';
+  a.target = '_blank';
+  a.click();
+}
+
+function copyPrompt(type) {
+  const prompt = type === 'hero' ? _heroPrompt : _socialPrompt;
+  navigator.clipboard.writeText(prompt).then(() => alert('Prompt copied to clipboard.'));
+}
+
+async function commitAllToGitHub(title, heroUrl, socialUrl) {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (!repo || !token) return;
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60);
+  await fetchAndCommit(heroUrl, repo, token, 'images/' + slug + '-hero.png');
+  await fetchAndCommit(socialUrl, repo, token, 'images/' + slug + '-social.png');
+}
+
+async function commitImage(type) {
+  const url = type === 'hero' ? _heroUrl : _socialUrl;
+  if (!url) return;
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (!repo || !token) { alert('Please add GitHub repo and token in the sidebar.'); return; }
+  const slug = _articleTitle.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60) || 'image';
+  const filename = 'images/' + slug + '-' + type + '.png';
+  try {
+    await fetchAndCommit(url, repo, token, filename);
+    alert('Committed to ' + repo + '/' + filename);
+  } catch(err) {
+    alert('GitHub error: ' + err.message);
+  }
+}
+
+async function fetchAndCommit(imageUrl, repo, token, filename) {
+  const res = await fetch(imageUrl);
+  const blob = await res.blob();
+  const base64 = await blobToBase64(blob);
+  const content = base64.split(',')[1];
+  let sha;
+  const check = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, { headers: { Authorization: 'token ' + token } });
+  if (check.ok) { const ex = await check.json(); sha = ex.sha; }
+  const put = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+    method: 'PUT',
+    headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: 'Add image: ' + filename, content, ...(sha ? { sha } : {}) })
+  });
+  if (!put.ok) throw new Error('GitHub ' + put.status);
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+}
+
+function renderHistory() {
+  const section = document.getElementById('historySection');
+  const grid = document.getElementById('historyGrid');
+  if (history.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  grid.innerHTML = history.map((item, i) => `
+    <div class="history-row">
+      <img class="history-thumb" src="${item.heroUrl}" alt="" onerror="this.style.display='none'" />
+      <div class="history-info">
+        <div class="history-title">${item.title}</div>
+        <div class="history-meta">Generated at ${item.time}</div>
+      </div>
+      <div class="history-actions">
+        <button class="img-btn" onclick="loadHistory(${i})">Load</button>
+        <a class="img-btn" href="${item.heroUrl}" target="_blank" download>Hero</a>
+        <a class="img-btn" href="${item.socialUrl}" target="_blank" download>Social</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadHistory(i) {
+  const item = history[i];
+  _heroUrl = item.heroUrl;
+  _socialUrl = item.socialUrl;
+  _heroPrompt = item.prompt;
+  _articleTitle = item.title;
+  document.getElementById('heroContainer').innerHTML = `<img src="${item.heroUrl}" alt="Hero image" />`;
+  document.getElementById('socialContainer').innerHTML = `<img src="${item.socialUrl}" alt="Social card" />`;
+  document.getElementById('imagesGrid').style.display = 'grid';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = 'Error: ' + msg;
+  el.classList.add('visible');
+}
+function hideError() { document.getElementById('errorMsg').classList.remove('visible'); }
+
+// Init
+loadKeys();
+loadGhSettings();
+</script>
+</body>
+</html>
