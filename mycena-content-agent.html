@@ -85,7 +85,7 @@
     width: 100%;
     text-align: left;
   }
-  .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .nav-item:hover { background: rgba(0,0,0,0.04); color: var(--text); }
   .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
   .nav-item .nav-icon { font-size: 14px; width: 18px; text-align: center; }
   .nav-badge { margin-left: auto; font-size: 10px; background: var(--accent); color: #ffffff; border-radius: 100px; padding: 1px 6px; font-weight: 600; display: none; }
@@ -277,7 +277,69 @@
   .output-actions { display: flex; gap: 6px; }
   .output-btn { font-size: 0.75rem; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: all 0.15s; }
   .output-btn:hover { border-color: var(--border-hover); color: var(--text); }
-  #outputText { font-size: 0.875rem; color: var(--text-muted); line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+
+  /* FEEDBACK PANEL */
+  .feedback-panel { margin-top: 1rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: none; }
+  .feedback-panel.visible { display: block; }
+  .feedback-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .feedback-tab { flex: 1; font-size: 12px; font-weight: 500; color: var(--text-muted); background: var(--navy-mid); border: none; padding: 8px; cursor: pointer; transition: all 0.15s; border-right: 1px solid var(--border); }
+  .feedback-tab:last-child { border-right: none; }
+  .feedback-tab.active { background: #ffffff; color: var(--accent); }
+  .feedback-body { padding: 1rem; background: #ffffff; }
+  .feedback-input-row { display: flex; gap: 8px; margin-bottom: 0.75rem; }
+  .feedback-input-row textarea { flex: 1; height: 56px; font-size: 13px; }
+  .feedback-input-row button { align-self: flex-end; white-space: nowrap; font-size: 13px; }
+  .quick-edits { display: flex; gap: 6px; flex-wrap: wrap; }
+  .quick-edit-btn { font-size: 12px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 100px; background: var(--navy-mid); color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+  .quick-edit-btn:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
+
+  /* VERSION HISTORY */
+  .version-list { display: flex; flex-direction: column; gap: 5px; max-height: 280px; overflow-y: auto; }
+  .version-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--navy-mid); border: 1px solid var(--border); border-radius: 8px; }
+  .version-num { font-size: 10px; font-weight: 600; color: var(--text-dim); min-width: 24px; }
+  .version-info { flex: 1; min-width: 0; }
+  .version-label { font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .version-time { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+  .version-btn { font-size: 11px; color: var(--accent); background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+  .version-btn:hover { background: var(--accent-dim); }
+  .version-btn.restore { color: var(--success); }
+  .version-btn.restore:hover { background: var(--success-dim); }
+
+  /* SAVED ARTICLES */
+  .saved-list { display: flex; flex-direction: column; gap: 5px; }
+  .saved-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #ffffff; border: 1px solid var(--border); border-radius: 8px; transition: border-color 0.15s; }
+  .saved-row:hover { border-color: var(--accent-border); }
+  .saved-info { flex: 1; min-width: 0; }
+  .saved-title { font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .saved-meta { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+  .saved-badge { font-size: 10px; padding: 2px 7px; border-radius: 100px; font-weight: 500; }
+  .saved-badge.blog { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+  .saved-badge.whitepaper { background: var(--warning-dim); color: var(--warning); border: 1px solid rgba(133,79,11,0.25); }
+  .saved-actions { display: flex; gap: 4px; }
+  .saved-btn { font-size: 11px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+  .saved-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+  .saved-btn.danger:hover { border-color: rgba(163,45,45,0.3); color: var(--danger); }
+
+  /* GITHUB */
+  .github-form { display: flex; flex-direction: column; gap: 8px; }
+  .github-status { font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
+  .github-status.success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(15,110,86,0.2); display: block; }
+  .github-status.error { background: rgba(163,45,45,0.08); color: var(--danger); border: 1px solid rgba(163,45,45,0.2); display: block; }
+
+  .article-output { font-size: 0.925rem; color: var(--text); line-height: 1.85; }
+  .article-output .art-meta { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .article-output .art-title { font-family: var(--serif); font-size: 1.75rem; font-weight: 400; color: var(--text); line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 0.65rem; }
+  .article-output .art-subtitle { font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; font-weight: 300; }
+  .article-output .art-divider { border: none; border-top: 2px solid var(--text); width: 40px; margin: 0 0 1.5rem; }
+  .article-output .art-body p { margin-bottom: 1.1rem; color: var(--text); }
+  .article-output .art-body h2 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--text); margin: 1.75rem 0 0.6rem; letter-spacing: -0.01em; }
+  .article-output .art-body h3 { font-size: 0.9rem; font-weight: 600; color: var(--text); margin: 1.25rem 0 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .article-output .art-pull { font-family: var(--serif); font-size: 1.15rem; font-style: italic; color: var(--text); border-left: 3px solid var(--accent); padding: 0.75rem 1.25rem; margin: 1.5rem 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; line-height: 1.6; }
+  .article-output .art-stat { display: inline-block; font-size: 1.4rem; font-family: var(--serif); color: var(--accent); font-weight: 400; }
+  .article-output .art-seo { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+  .article-output .art-seo-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .article-output .art-seo-val { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; background: var(--navy-mid); padding: 8px 10px; border-radius: 6px; margin-bottom: 8px; }
+  .article-output .art-attribution { font-size: 0.78rem; color: var(--text-dim); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 
   .loading-indicator { display: none; align-items: center; gap: 10px; padding: 1rem; color: var(--text-muted); font-size: 0.875rem; }
   .loading-indicator.visible { display: flex; }
@@ -315,6 +377,10 @@
         <button class="nav-item" onclick="showPage('queue')">
           <span class="nav-icon">📋</span> Queue
           <span class="nav-badge" id="qNavBadge"></span>
+        </button>
+        <button class="nav-item" onclick="showPage('library')">
+          <span class="nav-icon">📚</span> Library
+          <span class="nav-badge" id="libNavBadge"></span>
         </button>
       </nav>
     </div>
@@ -456,7 +522,51 @@
             <button class="output-btn" onclick="downloadOutput('bOutputText', 'blog')">Download .txt</button>
           </div>
         </div>
-        <div id="bOutputText"></div>
+        <div id="bOutputText" class="article-output"></div>
+      </div>
+
+
+      <div class="feedback-panel" id="bFeedback">
+        <div class="feedback-tabs">
+          <button class="feedback-tab active" onclick="switchFeedbackTab('blog','refine')">Refine</button>
+          <button class="feedback-tab" onclick="switchFeedbackTab('blog','quick')">Quick edits</button>
+          <button class="feedback-tab" onclick="switchFeedbackTab('blog','versions')">Versions</button>
+          <button class="feedback-tab" onclick="switchFeedbackTab('blog','save')">Save</button>
+        </div>
+        <div class="feedback-body">
+          <div id="bRefinePanel">
+            <div class="feedback-input-row">
+              <textarea id="bFeedbackText" placeholder="e.g. 'Make the opening more punchy' or 'Add a DORA fine statistic in paragraph 2'..."></textarea>
+              <button class="btn-primary" onclick="refineContent('blog')">Refine →</button>
+            </div>
+            <div class="loading-indicator" id="bRefineLoading"><div class="spinner"></div><span>Refining article...</span></div>
+          </div>
+          <div id="bQuickPanel" style="display:none;">
+            <div class="quick-edits">
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Sharpen the opening paragraph — make it more direct and punchy')">Sharpen opening</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Cut the article by approximately 20% — keep the strongest arguments')">Cut by 20%</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Strengthen the conclusion and call to action — make it more compelling')">Stronger CTA</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Add more specific statistics and data points with sources throughout')">Add more data</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Simplify the language — make it accessible to a non-technical board audience')">Simplify language</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Make the sector-specific detail more precise and credible')">More sector-specific</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Rewrite in a more Financial Times editorial style — authoritative, concise, data-led')">FT style</button>
+              <button class="quick-edit-btn" onclick="quickEdit('blog','Add a pull quote that would work well for social media sharing')">Add pull quote</button>
+            </div>
+          </div>
+          <div id="bVersionsPanel" style="display:none;">
+            <div class="version-list" id="bVersionList"><div style="font-size:12px;color:var(--text-dim);padding:0.5rem 0;">No versions yet. Generate an article to start.</div></div>
+          </div>
+          <div id="bSavePanel" style="display:none;">
+            <div class="github-form">
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Save to localStorage library or commit to GitHub repo.</div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn-accent" onclick="saveToLibrary('blog')" style="flex:1;font-size:13px;">Save to library</button>
+                <button class="btn-ghost" onclick="commitToGitHub('blog')" style="flex:1;font-size:13px;">Commit to GitHub</button>
+              </div>
+              <div class="github-status" id="bGithubStatus"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -564,7 +674,49 @@
             <button class="output-btn" onclick="downloadOutput('wpOutputText', 'whitepaper')">Download .txt</button>
           </div>
         </div>
-        <div id="wpOutputText"></div>
+        <div id="wpOutputText" class="article-output"></div>
+      </div>
+
+
+      <div class="feedback-panel" id="wpFeedback">
+        <div class="feedback-tabs">
+          <button class="feedback-tab active" onclick="switchFeedbackTab('wp','refine')">Refine</button>
+          <button class="feedback-tab" onclick="switchFeedbackTab('wp','quick')">Quick edits</button>
+          <button class="feedback-tab" onclick="switchFeedbackTab('wp','versions')">Versions</button>
+          <button class="feedback-tab" onclick="switchFeedbackTab('wp','save')">Save</button>
+        </div>
+        <div class="feedback-body">
+          <div id="wpRefinePanel">
+            <div class="feedback-input-row">
+              <textarea id="wpFeedbackText" placeholder="e.g. 'The executive summary needs to be shorter' or 'Add more detail on CMMC compliance in section 3'..."></textarea>
+              <button class="btn-primary" onclick="refineContent('wp')">Refine →</button>
+            </div>
+            <div class="loading-indicator" id="wpRefineLoading"><div class="spinner"></div><span>Refining whitepaper...</span></div>
+          </div>
+          <div id="wpQuickPanel" style="display:none;">
+            <div class="quick-edits">
+              <button class="quick-edit-btn" onclick="quickEdit('wp','Tighten the executive summary to under 200 words — three key findings only')">Tighten exec summary</button>
+              <button class="quick-edit-btn" onclick="quickEdit('wp','Strengthen the ROI and business case section with more specific numbers')">Stronger ROI case</button>
+              <button class="quick-edit-btn" onclick="quickEdit('wp','Add more regulatory detail — cite specific articles and clauses')">More regulatory detail</button>
+              <button class="quick-edit-btn" onclick="quickEdit('wp','Make the tone more board-ready — less technical, more strategic')">More board-ready</button>
+              <button class="quick-edit-btn" onclick="quickEdit('wp','Add more data and statistics with sources throughout')">Add more data</button>
+              <button class="quick-edit-btn" onclick="quickEdit('wp','Strengthen the conclusion and next steps — make it more actionable')">Stronger conclusion</button>
+            </div>
+          </div>
+          <div id="wpVersionsPanel" style="display:none;">
+            <div class="version-list" id="wpVersionList"><div style="font-size:12px;color:var(--text-dim);padding:0.5rem 0;">No versions yet. Generate a whitepaper to start.</div></div>
+          </div>
+          <div id="wpSavePanel" style="display:none;">
+            <div class="github-form">
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Save to localStorage library or commit to GitHub repo.</div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn-accent" onclick="saveToLibrary('wp')" style="flex:1;font-size:13px;">Save to library</button>
+                <button class="btn-ghost" onclick="commitToGitHub('wp')" style="flex:1;font-size:13px;">Commit to GitHub</button>
+              </div>
+              <div class="github-status" id="wpGithubStatus"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -594,6 +746,26 @@
 
       <div class="queue-list" id="queueList">
         <div class="empty-state">Queue is empty. Add articles or whitepapers from the other tabs.</div>
+      </div>
+    </div>
+
+
+    <!-- LIBRARY PAGE -->
+    <div class="page" id="libraryPage">
+      <h1 class="page-title">Content library</h1>
+      <p class="page-sub">All saved articles and whitepapers. Stored in your browser. Click any item to load and continue editing.</p>
+
+      <div style="display:flex;gap:0.65rem;margin-bottom:1rem;" id="libActions">
+        <div style="display:flex;gap:6px;align-items:center;margin-left:auto;">
+          <label class="form-label" style="white-space:nowrap;">GitHub repo</label>
+          <input type="text" id="ghRepo" placeholder="username/repo" style="width:180px;font-size:12px;" />
+          <label class="form-label" style="white-space:nowrap;">Token</label>
+          <input type="password" id="ghToken" placeholder="ghp_..." style="width:160px;font-size:12px;" />
+        </div>
+      </div>
+
+      <div class="saved-list" id="savedList">
+        <div class="empty-state">No saved content yet. Generate an article or whitepaper and click Save to library.</div>
       </div>
     </div>
 
@@ -709,6 +881,7 @@ function showPage(p) {
   document.getElementById(p + 'Page').classList.add('active');
   document.querySelectorAll('.nav-item')[['blog','whitepaper','queue'].indexOf(p)].classList.add('active');
   if (p === 'queue') renderQueue();
+  if (p === 'library') { renderLibrary(); updateLibBadge(); }
 }
 
 function setTone(type, btn, tone) {
@@ -831,8 +1004,12 @@ async function generateContent(type) {
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
     const text = data.content.map(c => c.text || '').join('');
-    outputText.textContent = text;
+    renderArticle(text, outputText);
+    outputText.dataset.raw = text;
     output.classList.add('visible');
+    const feedbackEl = document.getElementById(type === 'blog' ? 'bFeedback' : 'wpFeedback');
+    feedbackEl.classList.add('visible');
+    addVersion(type, text, 'Original — ' + new Date().toLocaleTimeString());
   } catch (err) {
     outputText.textContent = 'Error: ' + err.message + '\n\nMake sure your API key is correct and has sufficient credits.';
     output.classList.add('visible');
@@ -863,7 +1040,10 @@ async function generateSection(sectionName, words) {
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
     const text = data.content.map(c => c.text || '').join('');
-    outputText.textContent = (outputText.textContent ? outputText.textContent + '\n\n---\n\n' : '') + text;
+    const existing = outputText.dataset.raw || '';
+    const combined = existing ? existing + '\n\n---\n\n' + text : text;
+    renderArticle(combined, outputText);
+    outputText.dataset.raw = combined;
     output.classList.add('visible');
   } catch (err) {
     outputText.textContent = 'Error: ' + err.message;
@@ -885,6 +1065,7 @@ function addToQueue(type) {
     queue.push({ contentType: 'whitepaper', title, audience: document.getElementById('wpAudience').value, wordCount: document.getElementById('wpWords').value, tone: wpTone });
   }
   updateStats();
+updateLibBadge();
 }
 
 function addAllBlogs() {
@@ -894,6 +1075,7 @@ function addAllBlogs() {
     });
   });
   updateStats();
+updateLibBadge();
 }
 
 function addSectorBlogs() {
@@ -903,19 +1085,23 @@ function addSectorBlogs() {
     if (!queue.find(q => q.title === title)) queue.push({ contentType: 'blog', title, sector: s, type, wordCount: document.getElementById('bWords').value, tone: bTone, angle: '', elements: getCheckedElements() });
   });
   updateStats();
+updateLibBadge();
 }
 
 function addAllWp() {
   ALL_WPS.forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
   updateStats();
+updateLibBadge();
 }
 
 function addFlagshipWp() {
   ALL_WPS.slice(0,3).forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
   updateStats();
+updateLibBadge();
 }
 
-function removeFromQueue(i) { queue.splice(i, 1); updateStats(); renderQueue(); }
+function removeFromQueue(i) { queue.splice(i, 1); updateStats();
+updateLibBadge(); renderQueue(); }
 
 async function generateFromQueue(i) {
   const apiKey = getApiKey();
@@ -936,10 +1122,12 @@ async function generateFromQueue(i) {
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
-    outputText.textContent = data.content.map(c => c.text || '').join('');
+    const qText = data.content.map(c => c.text || '').join('');
+    renderArticle(qText, outputText);
+    outputText.dataset.raw = qText;
     outputEl.classList.add('visible');
   } catch (err) {
-    outputText.textContent = 'Error: ' + err.message;
+    outputText.innerHTML = '<p style="color:var(--danger);">Error: ' + err.message + '</p>';
     outputEl.classList.add('visible');
   } finally { loading.classList.remove('visible'); }
 }
@@ -948,7 +1136,8 @@ function generateNextInQueue() {
   if (queue.length > 0) generateFromQueue(0);
 }
 
-function clearQueue() { if (confirm('Clear all ' + queue.length + ' items from the queue?')) { queue = []; updateStats(); renderQueue(); } }
+function clearQueue() { if (confirm('Clear all ' + queue.length + ' items from the queue?')) { queue = []; updateStats();
+updateLibBadge(); renderQueue(); } }
 
 function renderQueue() {
   const list = document.getElementById('queueList');
@@ -973,6 +1162,336 @@ function renderQueue() {
   `).join('');
 }
 
+
+
+// ── ARTICLE RENDERER ──
+function renderArticle(text, el) {
+  const lines = text.split('\n').filter(l => l !== undefined);
+  let html = '';
+  let inBody = false;
+  let seoSection = false;
+  let title = '', subtitle = '', sector = '', articleType = '';
+
+  // Extract title from first # heading or first line
+  let bodyLines = [];
+  let foundTitle = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    // SEO section detection
+    if (line.match(/^(SEO|Meta title|Meta description|meta title|meta description)/i) || seoSection) {
+      if (!seoSection) {
+        seoSection = true;
+        html += '<div class="art-seo">';
+        html += '<div class="art-seo-label">SEO</div>';
+      }
+      if (line.match(/^(Meta title|SEO title)/i)) {
+        const val = line.replace(/^[^:]+:\s*/i, '').trim();
+        if (val) html += '<div class="art-seo-label">Meta title</div><div class="art-seo-val">' + esc(val) + '</div>';
+      } else if (line.match(/^(Meta description|SEO description)/i)) {
+        const val = line.replace(/^[^:]+:\s*/i, '').trim();
+        if (val) html += '<div class="art-seo-label">Meta description</div><div class="art-seo-val">' + esc(val) + '</div>';
+      } else if (line && !line.match(/^(SEO|Meta)/i)) {
+        html += '<div class="art-seo-val">' + esc(line) + '</div>';
+      }
+      continue;
+    }
+
+    // Title: # heading or first non-empty line
+    if (!foundTitle) {
+      if (line.startsWith('# ')) { title = line.slice(2).trim(); foundTitle = true; continue; }
+      if (line && !line.startsWith('#')) { title = line.trim(); foundTitle = true; continue; }
+      continue;
+    }
+
+    // Subtitle: next substantive non-heading line after title
+    if (!inBody && line && !line.startsWith('#') && !line.startsWith('**') && subtitle === '') {
+      subtitle = line; continue;
+    }
+
+    bodyLines.push(lines[i]);
+    inBody = true;
+  }
+
+  // Render header
+  if (title) html = '<div class="art-meta">MyCena · Credential Security</div><h1 class="art-title">' + esc(title) + '</h1>';
+  if (subtitle) html += '<p class="art-subtitle">' + esc(subtitle) + '</p>';
+  html += '<hr class="art-divider">';
+  html += '<div class="art-body">';
+
+  // Render body
+  for (let i = 0; i < bodyLines.length; i++) {
+    const raw = bodyLines[i];
+    const line = raw.trim();
+    if (!line) { continue; }
+
+    // H2
+    if (line.startsWith('## ')) { html += '<h2>' + esc(line.slice(3)) + '</h2>'; continue; }
+    if (line.startsWith('# ')) { html += '<h2>' + esc(line.slice(2)) + '</h2>'; continue; }
+
+    // H3
+    if (line.startsWith('### ')) { html += '<h3>' + esc(line.slice(4)) + '</h3>'; continue; }
+
+    // Bold heading (standalone **text**)
+    if (line.match(/^\*\*[^*]+\*\*$/) || line.match(/^\*\*[^*]+\*\*:?$/)) {
+      html += '<h3>' + esc(line.replace(/\*\*/g,'')) + '</h3>'; continue;
+    }
+
+    // Pull quote detection — lines with em dash attribution or in blockquote
+    if (line.startsWith('> ') || (line.startsWith('"') && line.endsWith('"') && line.length > 60)) {
+      html += '<div class="art-pull">' + esc(line.replace(/^> /, '').replace(/^"|"$/g,'')) + '</div>'; continue;
+    }
+
+    // Attribution line (— Name, Title)
+    if (line.startsWith('—') || line.startsWith('–')) {
+      html += '<div class="art-attribution">' + esc(line) + '</div>'; continue;
+    }
+
+    // Regular paragraph — inline formatting
+    html += '<p>' + inlineFormat(line) + '</p>';
+  }
+
+  html += '</div>';
+  if (seoSection) html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function inlineFormat(line) {
+  // Bold **text**
+  line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic *text*
+  line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Inline stats: numbers with $ % M B followed by description
+  line = line.replace(/(\$[\d,.]+[MBTKmbtk]*|[\d,.]+%|[\d,.]+\s*(?:million|billion|trillion))/gi, '<span class="art-stat">$1</span>');
+  // Escape remaining HTML
+  return line;
+}
+
+
+// ── VERSION HISTORY ──
+let bVersions = [], wpVersions = [];
+let currentBlogItem = null, currentWpItem = null;
+
+function addVersion(type, text, label) {
+  const versions = type === 'blog' ? bVersions : wpVersions;
+  versions.unshift({ text, label, time: new Date().toLocaleTimeString() });
+  if (versions.length > 20) versions.pop();
+  renderVersions(type);
+}
+
+function renderVersions(type) {
+  const versions = type === 'blog' ? bVersions : wpVersions;
+  const el = document.getElementById(type === 'blog' ? 'bVersionList' : 'wpVersionList');
+  if (versions.length === 0) { el.innerHTML = '<div style="font-size:12px;color:var(--text-dim);padding:0.5rem 0;">No versions yet.</div>'; return; }
+  el.innerHTML = versions.map((v, i) => `
+    <div class="version-row">
+      <div class="version-num">v${versions.length - i}</div>
+      <div class="version-info">
+        <div class="version-label">${v.label}</div>
+        <div class="version-time">${v.time}</div>
+      </div>
+      <button class="version-btn" onclick="previewVersion('${type}',${i})">View</button>
+      <button class="version-btn restore" onclick="restoreVersion('${type}',${i})">Restore</button>
+    </div>
+  `).join('');
+}
+
+function previewVersion(type, i) {
+  const versions = type === 'blog' ? bVersions : wpVersions;
+  const v = versions[i];
+  const w = window.open('', '_blank');
+  w.document.write('<pre style="white-space:pre-wrap;font-family:system-ui;padding:2rem;max-width:800px;margin:0 auto;">' + v.text + '</pre>');
+}
+
+function restoreVersion(type, i) {
+  const versions = type === 'blog' ? bVersions : wpVersions;
+  const outputText = document.getElementById(type === 'blog' ? 'bOutputText' : 'wpOutputText');
+  outputText.textContent = versions[i].text;
+}
+
+// ── FEEDBACK TABS ──
+function switchFeedbackTab(type, tab) {
+  const prefix = type === 'blog' ? 'b' : 'wp';
+  const panels = { refine: prefix + 'RefinePanel', quick: prefix + 'QuickPanel', versions: prefix + 'VersionsPanel', save: prefix + 'SavePanel' };
+  Object.values(panels).forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById(panels[tab]).style.display = 'block';
+  const fbEl = document.getElementById(prefix + 'Feedback');
+  fbEl.querySelectorAll('.feedback-tab').forEach((t, i) => t.classList.toggle('active', ['refine','quick','versions','save'][i] === tab));
+  if (tab === 'versions') renderVersions(type === 'blog' ? 'blog' : 'wp');
+}
+
+// ── REFINE ──
+async function refineContent(type) {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Please save your Anthropic API key in the sidebar first.'); return; }
+  const prefix = type === 'blog' ? 'b' : 'wp';
+  const feedback = document.getElementById(prefix + 'FeedbackText').value.trim();
+  if (!feedback) { alert('Please enter your feedback first.'); return; }
+  const outputText = document.getElementById(prefix + 'OutputText');
+  const current = outputText.textContent;
+  if (!current) { alert('No content to refine yet.'); return; }
+  const loading = document.getElementById(prefix + 'RefineLoading');
+  loading.classList.add('visible');
+  const prompt = 'Here is a MyCena ' + (type === 'blog' ? 'blog article' : 'whitepaper') + ':\n\n' + current + '\n\n---\n\nPlease revise it with the following instruction:\n' + feedback + '\n\nReturn the complete revised ' + (type === 'blog' ? 'article' : 'whitepaper') + ' only — no preamble, no explanation.';
+  try {
+    const res = await fetch('https://mycena-crm-proxy.julia-aa4.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    addVersion(type === 'blog' ? 'blog' : 'wp', current, 'Before: ' + feedback.slice(0, 40));
+    const refined = data.content.map(c => c.text || '').join('');
+    renderArticle(refined, outputText);
+    outputText.dataset.raw = refined;
+    document.getElementById(prefix + 'FeedbackText').value = '';
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally { loading.classList.remove('visible'); }
+}
+
+async function quickEdit(type, instruction) {
+  const prefix = type === 'blog' ? 'b' : 'wp';
+  document.getElementById(prefix + 'FeedbackText').value = instruction;
+  switchFeedbackTab(type, 'refine');
+  await refineContent(type);
+}
+
+// ── LOCAL STORAGE LIBRARY ──
+function getLibrary() {
+  try { return JSON.parse(localStorage.getItem('mycena_library') || '[]'); } catch { return []; }
+}
+
+function saveLibrary(lib) {
+  try { localStorage.setItem('mycena_library', JSON.stringify(lib)); } catch { alert('Storage full. Please delete some saved items.'); }
+}
+
+function saveToLibrary(type) {
+  const prefix = type === 'blog' ? 'b' : 'wp';
+  const el = document.getElementById(prefix + 'OutputText');
+  const text = el.dataset.raw || el.textContent;
+  if (!text) { alert('No content to save yet.'); return; }
+  const title = type === 'blog' ? (getBlogTitle() || 'Untitled blog') : (document.getElementById('wpType').value || 'Untitled whitepaper');
+  const lib = getLibrary();
+  lib.unshift({ id: Date.now(), contentType: type === 'blog' ? 'blog' : 'whitepaper', title, text, savedAt: new Date().toLocaleString(), wordCount: text.split(' ').length });
+  saveLibrary(lib);
+  const statusEl = document.getElementById(prefix + 'GithubStatus');
+  statusEl.className = 'github-status success';
+  statusEl.textContent = 'Saved to library.';
+  setTimeout(() => { statusEl.className = 'github-status'; }, 3000);
+  updateLibBadge();
+}
+
+function updateLibBadge() {
+  const lib = getLibrary();
+  const badge = document.getElementById('libNavBadge');
+  if (lib.length > 0) { badge.textContent = lib.length; badge.style.display = 'inline'; }
+  else { badge.style.display = 'none'; }
+}
+
+function renderLibrary() {
+  const lib = getLibrary();
+  const el = document.getElementById('savedList');
+  if (lib.length === 0) { el.innerHTML = '<div class="empty-state">No saved content yet. Generate an article or whitepaper and click Save to library.</div>'; return; }
+  el.innerHTML = lib.map((item, i) => `
+    <div class="saved-row">
+      <div class="saved-info">
+        <div class="saved-title">${item.title}</div>
+        <div class="saved-meta">Saved ${item.savedAt} · ~${item.wordCount} words</div>
+      </div>
+      <span class="saved-badge ${item.contentType}">${item.contentType === 'blog' ? 'Blog' : 'Whitepaper'}</span>
+      <div class="saved-actions">
+        <button class="saved-btn" onclick="loadFromLibrary(${i})">Load</button>
+        <button class="saved-btn" onclick="downloadSaved(${i})">Download</button>
+        <button class="saved-btn" onclick="commitSavedToGitHub(${i})">GitHub</button>
+        <button class="saved-btn danger" onclick="deleteFromLibrary(${i})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadFromLibrary(i) {
+  const lib = getLibrary();
+  const item = lib[i];
+  const type = item.contentType;
+  showPage(type === 'blog' ? 'blog' : 'whitepaper');
+  const outputEl = document.getElementById(type === 'blog' ? 'bOutput' : 'wpOutput');
+  const outputText = document.getElementById(type === 'blog' ? 'bOutputText' : 'wpOutputText');
+  const feedback = document.getElementById(type === 'blog' ? 'bFeedback' : 'wpFeedback');
+  renderArticle(item.text, outputText);
+  outputText.dataset.raw = item.text;
+  outputEl.classList.add('visible');
+  feedback.classList.add('visible');
+  addVersion(type, item.text, 'Loaded from library');
+}
+
+function downloadSaved(i) {
+  const lib = getLibrary();
+  const item = lib[i];
+  const blob = new Blob([item.text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mycena-' + item.contentType + '-' + Date.now() + '.txt';
+  a.click();
+}
+
+function deleteFromLibrary(i) {
+  if (!confirm('Delete this saved item?')) return;
+  const lib = getLibrary();
+  lib.splice(i, 1);
+  saveLibrary(lib);
+  renderLibrary();
+  updateLibBadge();
+}
+
+// ── GITHUB COMMIT ──
+async function commitToGitHub(type) {
+  const prefix = type === 'blog' ? 'b' : 'wp';
+  const el = document.getElementById(prefix + 'OutputText');
+  const text = el.dataset.raw || el.textContent;
+  if (!text) { alert('No content to commit yet.'); return; }
+  await commitTextToGitHub(text, type === 'blog' ? (getBlogTitle() || 'article') : (document.getElementById('wpType').value || 'whitepaper'), prefix + 'GithubStatus');
+}
+
+async function commitSavedToGitHub(i) {
+  const lib = getLibrary();
+  const item = lib[i];
+  await commitTextToGitHub(item.text, item.title, null);
+}
+
+async function commitTextToGitHub(text, title, statusElId) {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (!repo || !token) { alert('Please enter your GitHub repo (username/repo) and personal access token in the Library tab.'); showPage('library'); return; }
+  const filename = 'content/' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 60) + '.md';
+  const content = btoa(unescape(encodeURIComponent(text)));
+  const statusEl = statusElId ? document.getElementById(statusElId) : null;
+  try {
+    let sha;
+    const check = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, { headers: { 'Authorization': 'token ' + token } });
+    if (check.ok) { const existing = await check.json(); sha = existing.sha; }
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Add: ' + title.slice(0, 72), content, ...(sha ? { sha } : {}) })
+    });
+    if (!res.ok) throw new Error('GitHub error: ' + res.status);
+    if (statusEl) { statusEl.className = 'github-status success'; statusEl.textContent = 'Committed to ' + repo + '/' + filename; setTimeout(() => { statusEl.className = 'github-status'; }, 5000); }
+    else { alert('Committed to ' + repo + '/' + filename); }
+  } catch (err) {
+    if (statusEl) { statusEl.className = 'github-status error'; statusEl.textContent = err.message; }
+    else { alert('GitHub error: ' + err.message); }
+  }
+}
+
+
 function updateStats() {
   const blogs = queue.filter(q => q.contentType === 'blog').length;
   const wps = queue.filter(q => q.contentType === 'whitepaper').length;
@@ -990,12 +1509,14 @@ function updateStats() {
 }
 
 function copyOutput(id) {
-  const text = document.getElementById(id).textContent;
+  const el = document.getElementById(id);
+  const text = el.dataset.raw || el.textContent;
   navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard.'));
 }
 
 function downloadOutput(id, type) {
-  const text = document.getElementById(id).textContent;
+  const el = document.getElementById(id);
+  const text = el.dataset.raw || el.textContent;
   const blob = new Blob([text], { type: 'text/plain' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1004,6 +1525,7 @@ function downloadOutput(id, type) {
 }
 
 updateStats();
+updateLibBadge();
 </script>
 </body>
 </html>
