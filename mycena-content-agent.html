@@ -737,11 +737,33 @@
     <!-- QUEUE PAGE -->
     <div class="page" id="queuePage">
       <h1 class="page-title">Content queue</h1>
-      <p class="page-sub">Generate articles and whitepapers one at a time or in sequence. Each item uses the Anthropic API to research and write the full piece.</p>
+      <p class="page-sub">Generate one at a time or run the full queue automatically. Each article takes ~30 seconds. A 10-second delay between articles keeps within API rate limits.</p>
 
-      <div class="btn-row" id="qBtnRow" style="display:none;">
-        <button class="btn-primary" onclick="generateNextInQueue()">Generate next →</button>
-        <button class="btn-ghost" onclick="clearQueue()">Clear queue</button>
+      <div id="qBtnRow" style="display:none;">
+        <div class="btn-row">
+          <button class="btn-primary" id="autoRunBtn" onclick="startAutoRun()">Generate all automatically →</button>
+          <button class="btn-ghost" onclick="generateNextInQueue()">Generate next only</button>
+          <button class="btn-ghost" onclick="clearQueue()">Clear queue</button>
+        </div>
+
+        <div id="autoRunProgress" style="display:none;margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:12px;font-weight:500;color:var(--text);" id="autoRunStatus">Starting...</span>
+            <button onclick="stopAutoRun()" style="font-size:11px;color:var(--danger);background:none;border:1px solid rgba(163,45,45,0.3);border-radius:6px;padding:3px 10px;cursor:pointer;">Stop</button>
+          </div>
+          <div style="height:6px;background:var(--navy-light);border-radius:100px;overflow:hidden;">
+            <div id="autoRunBar" style="height:100%;background:var(--accent);border-radius:100px;width:0%;transition:width 0.5s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:5px;">
+            <span style="font-size:11px;color:var(--text-dim);" id="autoRunCount">0 of 0 complete</span>
+            <span style="font-size:11px;color:var(--text-dim);" id="autoRunETA"></span>
+          </div>
+        </div>
+
+        <div id="autoRunLog" style="display:none;max-height:180px;overflow-y:auto;background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:0.75rem;margin-bottom:1rem;">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Generation log</div>
+          <div id="autoRunLogItems" style="display:flex;flex-direction:column;gap:3px;"></div>
+        </div>
       </div>
 
       <div class="queue-list" id="queueList">
