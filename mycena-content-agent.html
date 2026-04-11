@@ -8,22 +8,22 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --navy: #0a0f1e;
-    --navy-mid: #111827;
-    --navy-light: #1a2540;
-    --accent: #4a7cfc;
-    --accent-dim: rgba(74,124,252,0.12);
-    --accent-border: rgba(74,124,252,0.3);
-    --text: #f0f4ff;
-    --text-muted: #8a9ac0;
-    --text-dim: #4a5578;
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.18);
-    --success: #1d9e75;
-    --success-dim: rgba(29,158,117,0.12);
-    --warning: #ef9f27;
-    --warning-dim: rgba(239,159,39,0.12);
-    --danger: #e84040;
+    --navy: #ffffff;
+    --navy-mid: #f5f6f8;
+    --navy-light: #eef0f4;
+    --accent: #2d5be3;
+    --accent-dim: rgba(45,91,227,0.08);
+    --accent-border: rgba(45,91,227,0.25);
+    --text: #0f1623;
+    --text-muted: #4a5578;
+    --text-dim: #8a95b0;
+    --border: rgba(0,0,0,0.09);
+    --border-hover: rgba(0,0,0,0.18);
+    --success: #0f6e56;
+    --success-dim: rgba(15,110,86,0.1);
+    --warning: #854f0b;
+    --warning-dim: rgba(133,79,11,0.1);
+    --danger: #a32d2d;
     --sans: 'DM Sans', system-ui, sans-serif;
     --serif: 'DM Serif Display', Georgia, serif;
   }
@@ -88,7 +88,7 @@
   .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
   .nav-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
   .nav-item .nav-icon { font-size: 14px; width: 18px; text-align: center; }
-  .nav-badge { margin-left: auto; font-size: 10px; background: var(--accent); color: var(--navy); border-radius: 100px; padding: 1px 6px; font-weight: 600; display: none; }
+  .nav-badge { margin-left: auto; font-size: 10px; background: var(--accent); color: #ffffff; border-radius: 100px; padding: 1px 6px; font-weight: 600; display: none; }
 
   .sidebar-stats { display: flex; flex-direction: column; gap: 6px; }
   .stat-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; }
@@ -124,7 +124,7 @@
   .form-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
 
   select, input[type=text], textarea {
-    background: var(--navy-light);
+    background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
@@ -135,10 +135,10 @@
     transition: border-color 0.15s;
     appearance: none;
   }
-  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a5578'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem; }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a5578'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem; background-color: #ffffff; }
   select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); }
   textarea { height: 80px; resize: vertical; }
-  select option { background: var(--navy-mid); }
+  select option { background: #ffffff; color: var(--text); }
   optgroup { color: var(--text-dim); font-size: 0.75rem; }
 
   /* CHIPS */
@@ -185,7 +185,7 @@
   .btn-primary {
     display: inline-flex; align-items: center; gap: 6px;
     font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
-    color: var(--navy); background: var(--text);
+    color: #ffffff; background: var(--accent);
     border: none; border-radius: 8px; padding: 0.6rem 1.25rem;
     cursor: pointer; transition: opacity 0.2s;
   }
@@ -345,11 +345,20 @@
 
     <div style="margin-top:auto;">
       <div class="sidebar-section-label">API</div>
-      <div class="form-group">
-        <label class="form-label">Anthropic API key</label>
-        <input type="text" id="apiKey" placeholder="sk-ant-..." style="font-size:0.75rem;" />
+      <div id="apiKeyEntry">
+        <div class="form-group">
+          <label class="form-label">Anthropic API key</label>
+          <input type="password" id="apiKey" placeholder="sk-ant-..." style="font-size:0.75rem;" onkeydown="if(event.key==='Enter')saveApiKey()" />
+        </div>
+        <button onclick="saveApiKey()" style="margin-top:6px;font-size:0.75rem;width:100%;padding:6px;border-radius:6px;border:1px solid var(--accent-border);background:var(--accent-dim);color:var(--accent);cursor:pointer;font-family:var(--sans);">Save key</button>
       </div>
-      <p style="font-size:0.7rem;color:var(--text-dim);margin-top:6px;">Key stored in browser only. Never sent anywhere except Anthropic.</p>
+      <div id="apiKeySet" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--success-dim);border:1px solid rgba(15,110,86,0.2);border-radius:8px;">
+          <span style="font-size:12px;color:var(--success);flex:1;">API key set</span>
+          <button onclick="clearApiKey()" style="font-size:11px;color:var(--text-dim);background:none;border:none;cursor:pointer;padding:0;">Change</button>
+        </div>
+      </div>
+      <p style="font-size:0.7rem;color:var(--text-dim);margin-top:6px;">Stored in memory only. Cleared when you close the tab.</p>
     </div>
   </aside>
 
@@ -592,6 +601,30 @@
 </div>
 
 <script>
+let _apiKey = '';
+
+function saveApiKey() {
+  const val = document.getElementById('apiKey').value.trim();
+  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
+    alert('That doesn\'t look like a valid Anthropic API key. It should start with sk-ant-');
+    return;
+  }
+  _apiKey = val;
+  document.getElementById('apiKey').value = '';
+  document.getElementById('apiKeyEntry').style.display = 'none';
+  document.getElementById('apiKeySet').style.display = 'block';
+}
+
+function clearApiKey() {
+  _apiKey = '';
+  document.getElementById('apiKeyEntry').style.display = 'block';
+  document.getElementById('apiKeySet').style.display = 'none';
+}
+
+function getApiKey() {
+  return _apiKey;
+}
+
 const BLOG_TITLES = {
   'Financial Services & Insurance': {
     'Breach case study': 'How M&S lost £300m to a credential it didn\'t control',
@@ -767,8 +800,8 @@ function buildSectionPrompt(sectionName, words, wpTitle, audience, tone) {
 }
 
 async function generateContent(type) {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { alert('Please enter your Anthropic API key in the sidebar.'); return; }
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Please save your Anthropic API key in the sidebar first.'); return; }
 
   const loading = document.getElementById(type === 'blog' ? 'bLoading' : 'wpLoading');
   const output = document.getElementById(type === 'blog' ? 'bOutput' : 'wpOutput');
@@ -810,8 +843,8 @@ async function generateContent(type) {
 }
 
 async function generateSection(sectionName, words) {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { alert('Please enter your Anthropic API key in the sidebar.'); return; }
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Please save your Anthropic API key in the sidebar first.'); return; }
   const title = document.getElementById('wpType').value;
   if (!title) { alert('Please select a whitepaper first.'); return; }
   const audience = document.getElementById('wpAudience').value;
@@ -885,8 +918,8 @@ function addFlagshipWp() {
 function removeFromQueue(i) { queue.splice(i, 1); updateStats(); renderQueue(); }
 
 async function generateFromQueue(i) {
-  const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { alert('Please enter your Anthropic API key in the sidebar.'); return; }
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Please save your Anthropic API key in the sidebar first.'); return; }
   const item = queue[i];
   const prompt = item.contentType === 'blog' ? buildBlogPrompt(item) : buildWpPrompt(item);
   showPage(item.contentType === 'blog' ? 'blog' : 'whitepaper');
