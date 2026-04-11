@@ -809,6 +809,7 @@ function saveApiKey() {
     return;
   }
   _apiKey = val;
+  try { localStorage.setItem('mycena_api_key', val); } catch(e) {}
   document.getElementById('apiKey').value = '';
   document.getElementById('apiKeyEntry').style.display = 'none';
   document.getElementById('apiKeySet').style.display = 'block';
@@ -816,6 +817,7 @@ function saveApiKey() {
 
 function clearApiKey() {
   _apiKey = '';
+  try { localStorage.removeItem('mycena_api_key'); } catch(e) {}
   document.getElementById('apiKeyEntry').style.display = 'block';
   document.getElementById('apiKeySet').style.display = 'none';
 }
@@ -1092,7 +1094,17 @@ function addToQueue(type) {
     if (!title) return;
     queue.push({ contentType: 'whitepaper', title, audience: document.getElementById('wpAudience').value, wordCount: document.getElementById('wpWords').value, tone: wpTone });
   }
-  updateStats();
+  // Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
+
+updateStats();
 updateLibBadge();
 loadGitHubSettings();
 renderLibrary();
@@ -1104,7 +1116,17 @@ function addAllBlogs() {
       if (!queue.find(q => q.title === title)) queue.push({ contentType: 'blog', title, sector, type, wordCount: '1000', tone: 'Financial Times', angle: '', elements: ['Breach reference','Statistics & data','Regulatory mapping','MyCena solution','SEO meta'] });
     });
   });
-  updateStats();
+  // Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
+
+updateStats();
 updateLibBadge();
 loadGitHubSettings();
 renderLibrary();
@@ -1116,7 +1138,17 @@ function addSectorBlogs() {
   Object.entries(BLOG_TITLES[s] || {}).forEach(([type, title]) => {
     if (!queue.find(q => q.title === title)) queue.push({ contentType: 'blog', title, sector: s, type, wordCount: document.getElementById('bWords').value, tone: bTone, angle: '', elements: getCheckedElements() });
   });
-  updateStats();
+  // Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
+
+updateStats();
 updateLibBadge();
 loadGitHubSettings();
 renderLibrary();
@@ -1124,7 +1156,17 @@ renderLibrary();
 
 function addAllWp() {
   ALL_WPS.forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
-  updateStats();
+  // Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
+
+updateStats();
 updateLibBadge();
 loadGitHubSettings();
 renderLibrary();
@@ -1132,13 +1174,33 @@ renderLibrary();
 
 function addFlagshipWp() {
   ALL_WPS.slice(0,3).forEach(wp => { if (!queue.find(q => q.title === wp.title)) queue.push({ contentType: 'whitepaper', ...wp }); });
-  updateStats();
+  // Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
+
+updateStats();
 updateLibBadge();
 loadGitHubSettings();
 renderLibrary();
 }
 
-function removeFromQueue(i) { queue.splice(i, 1); updateStats();
+function removeFromQueue(i) { queue.splice(i, 1); // Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
+
+updateStats();
 updateLibBadge();
 loadGitHubSettings();
 renderLibrary(); renderQueue(); }
@@ -1190,7 +1252,7 @@ async function startAutoRun() {
   if (!apiKey) { alert('Please save your Anthropic API key in the sidebar first.'); return; }
   if (queue.length === 0) { alert('Queue is empty.'); return; }
   const mins = Math.round(queue.length * 40 / 60);
-  if (!confirm('Generate all ' + queue.length + ' items automatically?\nEstimated time: ~' + mins + ' minutes.\n\nAll articles will be saved to your library and committed to GitHub automatically.')) return;
+  if (queue.length === 0) return;
 
   _autoRunning = true;
   _autoStop = false;
@@ -1587,6 +1649,8 @@ function saveToLibrary(type) {
   setTimeout(() => { statusEl.className = 'github-status'; }, 3000);
   updateLibBadge();
   if (document.getElementById('libraryPage').classList.contains('active')) renderLibrary();
+  // Auto-commit to GitHub silently if configured
+  commitTextToGitHub(text, title, null).catch(() => {});
 }
 
 function updateLibBadge() {
@@ -1668,14 +1732,21 @@ async function commitToGitHub(type) {
   const prefix = type === 'blog' ? 'b' : 'wp';
   const el = document.getElementById(prefix + 'OutputText');
   const text = el.dataset.raw || el.textContent;
-  if (!text) { alert('No content to commit yet.'); return; }
-  await commitTextToGitHub(text, type === 'blog' ? (getBlogTitle() || 'article') : (document.getElementById('wpType').value || 'whitepaper'), prefix + 'GithubStatus');
+  if (!text) { return; }
+  await commitTextToGitHub(text, extractTitleFromText(text) || 'untitled', prefix + 'GithubStatus');
 }
 
 async function commitSavedToGitHub(i) {
   const lib = getLibrary();
   const item = lib[i];
-  await commitTextToGitHub(item.text, item.title, null);
+  const realTitle = extractTitleFromText(item.text) || item.title;
+  await commitTextToGitHub(item.text, realTitle, null);
+  // Show brief feedback in the button row
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = 'Committed';
+  btn.style.color = 'var(--success)';
+  setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
 }
 
 
@@ -1693,7 +1764,13 @@ function extractTitleFromText(text) {
 async function commitTextToGitHub(text, title, statusElId) {
   const repo = document.getElementById('ghRepo').value.trim();
   const token = document.getElementById('ghToken').value.trim();
-  if (!repo || !token) { alert('Please enter your GitHub repo (username/repo) and personal access token in the Library tab.'); showPage('library'); return; }
+  if (!repo || !token) {
+    if (statusElId) {
+      const s = document.getElementById(statusElId);
+      if (s) { s.className = 'github-status error'; s.textContent = 'Add GitHub repo and token in the Library tab.'; }
+    }
+    return;
+  }
   const realTitle = extractTitleFromText(text) || title;
   const slug = realTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   const filename = 'content/' + slug + '.md';
@@ -1710,10 +1787,10 @@ async function commitTextToGitHub(text, title, statusElId) {
     });
     if (!res.ok) throw new Error('GitHub error: ' + res.status);
     if (statusEl) { statusEl.className = 'github-status success'; statusEl.textContent = 'Committed to ' + repo + '/' + filename; setTimeout(() => { statusEl.className = 'github-status'; }, 5000); }
-    else { alert('Committed to ' + repo + '/' + filename); }
+    else { console.log('Committed: ' + filename); }
   } catch (err) {
     if (statusEl) { statusEl.className = 'github-status error'; statusEl.textContent = err.message; }
-    else { alert('GitHub error: ' + err.message); }
+    else { console.error('GitHub error: ' + err.message); }
   }
 }
 
@@ -1771,6 +1848,16 @@ function downloadOutput(id, type) {
   a.download = 'mycena-' + type + '-' + Date.now() + '.txt';
   a.click();
 }
+
+// Load API key from localStorage on startup
+try {
+  const storedKey = localStorage.getItem('mycena_api_key');
+  if (storedKey && (storedKey.startsWith('sk-ant-') || storedKey.startsWith('sk-'))) {
+    _apiKey = storedKey;
+    document.getElementById('apiKeyEntry').style.display = 'none';
+    document.getElementById('apiKeySet').style.display = 'block';
+  }
+} catch(e) {}
 
 updateStats();
 updateLibBadge();
