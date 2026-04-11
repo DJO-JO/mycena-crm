@@ -906,7 +906,8 @@ function showPage(p) {
   document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(p + 'Page').classList.add('active');
-  document.querySelectorAll('.nav-item')[['blog','whitepaper','queue'].indexOf(p)].classList.add('active');
+  const navIdx = ['blog','whitepaper','queue','library'].indexOf(p);
+  if (navIdx >= 0) document.querySelectorAll('.nav-item')[navIdx].classList.add('active');
   if (p === 'queue') renderQueue();
   if (p === 'library') { renderLibrary(); updateLibBadge(); }
 }
@@ -1094,6 +1095,7 @@ function addToQueue(type) {
   updateStats();
 updateLibBadge();
 loadGitHubSettings();
+renderLibrary();
 }
 
 function addAllBlogs() {
@@ -1105,6 +1107,7 @@ function addAllBlogs() {
   updateStats();
 updateLibBadge();
 loadGitHubSettings();
+renderLibrary();
 }
 
 function addSectorBlogs() {
@@ -1116,6 +1119,7 @@ function addSectorBlogs() {
   updateStats();
 updateLibBadge();
 loadGitHubSettings();
+renderLibrary();
 }
 
 function addAllWp() {
@@ -1123,6 +1127,7 @@ function addAllWp() {
   updateStats();
 updateLibBadge();
 loadGitHubSettings();
+renderLibrary();
 }
 
 function addFlagshipWp() {
@@ -1130,11 +1135,13 @@ function addFlagshipWp() {
   updateStats();
 updateLibBadge();
 loadGitHubSettings();
+renderLibrary();
 }
 
 function removeFromQueue(i) { queue.splice(i, 1); updateStats();
 updateLibBadge();
-loadGitHubSettings(); renderQueue(); }
+loadGitHubSettings();
+renderLibrary(); renderQueue(); }
 
 async function generateFromQueue(i) {
   const apiKey = getApiKey();
@@ -1169,9 +1176,166 @@ function generateNextInQueue() {
   if (queue.length > 0) generateFromQueue(0);
 }
 
-function clearQueue() { if (confirm('Clear all ' + queue.length + ' items from the queue?')) { queue = []; updateStats();
-updateLibBadge();
-loadGitHubSettings(); renderQueue(); } }
+// ── AUTO-RUN ──
+let _autoRunning = false;
+let _autoStop = false;
+let _autoIndex = 0;
+let _autoTotal = 0;
+let _autoDone = 0;
+let _autoErrors = 0;
+let _autoCountdownTimer = null;
+
+async function startAutoRun() {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Please save your Anthropic API key in the sidebar first.'); return; }
+  if (queue.length === 0) { alert('Queue is empty.'); return; }
+  const mins = Math.round(queue.length * 40 / 60);
+  if (!confirm('Generate all ' + queue.length + ' items automatically?\nEstimated time: ~' + mins + ' minutes.\n\nAll articles will be saved to your library and committed to GitHub automatically.')) return;
+
+  _autoRunning = true;
+  _autoStop = false;
+  _autoIndex = 0;
+  _autoTotal = queue.length;
+  _autoDone = 0;
+  _autoErrors = 0;
+
+  document.getElementById('autoRunBtn').disabled = true;
+  document.getElementById('autoRunProgress').style.display = 'block';
+  document.getElementById('autoRunLog').style.display = 'block';
+  document.getElementById('autoRunLogItems').innerHTML = '';
+  updateAutoProgress('Starting...');
+
+  await processAutoItem();
+}
+
+async function processAutoItem() {
+  if (_autoStop || _autoIndex >= _autoTotal) {
+    finishAutoRun(); return;
+  }
+
+  const item = queue[_autoIndex];
+  if (!item) { finishAutoRun(); return; }
+
+  const remaining = _autoTotal - _autoIndex;
+  const etaSecs = remaining * 40;
+  const etaStr = etaSecs > 60 ? Math.round(etaSecs / 60) + ' min remaining' : etaSecs + 's remaining';
+  updateAutoProgress('Writing: ' + item.title.slice(0, 55) + '...', etaStr);
+
+  const apiKey = getApiKey();
+  const prompt = item.contentType === 'blog' ? buildBlogPrompt(item) : buildWpPrompt(item);
+
+  try {
+    const res = await fetch('https://mycena-crm-proxy.julia-aa4.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content.map(c => c.text || '').join('');
+
+    // Save to localStorage library
+    const lib = getLibrary();
+    const realTitle = extractTitleFromText(text) || item.title;
+    lib.unshift({ id: Date.now() + _autoIndex, contentType: item.contentType, title: realTitle, text, savedAt: new Date().toLocaleString(), wordCount: text.split(' ').length });
+    saveLibrary(lib);
+    updateLibBadge();
+
+    // Auto-commit to GitHub if configured
+    const repo = document.getElementById('ghRepo').value.trim();
+    const token = document.getElementById('ghToken').value.trim();
+    if (repo && token) {
+      try { await commitTextToGitHub(text, item.title, null); } catch(e) { /* log but don't stop run */ }
+    }
+
+    _autoDone++;
+    addAutoLog(_autoDone, item.title, true, null);
+  } catch (err) {
+    _autoErrors++;
+    addAutoLog(_autoIndex + 1, item.title, false, err.message);
+  }
+
+  _autoIndex++;
+  updateAutoBar();
+
+  if (_autoIndex < _autoTotal && !_autoStop) {
+    startCountdown(10, processAutoItem);
+  } else {
+    finishAutoRun();
+  }
+}
+
+function startCountdown(secs, callback) {
+  let count = secs;
+  updateAutoProgress('Next article in ' + count + 's...');
+  _autoCountdownTimer = setInterval(() => {
+    count--;
+    if (_autoStop) { clearInterval(_autoCountdownTimer); return; }
+    if (count <= 0) {
+      clearInterval(_autoCountdownTimer);
+      if (!_autoStop) callback();
+    } else {
+      updateAutoProgress('Next article in ' + count + 's...');
+    }
+  }, 1000);
+}
+
+function updateAutoProgress(status, eta) {
+  document.getElementById('autoRunStatus').textContent = status;
+  document.getElementById('autoRunCount').textContent = _autoDone + ' of ' + _autoTotal + ' complete';
+  if (eta) document.getElementById('autoRunETA').textContent = eta;
+}
+
+function updateAutoBar() {
+  const pct = _autoTotal > 0 ? Math.round((_autoDone / _autoTotal) * 100) : 0;
+  document.getElementById('autoRunBar').style.width = pct + '%';
+  document.getElementById('autoRunCount').textContent = _autoDone + ' of ' + _autoTotal + ' complete';
+}
+
+function addAutoLog(num, title, success, error) {
+  const log = document.getElementById('autoRunLogItems');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px solid var(--border);';
+  row.innerHTML = '<span style="min-width:22px;color:var(--text-dim);">' + String(num).padStart(2,'0') + '</span>'
+    + '<span style="flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(title.slice(0, 55)) + '</span>'
+    + (success ? '<span style="color:var(--success);font-weight:600;">Saved</span>' : '<span style="color:var(--danger);font-weight:600;" title="' + escapeHtml(error||'') + '">Error</span>');
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function finishAutoRun() {
+  _autoRunning = false;
+  if (_autoCountdownTimer) clearInterval(_autoCountdownTimer);
+  document.getElementById('autoRunBtn').disabled = false;
+  document.getElementById('autoRunBar').style.width = '100%';
+  const msg = 'Done — ' + _autoDone + ' generated' + (_autoErrors > 0 ? ', ' + _autoErrors + ' errors' : '') + '. All saved to library.';
+  document.getElementById('autoRunStatus').textContent = msg;
+  document.getElementById('autoRunETA').textContent = '';
+  updateLibBadge();
+  renderLibrary();
+}
+
+function stopAutoRun() {
+  _autoStop = true;
+  _autoRunning = false;
+  if (_autoCountdownTimer) clearInterval(_autoCountdownTimer);
+  document.getElementById('autoRunStatus').textContent = 'Stopped — ' + _autoDone + ' of ' + _autoTotal + ' saved.';
+  document.getElementById('autoRunBtn').disabled = false;
+}
+
+function clearQueue() {
+  if (confirm('Clear all ' + queue.length + ' items from the queue?')) {
+    queue = [];
+    updateStats();
+    updateLibBadge();
+    loadGitHubSettings();
+    renderQueue();
+  }
+}
 
 function renderQueue() {
   const list = document.getElementById('queueList');
@@ -1412,7 +1576,8 @@ function saveToLibrary(type) {
   const el = document.getElementById(prefix + 'OutputText');
   const text = el.dataset.raw || el.textContent;
   if (!text) { alert('No content to save yet.'); return; }
-  const title = type === 'blog' ? (getBlogTitle() || 'Untitled blog') : (document.getElementById('wpType').value || 'Untitled whitepaper');
+  const previewTitle = type === 'blog' ? (getBlogTitle() || 'Untitled blog') : (document.getElementById('wpType').value || 'Untitled whitepaper');
+  const title = extractTitleFromText(text) || previewTitle;
   const lib = getLibrary();
   lib.unshift({ id: Date.now(), contentType: type === 'blog' ? 'blog' : 'whitepaper', title, text, savedAt: new Date().toLocaleString(), wordCount: text.split(' ').length });
   saveLibrary(lib);
@@ -1421,6 +1586,7 @@ function saveToLibrary(type) {
   statusEl.textContent = 'Saved to library.';
   setTimeout(() => { statusEl.className = 'github-status'; }, 3000);
   updateLibBadge();
+  if (document.getElementById('libraryPage').classList.contains('active')) renderLibrary();
 }
 
 function updateLibBadge() {
@@ -1443,6 +1609,7 @@ function renderLibrary() {
       <span class="saved-badge ${item.contentType}">${item.contentType === 'blog' ? 'Blog' : 'Whitepaper'}</span>
       <div class="saved-actions">
         <button class="saved-btn" onclick="loadFromLibrary(${i})">Load</button>
+        <button class="saved-btn" onclick="editLibraryTitle(${i})">Rename</button>
         <button class="saved-btn" onclick="downloadSaved(${i})">Download</button>
         <button class="saved-btn" onclick="commitSavedToGitHub(${i})">GitHub</button>
         <button class="saved-btn danger" onclick="deleteFromLibrary(${i})">Delete</button>
@@ -1485,6 +1652,17 @@ function deleteFromLibrary(i) {
   updateLibBadge();
 }
 
+function editLibraryTitle(i) {
+  const lib = getLibrary();
+  const current = lib[i].title;
+  const newTitle = prompt('Edit title:', current);
+  if (newTitle && newTitle.trim() && newTitle.trim() !== current) {
+    lib[i].title = newTitle.trim();
+    saveLibrary(lib);
+    renderLibrary();
+  }
+}
+
 // ── GITHUB COMMIT ──
 async function commitToGitHub(type) {
   const prefix = type === 'blog' ? 'b' : 'wp';
@@ -1500,11 +1678,25 @@ async function commitSavedToGitHub(i) {
   await commitTextToGitHub(item.text, item.title, null);
 }
 
+
+function extractTitleFromText(text) {
+  if (!text) return null;
+  const lines = text.split('\n');
+  for (const line of lines) {
+    const t = line.trim();
+    if (t.startsWith('# ')) return t.slice(2).trim();
+    if (t && !t.startsWith('#') && t.length > 10 && t.length < 200) return t.trim();
+  }
+  return null;
+}
+
 async function commitTextToGitHub(text, title, statusElId) {
   const repo = document.getElementById('ghRepo').value.trim();
   const token = document.getElementById('ghToken').value.trim();
   if (!repo || !token) { alert('Please enter your GitHub repo (username/repo) and personal access token in the Library tab.'); showPage('library'); return; }
-  const filename = 'content/' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 60) + '.md';
+  const realTitle = extractTitleFromText(text) || title;
+  const slug = realTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const filename = 'content/' + slug + '.md';
   const content = btoa(unescape(encodeURIComponent(text)));
   const statusEl = statusElId ? document.getElementById(statusElId) : null;
   try {
@@ -1583,6 +1775,7 @@ function downloadOutput(id, type) {
 updateStats();
 updateLibBadge();
 loadGitHubSettings();
+renderLibrary();
 </script>
 </body>
 </html>
