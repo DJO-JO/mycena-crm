@@ -499,8 +499,11 @@
       </div>
 
       <div class="preview-card" id="bPreview">
-        <div class="preview-eyebrow">Article preview</div>
-        <div class="preview-title" id="bPTitle"></div>
+        <div class="preview-eyebrow" style="display:flex;justify-content:space-between;align-items:center;">
+          Article title — edit freely
+          <button onclick="resetBlogTitle()" style="font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;">Reset suggestion</button>
+        </div>
+        <input type="text" id="bPTitle" style="font-size:1rem;font-weight:500;color:var(--text);background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0;width:100%;margin-bottom:8px;font-family:var(--serif);" placeholder="Edit the article title..." oninput="updateBlogPreview()" />
         <div class="preview-meta" id="bPMeta"></div>
       </div>
 
@@ -518,7 +521,9 @@
         <div class="output-header">
           <div class="output-label">Article generated</div>
           <div class="output-actions">
-            <button class="output-btn" onclick="copyOutput('bOutputText')">Copy</button>
+            <button class="output-btn" onclick="copyOutput('bOutputText')">Copy text</button>
+            <button class="output-btn" onclick="copyWordPress('bOutputText')">Copy for WordPress</button>
+            <button class="output-btn" onclick="downloadWordPress('bOutputText', 'blog')">Download WordPress HTML</button>
             <button class="output-btn" onclick="downloadOutput('bOutputText', 'blog')">Download .txt</button>
           </div>
         </div>
@@ -670,7 +675,9 @@
         <div class="output-header">
           <div class="output-label">Whitepaper generated</div>
           <div class="output-actions">
-            <button class="output-btn" onclick="copyOutput('wpOutputText')">Copy</button>
+            <button class="output-btn" onclick="copyOutput('wpOutputText')">Copy text</button>
+            <button class="output-btn" onclick="copyWordPress('wpOutputText')">Copy for WordPress</button>
+            <button class="output-btn" onclick="downloadWordPress('wpOutputText', 'whitepaper')">Download WordPress HTML</button>
             <button class="output-btn" onclick="downloadOutput('wpOutputText', 'whitepaper')">Download .txt</button>
           </div>
         </div>
@@ -924,10 +931,23 @@ function setTone(type, btn, tone) {
 
 function toggleChip(cb) { cb.parentElement.classList.toggle('on', cb.checked); }
 
+
+function resetBlogTitle() {
+  const s = document.getElementById('bSector').value;
+  const t = document.getElementById('bType').value;
+  if (!s || !t) return;
+  const suggested = BLOG_TITLES[s]?.[t] || t + ' — ' + s;
+  const titleInput = document.getElementById('bPTitle');
+  titleInput.value = suggested;
+  titleInput.dataset.lastSuggested = suggested;
+}
+
 function getBlogTitle() {
   const s = document.getElementById('bSector').value;
   const t = document.getElementById('bType').value;
-  return (s && t) ? (BLOG_TITLES[s]?.[t] || `${t} — ${s}`) : null;
+  if (!s || !t) return null;
+  const inputVal = document.getElementById('bPTitle') ? document.getElementById('bPTitle').value.trim() : '';
+  return inputVal || BLOG_TITLES[s]?.[t] || `${t} — ${s}`;
 }
 
 function updateBlogPreview() {
@@ -1831,6 +1851,165 @@ function updateStats() {
   if (queue.length > 0) { badge.textContent = queue.length; badge.style.display = 'inline'; }
   else { badge.style.display = 'none'; }
   if (document.getElementById('queuePage').classList.contains('active')) renderQueue();
+}
+
+
+// ── WORDPRESS EXPORT ──
+function convertToWordPress(rawText) {
+  if (!rawText || !rawText.trim()) return '';
+
+  const lines = rawText.split('\n');
+  let html = '';
+  let seoTitle = '';
+  let seoDesc = '';
+  let inSeo = false;
+  let title = '';
+  let subtitle = '';
+  let foundTitle = false;
+  let foundSubtitle = false;
+  let bodyLines = [];
+
+  // First pass — extract title, subtitle, SEO, body
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    // SEO section
+    if (line.match(/^(SEO|Meta title|Meta description)/i)) { inSeo = true; }
+    if (inSeo) {
+      if (line.match(/^Meta title/i)) seoTitle = line.replace(/^[^:]+:\s*/i, '').trim();
+      if (line.match(/^Meta description/i)) seoDesc = line.replace(/^[^:]+:\s*/i, '').trim();
+      continue;
+    }
+
+    if (!foundTitle) {
+      if (line.startsWith('# ')) { title = line.slice(2).trim(); foundTitle = true; continue; }
+      if (line && !line.startsWith('#') && line.length > 10) { title = line; foundTitle = true; continue; }
+      continue;
+    }
+    if (!foundSubtitle && line && !line.startsWith('#')) { subtitle = line; foundSubtitle = true; continue; }
+    bodyLines.push(lines[i]);
+  }
+
+  // Build WordPress HTML
+  // Title block — WordPress uses post title separately, but include as H1 comment
+  html += '<!-- wp:heading {"level":1} -->\n';
+  html += '<h1 class="wp-block-heading">' + wpEsc(title) + '</h1>\n';
+  html += '<!-- /wp:heading -->\n\n';
+
+  // Subtitle as standfirst paragraph
+  if (subtitle) {
+    html += '<!-- wp:paragraph {"className":"standfirst"} -->\n';
+    html += '<p class="standfirst"><strong>' + wpEsc(subtitle) + '</strong></p>\n';
+    html += '<!-- /wp:paragraph -->\n\n';
+  }
+
+  // Separator
+  html += '<!-- wp:separator -->\n<hr class="wp-block-separator has-alpha-channel-opacity"/>\n<!-- /wp:separator -->\n\n';
+
+  // Body
+  let i = 0;
+  while (i < bodyLines.length) {
+    const raw = bodyLines[i];
+    const line = raw.trim();
+    i++;
+
+    if (!line) continue;
+
+    // H2
+    if (line.startsWith('## ') || line.startsWith('# ')) {
+      const text = line.replace(/^#{1,2}\s+/, '');
+      html += '<!-- wp:heading {"level":2} -->\n';
+      html += '<h2 class="wp-block-heading">' + wpEsc(text) + '</h2>\n';
+      html += '<!-- /wp:heading -->\n\n';
+      continue;
+    }
+
+    // H3
+    if (line.startsWith('### ')) {
+      const text = line.slice(4);
+      html += '<!-- wp:heading {"level":3} -->\n';
+      html += '<h3 class="wp-block-heading">' + wpEsc(text) + '</h3>\n';
+      html += '<!-- /wp:heading -->\n\n';
+      continue;
+    }
+
+    // Pull quote / blockquote
+    if (line.startsWith('> ') || (line.startsWith('"') && line.endsWith('"') && line.length > 60)) {
+      const text = line.replace(/^> /, '').replace(/^"|"$/g, '');
+      html += '<!-- wp:quote -->\n<blockquote class="wp-block-quote">\n';
+      html += '<p>' + wpInline(text) + '</p>\n';
+      html += '</blockquote>\n<!-- /wp:quote -->\n\n';
+      continue;
+    }
+
+    // Attribution
+    if (line.startsWith('—') || line.startsWith('–')) {
+      html += '<!-- wp:paragraph {"className":"attribution"} -->\n';
+      html += '<p class="attribution"><em>' + wpEsc(line) + '</em></p>\n';
+      html += '<!-- /wp:paragraph -->\n\n';
+      continue;
+    }
+
+    // Bold-only line = subheading
+    if (line.match(/^\*\*[^*]+\*\*:?$/)) {
+      const text = line.replace(/\*\*/g, '').replace(/:$/, '');
+      html += '<!-- wp:heading {"level":3} -->\n';
+      html += '<h3 class="wp-block-heading">' + wpEsc(text) + '</h3>\n';
+      html += '<!-- /wp:heading -->\n\n';
+      continue;
+    }
+
+    // Regular paragraph
+    html += '<!-- wp:paragraph -->\n';
+    html += '<p>' + wpInline(line) + '</p>\n';
+    html += '<!-- /wp:paragraph -->\n\n';
+  }
+
+  // SEO block as HTML comment for easy copy-paste into Yoast
+  if (seoTitle || seoDesc) {
+    html += '\n<!-- ================================================\n';
+    html += 'YOAST SEO FIELDS — paste into Yoast SEO panel below the editor\n\n';
+    if (seoTitle) html += 'SEO Title:\n' + seoTitle + '\n\n';
+    if (seoDesc) html += 'Meta Description:\n' + seoDesc + '\n';
+    html += '================================================ -->\n';
+  }
+
+  return html;
+}
+
+function wpEsc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function wpInline(line) {
+  // Bold
+  line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Escape remaining HTML chars (except tags we just added)
+  line = line.replace(/&(?![a-z]+;)/g, '&amp;');
+  return line;
+}
+
+function copyWordPress(id) {
+  const el = document.getElementById(id);
+  const raw = el.dataset.raw || el.textContent;
+  const wpHtml = convertToWordPress(raw);
+  navigator.clipboard.writeText(wpHtml).then(() => {
+    alert('WordPress HTML copied!\n\nPaste it directly into the WordPress Code Editor (switch from Visual to Code editor using the three-dot menu top right).');
+  });
+}
+
+function downloadWordPress(id, type) {
+  const el = document.getElementById(id);
+  const raw = el.dataset.raw || el.textContent;
+  const wpHtml = convertToWordPress(raw);
+  const title = (extractTitleFromText(raw) || type).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,60);
+  const blob = new Blob([wpHtml], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mycena-' + title + '-wordpress.html';
+  a.click();
 }
 
 function copyOutput(id) {
