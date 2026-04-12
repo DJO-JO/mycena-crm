@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insights — MyCena Credential Security</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#002662;
+  --navy-light:#E6EBF5;
+  --gold:#D8B26F;
+  --gold-light:#FAF3E7;
+  --silver:#B2B4B3;
+  --black:#151515;
+  --white:#FFFFFF;
+  --text:#1a1a18;
+  --muted:#5a5a57;
+  --dim:#9a9a97;
+  --bg:#ffffff;
+  --bg-mid:#f5f5f3;
+  --bg-light:#eeeeed;
+  --border:rgba(0,0,0,0.09);
+  --border-mid:rgba(0,0,0,0.15);
+  --danger:#a32d2d;
+  --danger-light:#fdf0f0;
+  --heading:'Bai Jamjuree',sans-serif;
+  --body:'Manrope',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 2rem}
+.nav-inner{max-width:1280px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--heading);font-size:1.05rem;font-weight:600;color:var(--black);letter-spacing:0.08em;text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:1.75rem}
+.nav-link{font-size:0.82rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-link:hover,.nav-link.active{color:var(--black)}
+.nav-cta{font-family:var(--heading);font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#fff;background:var(--black);padding:8px 18px;border-radius:2px;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--navy)}
+
+.wrap{max-width:1280px;margin:0 auto;padding:0 2rem}
+
+.hero{padding:110px 2rem 60px;max-width:1280px;margin:0 auto}
+.hero-eyebrow{font-size:0.68rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--navy);margin-bottom:1rem}
+.hero-title{font-family:var(--heading);font-size:clamp(2rem,4vw,3rem);font-weight:600;color:var(--black);line-height:1.1;letter-spacing:-0.02em;margin-bottom:0.75rem}
+.hero-sub{font-size:1rem;font-weight:300;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:2rem}
+.hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+.stat-num{font-family:var(--heading);font-size:1.75rem;font-weight:600;color:var(--black)}
+.stat-label{font-size:0.72rem;color:var(--dim);margin-top:1px}
+
+.divider{height:1px;background:var(--border);margin:0 2rem}
+
+.breach-banner{background:var(--danger-light);border-top:2px solid var(--danger);border-bottom:1px solid rgba(163,45,45,0.15);padding:0.85rem 2rem}
+.breach-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.breach-live{font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:var(--danger);padding:3px 8px;border-radius:2px;white-space:nowrap}
+.breach-text{font-size:0.85rem;color:var(--danger);font-weight:500;flex:1}
+.breach-link{font-size:0.78rem;color:var(--danger);font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:1px solid rgba(163,45,45,0.3)}
+.breach-link:hover{border-color:var(--danger)}
+
+.tools-section{padding:2.5rem 0;border-bottom:1px solid var(--border)}
+.section-label{font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim);margin-bottom:1rem}
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.tool-card{background:var(--bg);padding:1.5rem;cursor:pointer;transition:background 0.15s;position:relative;text-decoration:none;display:block}
+.tool-card:hover{background:var(--bg-mid)}
+.tool-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background 0.2s}
+.tool-card:hover::after{background:var(--navy)}
+.tool-icon{width:32px;height:32px;background:var(--navy-light);border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem}
+.tool-icon svg{width:16px;height:16px}
+.tool-name{font-family:var(--heading);font-size:0.95rem;font-weight:600;color:var(--black);margin-bottom:0.3rem}
+.tool-desc{font-size:0.78rem;color:var(--muted);line-height:1.5;margin-bottom:0.85rem}
+.tool-action{font-size:0.72rem;font-weight:600;color:var(--navy);letter-spacing:0.04em}
+.tool-card.featured-tool{background:var(--navy)}
+.tool-card.featured-tool::after{background:var(--gold)}
+.tool-card.featured-tool:hover{background:#001d4a}
+.tool-card.featured-tool .tool-icon{background:rgba(255,255,255,0.1)}
+.tool-card.featured-tool .tool-icon svg path,.tool-card.featured-tool .tool-icon svg rect{stroke:#fff}
+.tool-card.featured-tool .tool-name{color:#fff}
+.tool-card.featured-tool .tool-desc{color:rgba(255,255,255,0.55)}
+.tool-card.featured-tool .tool-action{color:var(--gold)}
+
+.research-section{padding:2.5rem 0;border-bottom:1px solid var(--border)}
+.research-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.research-card{background:var(--bg);padding:2rem;text-decoration:none;display:block;transition:background 0.15s;position:relative}
+.research-card:hover{background:var(--bg-mid)}
+.research-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:transparent;transition:background 0.2s}
+.research-card:hover::before{background:var(--navy)}
+.research-type{font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--navy);margin-bottom:0.5rem}
+.research-title{font-family:var(--heading);font-size:1.2rem;font-weight:600;color:var(--black);line-height:1.25;margin-bottom:0.5rem;letter-spacing:-0.01em}
+.research-desc{font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+.research-meta{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--border)}
+.research-pages{font-size:0.72rem;color:var(--dim)}
+.research-dl{font-size:0.72rem;font-weight:600;color:var(--navy);letter-spacing:0.04em}
+
+.content-section{padding:2.5rem 0}
+.tab-bar{display:flex;gap:0;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem;width:fit-content}
+.tab-btn{font-size:0.78rem;font-weight:500;color:var(--muted);background:var(--bg);border:none;padding:8px 18px;cursor:pointer;border-right:1px solid var(--border);transition:all 0.15s;white-space:nowrap}
+.tab-btn:last-child{border-right:none}
+.tab-btn.active{background:var(--navy);color:#fff}
+.tab-btn:hover:not(.active){background:var(--bg-mid);color:var(--black)}
+
+.filters-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem}
+.sector-filters{display:flex;gap:6px;flex-wrap:wrap}
+.sector-btn{font-size:0.72rem;font-weight:500;color:var(--muted);background:none;border:1px solid var(--border);border-radius:2px;padding:4px 12px;cursor:pointer;transition:all 0.15s}
+.sector-btn:hover{border-color:var(--border-mid);color:var(--black)}
+.sector-btn.active{border-color:var(--navy);color:var(--navy);background:var(--navy-light)}
+.results-label{font-size:0.72rem;color:var(--dim)}
+
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.content-card{background:var(--bg);padding:1.5rem;text-decoration:none;display:flex;flex-direction:column;transition:background 0.15s;position:relative}
+.content-card:hover{background:var(--bg-mid)}
+.content-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background 0.2s}
+.content-card:hover::after{background:var(--navy)}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;flex-wrap:wrap}
+.badge{font-size:0.62rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:1px}
+.badge-article{color:var(--navy);background:var(--navy-light)}
+.badge-analysis{color:#791F1F;background:#FCEBEB}
+.badge-regulatory{color:#412402;background:#FAEEDA}
+.badge-sector{color:var(--dim);background:var(--bg-light);border:1px solid var(--border)}
+.badge-wp{color:#04342C;background:#E1F5EE}
+.card-title{font-family:var(--heading);font-size:0.98rem;font-weight:600;color:var(--black);line-height:1.3;margin-bottom:0.5rem;letter-spacing:-0.005em}
+.card-excerpt{font-size:0.78rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;flex:1}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;border-top:1px solid var(--border);margin-top:auto}
+.card-time{font-size:0.68rem;color:var(--dim)}
+.card-arrow{font-size:0.75rem;color:var(--dim);transition:all 0.2s}
+.content-card:hover .card-arrow{color:var(--navy);transform:translateX(3px)}
+
+.wp-card{background:var(--navy)}
+.wp-card:hover{background:#001d4a}
+.wp-card::after{background:transparent}
+.wp-card:hover::after{background:var(--gold)}
+.wp-card .badge-wp{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7)}
+.wp-card .badge-sector{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);border-color:rgba(255,255,255,0.1)}
+.wp-card .card-title{color:#fff}
+.wp-card .card-excerpt{color:rgba(255,255,255,0.5)}
+.wp-card .card-footer{border-color:rgba(255,255,255,0.1)}
+.wp-card .card-time{color:rgba(255,255,255,0.3)}
+.wp-card .card-arrow{color:var(--gold)}
+.wp-card:hover .card-arrow{color:var(--gold)}
+.wp-dl{display:inline-flex;align-items:center;gap:5px;font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold)}
+
+.ladder-section{padding:2.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-mid)}
+.ladder-wrap{display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start}
+.ladder-intro-eyebrow{font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--navy);margin-bottom:0.5rem}
+.ladder-intro-title{font-family:var(--heading);font-size:1.4rem;font-weight:600;color:var(--black);line-height:1.2;margin-bottom:0.75rem;letter-spacing:-0.01em}
+.ladder-intro-desc{font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.25rem}
+.ladder-cta{font-family:var(--heading);font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#fff;background:var(--black);padding:9px 18px;border-radius:2px;text-decoration:none;display:inline-block;transition:background 0.2s}
+.ladder-cta:hover{background:var(--navy)}
+.ladder-rungs{display:flex;flex-direction:column;gap:0}
+.rung{display:flex;align-items:stretch;gap:0;border-bottom:1px solid var(--border)}
+.rung:last-child{border-bottom:none}
+.rung-num{width:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--heading);font-size:0.78rem;font-weight:600;color:var(--dim);background:var(--bg-light);border-right:1px solid var(--border)}
+.rung-body{flex:1;padding:0.85rem 1rem}
+.rung-title{font-size:0.85rem;font-weight:600;color:var(--black);margin-bottom:2px}
+.rung-desc{font-size:0.75rem;color:var(--muted);line-height:1.5}
+.rung-status{width:100px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0 0.75rem;border-left:1px solid var(--border)}
+.rung-badge{font-size:0.62rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:2px;text-align:center;white-space:nowrap}
+.rung-exposed{background:#FCEBEB;color:#791F1F}
+.rung-partial{background:#FAEEDA;color:#412402}
+.rung-controlled{background:#E1F5EE;color:#04342C}
+.rung-active{background:var(--navy)}
+.rung-active .rung-num{background:var(--navy);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)}
+.rung-active .rung-title{color:#fff}
+.rung-active .rung-desc{color:rgba(255,255,255,0.5)}
+.rung-active .rung-body{background:var(--navy)}
+.rung-active .rung-status{border-color:rgba(255,255,255,0.1)}
+.rung-active .rung-badge{background:var(--gold);color:var(--black)}
+
+.email-section{padding:3rem 2rem;background:var(--bg-mid);border-top:1px solid var(--border)}
+.email-inner{max-width:600px;margin:0 auto;text-align:center}
+.email-title{font-family:var(--heading);font-size:1.25rem;font-weight:600;color:var(--black);margin-bottom:0.35rem}
+.email-sub{font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem}
+.email-form{display:flex;gap:8px;max-width:420px;margin:0 auto}
+.email-form input{flex:1;font-family:var(--body);font-size:0.875rem;color:var(--text);background:#fff;border:1px solid var(--border-mid);border-radius:2px;padding:10px 14px}
+.email-form input:focus{outline:none;border-color:var(--navy)}
+.email-form button{font-family:var(--heading);font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#fff;background:var(--navy);border:none;border-radius:2px;padding:10px 18px;cursor:pointer;white-space:nowrap}
+.email-form button:hover{background:var(--black)}
+.email-note{font-size:0.68rem;color:var(--dim);margin-top:0.75rem}
+
+.cta-strip{background:var(--black);padding:4rem 2rem}
+.cta-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.cta-eyebrow{font-size:0.65rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem}
+.cta-title{font-family:var(--heading);font-size:1.6rem;font-weight:600;color:#fff;line-height:1.15;letter-spacing:-0.01em;max-width:480px}
+.cta-btn{font-family:var(--heading);font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--black);background:#fff;padding:13px 28px;border-radius:2px;text-decoration:none;white-space:nowrap;transition:background 0.2s}
+.cta-btn:hover{background:var(--gold)}
+
+footer{background:var(--bg-mid);border-top:1px solid var(--border);padding:2rem}
+.footer-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:var(--heading);font-size:0.88rem;font-weight:600;letter-spacing:0.1em;color:var(--dim)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.footer-link{font-size:0.75rem;color:var(--dim);text-decoration:none}
+.footer-link:hover{color:var(--muted)}
+.footer-copy{font-size:0.7rem;color:var(--dim)}
+
+.load-more-wrap{text-align:center;padding:2rem 0}
+.load-more{font-family:var(--heading);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border-mid);padding:11px 32px;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.load-more:hover{border-color:var(--navy);color:var(--navy)}
+
+@media(max-width:900px){
+  .tools-grid{grid-template-columns:1fr 1fr}
+  .research-grid{grid-template-columns:1fr}
+  .card-grid{grid-template-columns:1fr}
+  .ladder-wrap{grid-template-columns:1fr}
+  .hero-stats{gap:1.5rem}
+}
+@media(max-width:600px){
+  .tools-grid{grid-template-columns:1fr}
+  .email-form{flex-direction:column}
+  .nav-links{gap:1rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">MYCENA</a>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Home</a>
+      <a href="#" class="nav-link">Problem</a>
+      <a href="#" class="nav-link">Solutions</a>
+      <a href="#" class="nav-link active">Insights</a>
+      <a href="#" class="nav-link">Packages</a>
+      <a href="#" class="nav-link">About</a>
+      <a href="#" class="nav-link">Contact</a>
+      <a href="#" class="nav-cta">Book a Briefing</a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Insights</div>
+  <h1 class="hero-title">Everything we know about<br>credential risk. All sourced.</h1>
+  <p class="hero-sub">Breach analysis, sector reports, regulatory guides, research tools and the board brief. Built for CISOs, compliance directors and boards.</p>
+  <div class="hero-stats">
+    <div><div class="stat-num">35</div><div class="stat-label">Articles</div></div>
+    <div><div class="stat-num">15</div><div class="stat-label">Whitepapers</div></div>
+    <div><div class="stat-num">7</div><div class="stat-label">Sectors</div></div>
+    <div><div class="stat-num">4</div><div class="stat-label">Regulatory guides</div></div>
+  </div>
+</div>
+
+<div class="breach-banner">
+  <div class="breach-inner">
+    <span class="breach-live">Latest breach</span>
+    <span class="breach-text">M&amp;S — £300m impact · April 2025 · Scattered Spider entered through a third-party credential M&amp;S could not revoke.</span>
+    <a href="#" class="breach-link">Read the analysis →</a>
+  </div>
+</div>
+
+<div class="tools-section">
+  <div class="wrap">
+    <div class="section-label">Tools &amp; resources</div>
+    <div class="tools-grid">
+
+      <a href="#" class="tool-card featured-tool">
+        <div class="tool-icon">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="12" width="3" height="3" stroke="white" stroke-width="1.2"/>
+            <rect x="6" y="8" width="3" height="7" stroke="white" stroke-width="1.2"/>
+            <rect x="11" y="4" width="3" height="11" stroke="white" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="tool-name">Credential attack surface calculator</div>
+        <div class="tool-desc">Six categories. Your inputs. See your uncontrolled credential count and annual breach probability.</div>
+        <div class="tool-action">Calculate your exposure →</div>
+      </a>
+
+      <a href="#" class="tool-card">
+        <div class="tool-icon">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="1" width="12" height="14" rx="1" stroke="#002662" stroke-width="1.2"/>
+            <line x1="5" y1="5" x2="11" y2="5" stroke="#002662" stroke-width="1"/>
+            <line x1="5" y1="8" x2="11" y2="8" stroke="#002662" stroke-width="1"/>
+            <line x1="5" y1="11" x2="8" y2="11" stroke="#002662" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="tool-name">One-page board brief</div>
+        <div class="tool-desc">Designed to be handed directly to your board without modification. The binary decision, in board language.</div>
+        <div class="tool-action">Download free →</div>
+      </a>
+
+      <a href="#" class="tool-card">
+        <div class="tool-icon">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="6.5" stroke="#002662" stroke-width="1.2"/>
+            <path d="M8 4.5v4l2.5 2" stroke="#002662" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="tool-name">Reset cost calculator</div>
+        <div class="tool-desc">How many credential resets per month? What does that cost per year? The number surprises most ops directors.</div>
+        <div class="tool-action">Calculate now →</div>
+      </a>
+
+      <a href="#" class="tool-card">
+        <div class="tool-icon">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1L8 4M8 12L8 15M1 8L4 8M12 8L15 8" stroke="#002662" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="8" cy="8" r="3.5" stroke="#002662" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="tool-name">Credential control ladder</div>
+        <div class="tool-desc">Five rungs from exposed to fully controlled. Where does your organisation sit today?</div>
+        <div class="tool-action">Find your rung →</div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<div class="research-section">
+  <div class="wrap">
+    <div class="section-label">Research &amp; annual reports</div>
+    <div class="research-grid">
+
+      <a href="#" class="research-card">
+        <div class="research-type">Annual report · 2025</div>
+        <div class="research-title">The MyCena Credential Breach Index 2025</div>
+        <div class="research-desc">Every confirmed credential-based breach of 2025. Entry point, sector, dwell time, cost. The source of record for credential breach data — methodology fully published.</div>
+        <div class="research-meta">
+          <span class="research-pages">52 pages · PDF · Free download</span>
+          <span class="research-dl">Download report →</span>
+        </div>
+      </a>
+
+      <a href="#" class="research-card">
+        <div class="research-type">Flagship whitepaper</div>
+        <div class="research-title">The Credential Control Gap — why IAM, PAM, SSO, MFA and Zero Trust all leave the same vulnerability</div>
+        <div class="research-desc">Every organisation has invested in identity tools. Every organisation still gets breached through stolen credentials. This paper explains the structural reason — and the fix.</div>
+        <div class="research-meta">
+          <span class="research-pages">48 pages · PDF · Gated</span>
+          <span class="research-dl">Download →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<div class="content-section">
+  <div class="wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem">
+      <div class="tab-bar" id="tabBar">
+        <button class="tab-btn active" onclick="switchTab('analysis')">Breach analysis</button>
+        <button class="tab-btn" onclick="switchTab('sector')">Sector reports</button>
+        <button class="tab-btn" onclick="switchTab('regulatory')">Regulatory guides</button>
+        <button class="tab-btn" onclick="switchTab('articles')">Articles</button>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <div class="sector-filters" id="sectorFilters">
+        <button class="sector-btn active" onclick="filterSector('all',this)">All sectors</button>
+        <button class="sector-btn" onclick="filterSector('financial',this)">Financial services</button>
+        <button class="sector-btn" onclick="filterSector('healthcare',this)">Healthcare</button>
+        <button class="sector-btn" onclick="filterSector('msp',this)">MSP</button>
+        <button class="sector-btn" onclick="filterSector('bpo',this)">BPO</button>
+        <button class="sector-btn" onclick="filterSector('defense',this)">Defense</button>
+        <button class="sector-btn" onclick="filterSector('energy',this)">Energy</button>
+        <button class="sector-btn" onclick="filterSector('manufacturing',this)">Manufacturing</button>
+      </div>
+      <span class="results-label" id="resultsLabel">Showing 6 items</span>
+    </div>
+
+    <div class="card-grid" id="cardGrid">
+
+      <a href="#" class="content-card" data-tab="analysis" data-sector="financial">
+        <div class="card-meta">
+          <span class="badge badge-analysis">Breach analysis</span>
+          <span class="badge badge-sector">Financial services</span>
+        </div>
+        <div class="card-title">How M&amp;S lost £300m to a credential it didn't control</div>
+        <div class="card-excerpt">Scattered Spider entered through a third-party credential M&amp;S had no visibility of and could not revoke. The structural failure behind the breach.</div>
+        <div class="card-footer">
+          <span class="card-time">8 min read · April 2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card" data-tab="analysis" data-sector="msp">
+        <div class="card-meta">
+          <span class="badge badge-analysis">Breach analysis</span>
+          <span class="badge badge-sector">MSP</span>
+        </div>
+        <div class="card-title">Kaseya: how one MSP credential reached 1,500 businesses in hours</div>
+        <div class="card-excerpt">Not a zero-day. A credential. Understanding why changes how MSPs architect their entire access model.</div>
+        <div class="card-footer">
+          <span class="card-time">9 min read · July 2021</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card" data-tab="analysis" data-sector="defense">
+        <div class="card-meta">
+          <span class="badge badge-analysis">Breach analysis</span>
+          <span class="badge badge-sector">Defense</span>
+        </div>
+        <div class="card-title">SolarWinds: how one vendor credential reached 18,000 organisations including the US government</div>
+        <div class="card-excerpt">The most consequential supply chain breach in history. One credential. Nine months undetected.</div>
+        <div class="card-footer">
+          <span class="card-time">10 min read · Dec 2020</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card wp-card" data-tab="sector" data-sector="financial">
+        <div class="card-meta">
+          <span class="badge badge-wp">Sector report</span>
+          <span class="badge badge-sector">Financial services</span>
+        </div>
+        <div class="card-title">Financial Services Credential Risk Report 2025</div>
+        <div class="card-excerpt">DORA Articles 9 and 28, PCI-DSS v4.0, FCA operational resilience — and the credential gap none of them close structurally.</div>
+        <div class="card-footer">
+          <span class="card-time">32 pages · PDF</span>
+          <span class="wp-dl">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download
+          </span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card wp-card" data-tab="sector" data-sector="healthcare">
+        <div class="card-meta">
+          <span class="badge badge-wp">Sector report</span>
+          <span class="badge badge-sector">Healthcare</span>
+        </div>
+        <div class="card-title">Healthcare Credential Risk Report 2025</div>
+        <div class="card-excerpt">HIPAA, HITECH, NIS2 — and why clinical staff controlling their own credentials is a structural compliance failure.</div>
+        <div class="card-footer">
+          <span class="card-time">28 pages · PDF</span>
+          <span class="wp-dl">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download
+          </span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card" data-tab="regulatory" data-sector="financial">
+        <div class="card-meta">
+          <span class="badge badge-regulatory">Regulatory guide</span>
+          <span class="badge badge-sector">Financial services</span>
+        </div>
+        <div class="card-title">What DORA actually requires on credential access — and why most firms fail it</div>
+        <div class="card-excerpt">DORA doesn't mention passwords. But Articles 9 and 10 set requirements most firms structurally cannot evidence with their current architecture.</div>
+        <div class="card-footer">
+          <span class="card-time">12 min read · 2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card" data-tab="regulatory" data-sector="defense">
+        <div class="card-meta">
+          <span class="badge badge-regulatory">Regulatory guide</span>
+          <span class="badge badge-sector">Defense</span>
+        </div>
+        <div class="card-title">CMMC 2.0 and credential governance — what contractors must evidence</div>
+        <div class="card-excerpt">220,000+ contractors face CMMC 2.0 requirements. Most cannot evidence the access control and audit trail requirements with current credential architecture.</div>
+        <div class="card-footer">
+          <span class="card-time">14 min read · 2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card" data-tab="articles" data-sector="msp">
+        <div class="card-meta">
+          <span class="badge badge-article">Article</span>
+          <span class="badge badge-sector">MSP</span>
+        </div>
+        <div class="card-title">The PAM credential problem: why the vault is only as secure as the technician who holds the key</div>
+        <div class="card-excerpt">CyberArk governs privileged sessions. It doesn't govern the credential the technician used to open the vault. That gap is where MSP breaches originate.</div>
+        <div class="card-footer">
+          <span class="card-time">7 min read</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="content-card" data-tab="articles" data-sector="energy">
+        <div class="card-meta">
+          <span class="badge badge-article">Article</span>
+          <span class="badge badge-sector">Energy</span>
+        </div>
+        <div class="card-title">Colonial Pipeline: how one credential shut down fuel supply for the eastern United States</div>
+        <div class="card-excerpt">A single VPN credential, unused and unrevoked, gave attackers full access to critical infrastructure. The structural lesson for every operator.</div>
+        <div class="card-footer">
+          <span class="card-time">8 min read</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="load-more-wrap">
+      <button class="load-more">Load more</button>
+    </div>
+  </div>
+</div>
+
+<div class="ladder-section">
+  <div class="wrap">
+    <div class="ladder-wrap">
+      <div>
+        <div class="ladder-intro-eyebrow">Credential control ladder</div>
+        <h2 class="ladder-intro-title">Where does your organisation sit today?</h2>
+        <p class="ladder-intro-desc">Five rungs from fully exposed to structurally controlled. Most organisations sit at rung 2 or 3 — believing they are protected because they have MFA or a password manager.</p>
+        <a href="#" class="ladder-cta">Assess your rung →</a>
+      </div>
+      <div class="ladder-rungs">
+        <div class="rung">
+          <div class="rung-num">1</div>
+          <div class="rung-body">
+            <div class="rung-title">User-created, user-held credentials</div>
+            <div class="rung-desc">Employees create their own passwords. Organisation has no visibility, no control, no revocation capability.</div>
+          </div>
+          <div class="rung-status"><span class="rung-badge rung-exposed">Exposed</span></div>
+        </div>
+        <div class="rung">
+          <div class="rung-num">2</div>
+          <div class="rung-body">
+            <div class="rung-title">MFA and SSO deployed</div>
+            <div class="rung-desc">Authentication layer strengthened. The underlying credential is still user-created and user-held. Phishable at the source.</div>
+          </div>
+          <div class="rung-status"><span class="rung-badge rung-partial">Partial</span></div>
+        </div>
+        <div class="rung">
+          <div class="rung-num">3</div>
+          <div class="rung-body">
+            <div class="rung-title">PAM deployed for privileged accounts</div>
+            <div class="rung-desc">Privileged users governed. General workforce — typically 95%+ of employees — still outside governance. Third parties entirely ungoverned.</div>
+          </div>
+          <div class="rung-status"><span class="rung-badge rung-partial">Partial</span></div>
+        </div>
+        <div class="rung">
+          <div class="rung-num">4</div>
+          <div class="rung-body">
+            <div class="rung-title">Organisation generates all credentials</div>
+            <div class="rung-desc">No user creates their own credential. Organisation generates, distributes encrypted, and controls every credential. Users never see or hold it.</div>
+          </div>
+          <div class="rung-status"><span class="rung-badge rung-controlled">Controlled</span></div>
+        </div>
+        <div class="rung rung-active">
+          <div class="rung-num">5</div>
+          <div class="rung-body">
+            <div class="rung-title">Full credential assurance — internal and third-party</div>
+            <div class="rung-desc">Every credential governed — employees, contractors, vendors, BPO agents, AI systems. Real-time audit trail. Instant revocation. Continuous compliance evidence.</div>
+          </div>
+          <div class="rung-status"><span class="rung-badge">MyCena</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="email-section">
+  <div class="email-inner">
+    <div class="email-title">Stay ahead of the next breach</div>
+    <p class="email-sub">Breach analysis when it happens. Sector reports as they publish. No marketing — just the research.</p>
+    <div class="email-form">
+      <input type="email" placeholder="Work email address">
+      <button type="button">Subscribe</button>
+    </div>
+    <div class="email-note">One email per week maximum. Unsubscribe any time.</div>
+  </div>
+</div>
+
+<div class="cta-strip">
+  <div class="cta-inner">
+    <div>
+      <div class="cta-eyebrow">Take the next step</div>
+      <div class="cta-title">See how Credential Control removes this risk structurally.</div>
+    </div>
+    <a href="#" class="cta-btn">Book a board-ready briefing</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">MYCENA</div>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Credential Control</a>
+      <a href="#" class="footer-link">Solutions</a>
+      <a href="#" class="footer-link">Insights</a>
+      <a href="#" class="footer-link">Packages</a>
+      <a href="#" class="footer-link">Contact</a>
+    </div>
+    <div class="footer-copy">© 2025 MyCena. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+let activeTab = 'analysis';
+let activeSector = 'all';
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['analysis','sector','regulatory','articles'][i] === tab);
+  });
+  applyFilters();
+}
+
+function filterSector(sector, btn) {
+  activeSector = sector;
+  document.querySelectorAll('.sector-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  const cards = document.querySelectorAll('.content-card[data-tab]');
+  let count = 0;
+  cards.forEach(card => {
+    const tabMatch = card.dataset.tab === activeTab;
+    const sectorMatch = activeSector === 'all' || card.dataset.sector === activeSector;
+    const show = tabMatch && sectorMatch;
+    card.style.display = show ? '' : 'none';
+    if (show) count++;
+  });
+  document.getElementById('resultsLabel').textContent = 'Showing ' + count + ' items';
+}
+
+applyFilters();
+</script>
+</body>
+</html>
