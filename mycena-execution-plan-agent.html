@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCena — Execution Plan Content Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;600;700&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#002662;--navy-mid:#001a47;--navy-light:#E6EBF5;
+  --gold:#D8B26F;--gold-dark:#b8923f;
+  --black:#151515;--white:#ffffff;
+  --text:#1a1a18;--muted:#5a5a57;--dim:#9a9a97;
+  --bg:#ffffff;--bg-mid:#f5f5f3;--bg-light:#eeeeed;
+  --border:rgba(0,0,0,0.09);--border-mid:rgba(0,0,0,0.15);
+  --success:#0f6e56;--success-light:#e1f5ee;
+  --danger:#a32d2d;--danger-light:#fdf0f0;
+  --heading:'Bai Jamjuree',sans-serif;--body:'Manrope',sans-serif;
+}
+html{height:100%}
+body{background:var(--bg-mid);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;height:100%;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{background:var(--black);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-logo{font-family:var(--heading);font-size:0.9rem;font-weight:600;color:#fff;letter-spacing:0.1em}
+.topbar-title{font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:0.05em}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.api-status{font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:2px}
+.api-status.set{background:rgba(15,110,86,0.3);color:#5DCAA5}
+.api-status.unset{background:rgba(163,45,45,0.3);color:#F09595}
+.api-link{font-size:0.72rem;color:rgba(255,255,255,0.4);text-decoration:none}
+.api-link:hover{color:rgba(255,255,255,0.7)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:300px 1fr 380px;flex:1;min-height:0;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-head{padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.sidebar-head-title{font-family:var(--heading);font-size:0.82rem;font-weight:600;color:var(--black);margin-bottom:4px}
+.sidebar-head-sub{font-size:0.7rem;color:var(--dim)}
+.sidebar-search{padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.sidebar-search input{width:100%;font-family:var(--body);font-size:0.78rem;color:var(--text);background:var(--bg-mid);border:1px solid var(--border);border-radius:2px;padding:6px 10px}
+.sidebar-search input:focus{outline:none;border-color:var(--navy)}
+.sidebar-scroll{flex:1;overflow-y:auto}
+.plan-group{border-bottom:1px solid var(--border)}
+.plan-group-label{font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);padding:0.6rem 1.25rem 0.4rem;background:var(--bg-mid);position:sticky;top:0;z-index:1}
+.plan-item{padding:0.65rem 1.25rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.1s;display:flex;flex-direction:column;gap:3px}
+.plan-item:last-child{border-bottom:none}
+.plan-item:hover{background:var(--bg-mid)}
+.plan-item.active{background:var(--navy-light);border-left:2px solid var(--navy)}
+.plan-item-name{font-size:0.78rem;font-weight:500;color:var(--text);line-height:1.35}
+.plan-item.active .plan-item-name{color:var(--navy);font-weight:600}
+.plan-item-type{font-size:0.65rem;color:var(--dim)}
+.plan-item.active .plan-item-type{color:var(--navy);opacity:0.6}
+.plan-tag{display:inline-block;font-size:0.58rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:1px 6px;border-radius:1px;margin-top:2px}
+.tag-linkedin{background:#e8f0fb;color:#1a5fa8}
+.tag-article{background:var(--navy-light);color:var(--navy)}
+.tag-whitepaper{background:#e1f5ee;color:#085041}
+.tag-tool{background:#FAEEDA;color:#412402}
+.tag-sales{background:#FCEBEB;color:#791F1F}
+.tag-pr{background:#EEEDFE;color:#3C3489}
+
+/* MAIN PANEL */
+.main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg-mid)}
+.main-toolbar{background:var(--bg);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-shrink:0;flex-wrap:wrap}
+.toolbar-label{font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim)}
+.toolbar-select{font-family:var(--body);font-size:0.78rem;color:var(--text);background:var(--bg);border:1px solid var(--border-mid);border-radius:2px;padding:5px 10px;cursor:pointer}
+.toolbar-select:focus{outline:none;border-color:var(--navy)}
+.toolbar-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.gen-btn{font-family:var(--heading);font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#fff;background:var(--navy);border:none;border-radius:2px;padding:7px 18px;cursor:pointer;transition:background 0.15s;white-space:nowrap}
+.gen-btn:hover{background:var(--navy-mid)}
+.gen-btn:disabled{background:var(--dim);cursor:not-allowed}
+.gen-btn.gold{background:var(--gold-dark)}
+.gen-btn.gold:hover{background:var(--gold)}
+
+.main-scroll{flex:1;overflow-y:auto;padding:1.5rem}
+.plan-detail{background:var(--bg);border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem}
+.plan-detail-eyebrow{font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--navy);margin-bottom:0.4rem}
+.plan-detail-title{font-family:var(--heading);font-size:1.1rem;font-weight:600;color:var(--black);margin-bottom:0.5rem;line-height:1.25}
+.plan-detail-meta{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem}
+.meta-item{font-size:0.7rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+.meta-item strong{color:var(--text);font-weight:600}
+.plan-detail-desc{font-size:0.82rem;color:var(--muted);line-height:1.65;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.plan-detail-outputs{display:flex;flex-direction:column;gap:6px}
+.output-item{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.85rem;background:var(--bg-mid);border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:all 0.15s}
+.output-item:hover{border-color:var(--border-mid);background:var(--bg-light)}
+.output-item.selected{border-color:var(--navy);background:var(--navy-light)}
+.output-item-left{display:flex;flex-direction:column;gap:2px}
+.output-name{font-size:0.78rem;font-weight:600;color:var(--text)}
+.output-item.selected .output-name{color:var(--navy)}
+.output-desc{font-size:0.68rem;color:var(--dim)}
+.output-arrow{font-size:0.72rem;color:var(--dim)}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;color:var(--dim);gap:0.75rem;padding:2rem}
+.empty-icon{width:48px;height:48px;background:var(--bg-light);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.25rem}
+.empty-title{font-size:0.88rem;font-weight:500;color:var(--muted)}
+.empty-sub{font-size:0.75rem;color:var(--dim);max-width:220px;line-height:1.55}
+
+/* OUTPUT PANEL */
+.output-panel{background:var(--bg);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.output-head{padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.output-head-title{font-size:0.78rem;font-weight:600;color:var(--black)}
+.output-head-status{font-size:0.68rem;color:var(--dim)}
+.output-actions{display:flex;gap:6px;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.out-btn{font-family:var(--body);font-size:0.7rem;font-weight:500;color:var(--muted);background:none;border:1px solid var(--border);border-radius:2px;padding:4px 10px;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.out-btn:hover{border-color:var(--border-mid);color:var(--black)}
+.out-btn.active-tab{background:var(--black);color:#fff;border-color:var(--black)}
+.out-btn.copy-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.output-scroll{flex:1;overflow-y:auto;padding:1.25rem}
+.output-text{font-size:0.82rem;line-height:1.8;color:var(--text);white-space:pre-wrap;font-family:var(--body)}
+.output-thinking{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:0.78rem;padding:2rem 0}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.refine-section{padding:0.75rem 1.25rem;border-top:1px solid var(--border);flex-shrink:0}
+.refine-label{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim);margin-bottom:0.5rem}
+.refine-row{display:flex;gap:6px}
+.refine-input{flex:1;font-family:var(--body);font-size:0.75rem;color:var(--text);background:var(--bg-mid);border:1px solid var(--border);border-radius:2px;padding:6px 10px;min-height:36px;resize:none}
+.refine-input:focus{outline:none;border-color:var(--navy)}
+.refine-btn{font-family:var(--heading);font-size:0.68rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#fff;background:var(--navy);border:none;border-radius:2px;padding:6px 12px;cursor:pointer;white-space:nowrap;align-self:flex-end}
+.quick-refines{display:flex;gap:4px;flex-wrap:wrap;margin-top:0.5rem}
+.qr-btn{font-size:0.65rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:2px;padding:3px 8px;cursor:pointer;transition:all 0.12s}
+.qr-btn:hover{border-color:var(--border-mid);color:var(--black)}
+
+/* SAVE ROW */
+.save-row{display:flex;gap:6px;padding:0.75rem 1.25rem;border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.save-btn{font-family:var(--body);font-size:0.7rem;font-weight:500;color:var(--muted);background:none;border:1px solid var(--border);border-radius:2px;padding:5px 12px;cursor:pointer;transition:all 0.15s}
+.save-btn:hover{border-color:var(--success);color:var(--success)}
+.save-msg{font-size:0.68rem;color:var(--success);align-self:center}
+
+/* API MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal-overlay.hidden{display:none}
+.modal{background:#fff;border-radius:4px;padding:1.5rem;width:400px;max-width:90vw}
+.modal-title{font-family:var(--heading);font-size:1rem;font-weight:600;color:var(--black);margin-bottom:0.4rem}
+.modal-sub{font-size:0.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.55}
+.modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:1rem}
+.modal-label{font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim)}
+.modal-input{font-family:var(--body);font-size:0.85rem;color:var(--text);background:var(--bg-mid);border:1px solid var(--border-mid);border-radius:2px;padding:9px 12px;width:100%}
+.modal-input:focus{outline:none;border-color:var(--navy)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.modal-cancel{font-size:0.75rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:2px;padding:7px 16px;cursor:pointer}
+.modal-save{font-family:var(--heading);font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#fff;background:var(--navy);border:none;border-radius:2px;padding:7px 16px;cursor:pointer}
+.modal-note{font-size:0.68rem;color:var(--dim);margin-top:0.75rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:1.25rem">
+    <div class="topbar-logo">MYCENA</div>
+    <div class="topbar-title">Execution Plan Content Agent</div>
+  </div>
+  <div class="topbar-right">
+    <span class="api-status unset" id="apiStatus">No API key</span>
+    <a href="#" class="api-link" onclick="openModal();return false;">Set API key</a>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-head-title">Execution plans</div>
+      <div class="sidebar-head-sub">50+ plans · Select to generate content</div>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="planSearch" placeholder="Search plans..." oninput="filterPlans()">
+    </div>
+    <div class="sidebar-scroll" id="planList"></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="main-toolbar">
+      <span class="toolbar-label">Content type</span>
+      <select class="toolbar-select" id="contentType" onchange="updateOutputOptions()">
+        <option value="auto">Auto-detect from plan</option>
+        <option value="linkedin_post">LinkedIn post</option>
+        <option value="linkedin_thread">LinkedIn thread</option>
+        <option value="blog_article">Blog article</option>
+        <option value="email_sequence">Email sequence</option>
+        <option value="one_pager">One-pager / PDF brief</option>
+        <option value="press_release">Press release</option>
+        <option value="sales_tool">Sales tool / playbook</option>
+      </select>
+      <span class="toolbar-label">Tone</span>
+      <select class="toolbar-select" id="toneSelect">
+        <option value="founder">Founder voice — personal LinkedIn</option>
+        <option value="ft">Financial Times — editorial</option>
+        <option value="ciso">CISO briefing — technical authority</option>
+        <option value="board">Board memo — executive summary</option>
+        <option value="ops">Ops director — plain operational</option>
+      </select>
+      <div class="toolbar-sep"></div>
+      <button class="gen-btn" id="genBtn" onclick="generate()" disabled>Generate →</button>
+      <button class="gen-btn gold" id="genAllBtn" onclick="generateSeries()" disabled style="display:none">Generate series →</button>
+    </div>
+
+    <div class="main-scroll" id="mainScroll">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#B2B4B3" stroke-width="1.5"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#B2B4B3" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="empty-title">Select an execution plan</div>
+        <div class="empty-sub">Choose a plan from the left to see its outputs and generate content</div>
+      </div>
+      <div id="planDetail" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- OUTPUT PANEL -->
+  <div class="output-panel">
+    <div class="output-head">
+      <div class="output-head-title">Output</div>
+      <div class="output-head-status" id="outputStatus">Ready</div>
+    </div>
+    <div class="output-actions">
+      <button class="out-btn active-tab" id="tabWrite" onclick="switchTab('write')">Write</button>
+      <button class="out-btn" id="tabVersions" onclick="switchTab('versions')">Versions</button>
+      <button class="out-btn copy-btn" onclick="copyOutput()">Copy</button>
+      <button class="out-btn copy-btn" onclick="copyWordPress()">WordPress HTML</button>
+      <button class="out-btn copy-btn" onclick="downloadTxt()">Download .txt</button>
+    </div>
+    <div class="output-scroll" id="outputScroll">
+      <div class="empty-state">
+        <div class="empty-title">No content yet</div>
+        <div class="empty-sub">Select a plan, choose an output type, and click Generate</div>
+      </div>
+    </div>
+    <div class="refine-section" id="refineSection" style="display:none">
+      <div class="refine-label">Refine</div>
+      <div class="refine-row">
+        <textarea class="refine-input" id="refineInput" rows="2" placeholder="e.g. Make the opening more specific to BPO ops directors..."></textarea>
+        <button class="refine-btn" onclick="refine()">→</button>
+      </div>
+      <div class="quick-refines">
+        <button class="qr-btn" onclick="quickRefine('Sharpen the opening line')">Sharpen opening</button>
+        <button class="qr-btn" onclick="quickRefine('Cut by 20% — remove any filler')">Cut 20%</button>
+        <button class="qr-btn" onclick="quickRefine('Make the closing question stronger')">Stronger close</button>
+        <button class="qr-btn" onclick="quickRefine('Add more operational specificity — real scenarios, not generic language')">More specific</button>
+        <button class="qr-btn" onclick="quickRefine('Rewrite in plain operational language — no marketing copy')">Plain language</button>
+        <button class="qr-btn" onclick="quickRefine('Strengthen the MyCena solution section without making it a sales pitch')">Stronger solution</button>
+      </div>
+    </div>
+    <div class="save-row" id="saveRow" style="display:none">
+      <button class="save-btn" onclick="saveToLibrary()">Save to library</button>
+      <button class="save-btn" onclick="commitToGitHub()">Commit to GitHub</button>
+      <span class="save-msg" id="saveMsg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- API MODAL -->
+<div class="modal-overlay hidden" id="apiModal">
+  <div class="modal">
+    <div class="modal-title">Set API keys</div>
+    <div class="modal-sub">Keys are stored in localStorage and persist between sessions. Never sent anywhere except the Anthropic API via your configured proxy.</div>
+    <div class="modal-field">
+      <label class="modal-label">Anthropic API key</label>
+      <input class="modal-input" type="password" id="anthropicKey" placeholder="sk-ant-...">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">GitHub repo (for commits)</label>
+      <input class="modal-input" type="text" id="githubRepo" placeholder="username/repo-name">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">GitHub personal access token</label>
+      <input class="modal-input" type="password" id="githubToken" placeholder="ghp_...">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" onclick="saveKeys()">Save keys</button>
+    </div>
+    <div class="modal-note">Keys stored in localStorage only. Clear browser data to remove them.</div>
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://mycena-crm-proxy.julia-aa4.workers.dev';
+
+// ── EXECUTION PLANS DATA ──────────────────────────────────────────────────────
+
+const PLANS = [
+  // LinkedIn / Social
+  { id:'design_flaw', group:'LinkedIn', tag:'linkedin_post', name:'The design flaw post', desc:'The identity ≠ access argument. MyCena\'s founding thesis as a founder-voice LinkedIn post. The single most important piece of content to publish first.', persona:'CISO, security director', outputs:['LinkedIn post (600–800 words)','First comment with source','30-day follow-up arc outline'] },
+  { id:'ciso_fear', group:'LinkedIn', tag:'linkedin_post', name:'CISO Fear Index — weekly breach post', desc:'A weekly Monday post naming the credential entry point of the most recent major breach. Format never varies. Value compounds over 52 weeks.', persona:'CISO, security community', outputs:['Week 1 post (20–60 words)','Week 2 post variation','Weeks 3–4 variations','Source workflow note'] },
+  { id:'ms_article', group:'LinkedIn', tag:'article', name:"'What M&S didn't tell you'", desc:'Long-form LinkedIn post and blog article dissecting the M&S breach from public sources. Ends with the one architectural change that would have stopped it.', persona:'CISO, UK security community', outputs:['LinkedIn post (600–800 words)','Blog article (1,200–1,500 words)','Social pull quote'] },
+  { id:'reset_25', group:'LinkedIn', tag:'linkedin_post', name:'The £25 password reset thread', desc:'BPO-focused thread showing the fully loaded cost of a single credential reset and scaling it to a 2,000-agent operation. Targets COO and finance buyers.', persona:'BPO COO, CFO, IT Director', outputs:['LinkedIn thread (7 posts)','Carousel slide copy','First comment with source'] },
+  { id:'reset_70', group:'LinkedIn', tag:'linkedin_post', name:'The £70 password reset thread', desc:'The detailed cost breakdown version. Itemises every cost component of a reset. Includes the 11 minutes/day productivity loss argument.', persona:'BPO COO, CFO, operations', outputs:['LinkedIn post — cost breakdown','Post 2 — invisible budget line','Post 3 — 11 minutes/day productivity'] },
+  { id:'agent_nightmare', group:'LinkedIn', tag:'linkedin_post', name:'The agent turnover credential nightmare', desc:'The departure story post. A BPO ops director recognises their own Workstation 7. Emotional hook leads to the four-second revocation solution.', persona:'BPO Ops Director, IT Director', outputs:['Post Version A — departure story','Post Version B — Monday morning scene','Post — client audit consequence','Post — solution arc (Week 9)'] },
+  { id:'sla_penalty', group:'LinkedIn', tag:'linkedin_post', name:'The SLA penalty calculator post', desc:'What happens when a credential incident causes downtime that triggers SLA penalties. Quantifies the exposure in BPO operational language.', persona:'BPO COO, client services', outputs:['LinkedIn post — SLA exposure','Calculation model copy','Follow-up post'] },
+  { id:'client_auditor', group:'LinkedIn', tag:'linkedin_post', name:"'What your client's auditor is about to ask'", desc:'The five access control questions enterprise clients ask of BPOs that most BPOs cannot answer confidently. Written as a public-facing post.', persona:'BPO client services director', outputs:['LinkedIn post (5-question format)','Full 20-question post version','First comment with audit framing'] },
+  { id:'before_after', group:'LinkedIn', tag:'linkedin_post', name:'Before / after access story', desc:'The specific operational transformation. Before MyCena: the chaos. After: the four-second fact. Structured as a concrete BPO scenario.', persona:'BPO ops, MSP engineers', outputs:['LinkedIn post — before/after','Thread version (3 posts)'] },
+  { id:'ai_bomb', group:'LinkedIn', tag:'article', name:'The AI agent credential bomb', desc:'Co-authored piece with an AI security researcher: the next Colonial Pipeline will involve an AI agent credential. For MIT Tech Review / Wired.', persona:'Security community, AI programme leads', outputs:['Long-form article (2,000 words)','LinkedIn post version','Co-author briefing note'] },
+
+  // PR & Media
+  { id:'we_named_it', group:'PR & Media', tag:'pr', name:"'We named it' press release", desc:"The category creation press release. MyCena names the category 'Credential Control Failure' and establishes the market position.", persona:'Journalists, analysts', outputs:['Press release (400–500 words)','Journalist embargo email','LinkedIn post — launch day','Analyst briefing summary'] },
+  { id:'ft_oped', group:'PR & Media', tag:'pr', name:'FT / WSJ CISO op-ed', desc:"Op-ed: 'We've spent 30 years solving the wrong cybersecurity problem.' Reaches board members and CFOs who don't read security trade press.", persona:'Board, CFO, non-security executives', outputs:['Op-ed (800 words)','Pitch email to FT/WSJ editor','LinkedIn teaser post'] },
+  { id:'bbc_breach', group:'PR & Media', tag:'pr', name:'BBC / Sky breach commentary', desc:'Ready-to-publish commentary for when the next major credential breach hits BBC or Sky News. Founder positioned as the credential security expert.', persona:'Journalists, general public', outputs:['Live commentary statement (200 words)','Extended analysis (500 words)','Journalist pitch email'] },
+  { id:'diu_contract', group:'PR & Media', tag:'pr', name:'DIU / government contract announcement', desc:'Announcement for defence and government contract wins. Targets CMMC 2.0 and FedRAMP market.', persona:'Defence community, government', outputs:['Press release','LinkedIn announcement post','Trade press pitch'] },
+
+  // Research & Reports
+  { id:'breach_index', group:'Research', tag:'whitepaper', name:'Annual Credential Breach Index', desc:'The annual research report that becomes the definitive source of record for credential-based breach data. Year 1 makes MyCena a source. Year 3 makes it the authority.', persona:'CISOs, analysts, journalists', outputs:['Report executive summary','Key findings (5 stats — tweetable)','LinkedIn launch post','Methodology brief'] },
+  { id:'category_wp', group:'Research', tag:'whitepaper', name:'The category error white paper', desc:"'Credential Control Failure: The Category Error Behind Every Major Breach of the Last Decade.' The flagship thought leadership document.", persona:'CISOs, boards, analysts', outputs:['Executive summary (4 paragraphs)','Full white paper (3,000 words)','One-page summary version','LinkedIn post — excerpt'] },
+  { id:'breach_postmortem', group:'Research', tag:'article', name:'Breach post-mortem series', desc:'Monthly long-form case studies: SolarWinds, Colonial Pipeline, M&S, Kaseya, Change Healthcare, NotPetya. Each ends with the credential control counterfactual.', persona:'CISOs, security practitioners', outputs:['SolarWinds post-mortem (1,500 words)','Colonial Pipeline post-mortem','M&S post-mortem','Kaseya post-mortem','Series index page copy'] },
+  { id:'iam_gap', group:'Research', tag:'article', name:"'What your IAM vendor doesn't govern'", desc:"The most comprehensive publicly available comparison of IAM/PAM/SSO/MFA capabilities — and the gap none of them close. Every claim sourced from vendor documentation.", persona:'CISOs, security architects', outputs:['Full page copy (2,500 words)','Comparison matrix copy','Gap diagram description','LinkedIn distribution post'] },
+
+  // Board & Executive
+  { id:'board_brief', group:'Board & Executive', tag:'sales', name:'One-page board brief', desc:'Ruthlessly designed one-page PDF a CISO can hand to their board unmodified. Binary decision. Financial language. No technical jargon.', persona:'Board, CFO, CEO', outputs:['Board brief copy (one page)','Financial services variant','BPO variant','Healthcare variant'] },
+  { id:'personal_liability', group:'Board & Executive', tag:'sales', name:'The personal liability angle', desc:'Director liability under NIS2, SEC, FCA SMCR. The GC/CFO one-pager. The co-authored legal briefing note. For the board members who need the liability argument.', persona:'Board, GC, CFO', outputs:['GC/CFO one-pager copy','LinkedIn post — liability angle','Legal briefing note (2,000 words)','Insurance broker framing'] },
+  { id:'binary_decision', group:'Board & Executive', tag:'sales', name:"The 'binary decision' landing page", desc:"mycena.co/decide. One page, no nav, two-column Approve/Defer table, live reset cost calculator. The liability statement. The highest-converting single page MyCena will build.", persona:'Board, CISO, CFO', outputs:['Full page copy','Approve column content','Defer column content','Liability statement','CTA copy'] },
+
+  // BPO Specific
+  { id:'bpo_onepager', group:'BPO', tag:'sales', name:'BPO-specific one-pager', desc:'A4 one-page PDF entirely in BPO language: agent turnover, shared workstations, client SLA penalties, audit trails. No generic enterprise security copy.', persona:'BPO COO, CFO, ops director', outputs:['Full one-pager copy','COO version','CFO numbers version'] },
+  { id:'bpo_audit_checklist', group:'BPO', tag:'tool', name:'BPO access control audit checklist', desc:'Free 20-question checklist covering every access control question an enterprise client auditor asks of BPOs. Genuine operational tool — useful whether or not they buy.', persona:'BPO client services, IT director', outputs:['All 20 questions with framing','Why most BPOs can\'t answer each','LinkedIn launch post','Sales Navigator outreach message'] },
+  { id:'bpo_objection_playbook', group:'BPO', tag:'sales', name:'BPO objection handling playbook', desc:'Every objection encountered in BPO discovery calls. Response by persona. Quarterly update structure. The first document a new sales hire reads.', persona:'Sales team (internal)', outputs:['COO objections + responses','CFO objections + responses','IT Director objections + responses','CISO objections + responses'] },
+  { id:'bpo_breach_postmortem', group:'BPO', tag:'article', name:'BPO breach post-mortem case study', desc:'A detailed case study of a credential-based breach at a BPO or through a BPO — ending with the credential control counterfactual for the BPO sector specifically.', persona:'BPO CISO, COO, client services', outputs:['Full case study (1,200 words)','Executive summary (300 words)','LinkedIn post version'] },
+  { id:'bpo_cost_calc', group:'BPO', tag:'tool', name:'BPO credential cost calculator', desc:'The full cost model: reset cost, productivity loss, SLA penalty exposure, breach expected value. Written up as a usable calculation tool with accompanying copy.', persona:'BPO CFO, operations', outputs:['Calculator methodology copy','Accompanying LinkedIn post','Sales email with personalised calc'] },
+  { id:'bpo_youtube', group:'BPO', tag:'pr', name:"YouTube — 'A day in the life of a BPO credential'", desc:"YouTube video script: follow a single credential through its lifecycle at a BPO — creation, sharing, theft, fraud, discovery. The visual argument for credential control.", persona:'BPO community, LinkedIn video audience', outputs:['Full video script (5 min)','LinkedIn teaser post','YouTube description copy'] },
+  { id:'bpo_liability', group:'BPO', tag:'sales', name:'BPO client breach liability & insurance angle', desc:'The MSA clause that activates when an agent credential is compromised. Cyber insurance premium loading. Broker outreach strategy.', persona:'BPO CFO, legal, compliance', outputs:['Liability briefing document (2 pages)','Broker outreach email sequence (3 emails)','CFO LinkedIn post','Insurance press byline pitch'] },
+  { id:'gdpr_calculator', group:'BPO', tag:'tool', name:'GDPR fine calculator for BPOs', desc:"Press release angle: 'Your BPO's GDPR exposure if an agent credential is compromised.' Quantifies the Article 83 fine exposure in BPO-specific terms.", persona:'BPO compliance, CFO', outputs:['Press release (400 words)','Calculator methodology','LinkedIn post'] },
+
+  // MSP Specific
+  { id:'msp_onepager', group:'MSP', tag:'sales', name:'MSP one-pager / sell sheet', desc:'The MSP-specific case. Allen Moffett quote. Revocation as #1 pain. CCA revenue model. Client churn risk quantified.', persona:'MSP owner, operations director', outputs:['Full one-pager copy','CCA revenue angle version','Client audit angle version'] },
+  { id:'agent_offboarding', group:'MSP', tag:'linkedin_post', name:'Agent offboarding risk report', desc:'What happens when an MSP engineer leaves and has credentials across 15 client environments. The 3.2-day lag quantified for MSP context.', persona:'MSP owner, IT director', outputs:['Report copy (800 words)','LinkedIn post version','Client-facing version'] },
+
+  // Tools & Calculators
+  { id:'cfoi_roi_calc', group:'Tools', tag:'tool', name:'CFO ROI calculator', desc:'The full financial model: reset cost, productivity loss, breach expected value, ROI. Designed to produce a number that surprises a CFO.', persona:'CFO, finance director', outputs:['Calculator copy and methodology','Gated PDF output copy','Sales email hook using calculator','LinkedIn post announcing calculator'] },
+  { id:'attack_surface_calc', group:'Tools', tag:'tool', name:'Credential attack surface calculator', desc:'Six-category calculator: employee credentials, vendor credentials, AI agents, service accounts, legacy/inactive, shared credentials. Annual breach probability output.', persona:'CISO, IT director', outputs:['Full methodology and copy','Six category descriptions','Results page copy','LinkedIn launch post'] },
+  { id:'pwned_tool', group:'Tools', tag:'tool', name:"'Have you been credential-pwned?' tool", desc:'Domain-based lookup: how many credentials from your organisation\'s domain appear in known breach databases. Count only — no individual data displayed.', persona:'CISO, IT director', outputs:['Tool page copy','Privacy notice copy','Sales email using personalised result','LinkedIn post announcing tool'] },
+
+  // Partnerships & Channels
+  { id:'insurance_broker', group:'Partnerships', tag:'sales', name:'Insurance broker partnership', desc:'Approach to Beazley, Coalition, Resilience. Positioning MyCena as a material risk reduction control. The actuarial brief strategy.', persona:'Cyber insurance underwriters', outputs:['Insurer briefing email (2-stage)','Technical architecture brief (2 pages)','Claims impact summary (1 page)','Broker event pitch'] },
+  { id:'ciso_roundtable', group:'Partnerships', tag:'pr', name:'Peer CISO reference calls', desc:'The structured peer reference call programme. 5–6 reference CISOs covering all MyCena target sectors. Matching by sector and use case.', persona:'Prospect CISOs', outputs:['Reference CISO recruitment ask','Reference call brief (for the CISO)','Matching criteria copy','Programme introduction email'] },
+  { id:'pov_programme', group:'Partnerships', tag:'sales', name:'POV fast-track programme', desc:'The 10-working-day proof of value structure. 50 agents. Simulated departure test on Day 9. The decision meeting framework.', persona:'BPO IT director, operations', outputs:['POV proposal email','5-phase structure copy','Simulated departure test brief','Results report template','Decision meeting agenda'] },
+  { id:'90day_roi', group:'Partnerships', tag:'sales', name:'90-day ROI guarantee framing', desc:'The guarantee that makes the proof of value irresistible: if reset cost has not measurably reduced in 90 days, the fee is waived.', persona:'CFO, COO', outputs:['Guarantee framing copy','Sales email with guarantee','LinkedIn post — guarantee announcement','Contract clause language'] },
+
+  // Analysts & Government
+  { id:'analyst_briefing', group:'Analysts & Gov', tag:'pr', name:'Gartner / Forrester analyst briefing', desc:"The category argument for analysts. The 'Credential Control Failure' category. Why it is distinct from IAM, PAM, and NHI monitoring.", persona:'Gartner, Forrester analysts', outputs:['Briefing document (4 pages)','Category definition copy','Market sizing argument','Submission email'] },
+  { id:'senate_testimony', group:'Analysts & Gov', tag:'pr', name:'Senate / parliamentary testimony prep', desc:'Written evidence to cybersecurity hearings (DSIT Select Committee UK, Senate Armed Services US). The policy argument for credential control mandates.', persona:'Policymakers, regulators', outputs:['Written evidence submission (2,000 words)','Executive summary (300 words)','Key policy recommendations','Submission cover letter'] },
+
+  // Growth Calendar
+  { id:'conference_breakfast', group:'Growth', tag:'pr', name:'Pre-conference CISO breakfast', desc:'The pre-conference breakfast for 20 CISOs the morning before the speaking session. Invitation, format, and follow-up.', persona:'CISOs at Infosecurity/RSA', outputs:['Invitation copy','Breakfast agenda','Follow-up email','LinkedIn post — event announcement'] },
+  { id:'newsletter_sponsor', group:'Growth', tag:'pr', name:'Security newsletter sponsorship', desc:'Sponsorship copy for TLDR Security, Risky Business, Unsupervised Learning. Message and format for newsletter placements.', persona:'Security professionals (readers)', outputs:['TLDR Security ad copy (50 words)','Risky Business sponsor message','Longer newsletter copy (200 words)'] },
+  { id:'soc2_case_study', group:'Growth', tag:'article', name:'SOC 2 / ISO 27001 audit trail case study', desc:'Case study showing how a deployed MyCena customer used the credential audit trail to satisfy SOC 2 Type II and ISO 27001 access control requirements.', persona:'Compliance directors, GRC leads', outputs:['Case study (1,000 words)','One-page summary','LinkedIn post version'] },
+  { id:'client_contract_clause', group:'Growth', tag:'sales', name:'Client contract clause template', desc:'The contractual clause MSPs and BPOs can add to client MSAs: MyCena-governed credential access is the evidenced standard. Signals maturity to clients.', persona:'Legal, client services', outputs:['Contract clause language','Cover note to legal','Client services talking points','LinkedIn post — announcing the standard'] },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+let selectedPlan = null;
+let selectedOutput = null;
+let currentContent = '';
+let versions = [];
+let currentTab = 'write';
+let apiKey = localStorage.getItem('mycena_anthropic_key') || '';
+let githubRepo = localStorage.getItem('mycena_github_repo') || '';
+let githubToken = localStorage.getItem('mycena_github_token') || '';
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+
+function init() {
+  updateApiStatus();
+  renderPlanList(PLANS);
+  // load modal fields
+  if (apiKey) document.getElementById('anthropicKey').value = apiKey;
+  if (githubRepo) document.getElementById('githubRepo').value = githubRepo;
+  if (githubToken) document.getElementById('githubToken').value = githubToken;
+}
+
+function updateApiStatus() {
+  const el = document.getElementById('apiStatus');
+  if (apiKey) {
+    el.textContent = 'API key set';
+    el.className = 'api-status set';
+  } else {
+    el.textContent = 'No API key';
+    el.className = 'api-status unset';
+  }
+}
+
+// ── PLAN LIST ─────────────────────────────────────────────────────────────────
+
+function renderPlanList(plans) {
+  const groups = {};
+  plans.forEach(p => {
+    if (!groups[p.group]) groups[p.group] = [];
+    groups[p.group].push(p);
+  });
+  const container = document.getElementById('planList');
+  container.innerHTML = '';
+  Object.entries(groups).forEach(([group, items]) => {
+    const g = document.createElement('div');
+    g.className = 'plan-group';
+    g.innerHTML = `<div class="plan-group-label">${group}</div>`;
+    items.forEach(plan => {
+      const item = document.createElement('div');
+      item.className = 'plan-item';
+      item.id = 'plan_' + plan.id;
+      const tagLabels = { linkedin_post:'LinkedIn', linkedin_thread:'Thread', article:'Article', whitepaper:'Whitepaper', tool:'Tool', sales:'Sales', pr:'PR' };
+      item.innerHTML = `
+        <div class="plan-item-name">${plan.name}</div>
+        <div><span class="plan-tag tag-${plan.tag}">${tagLabels[plan.tag] || plan.tag}</span></div>
+        <div class="plan-item-type">${plan.persona}</div>
+      `;
+      item.onclick = () => selectPlan(plan);
+      g.appendChild(item);
+    });
+    container.appendChild(g);
+  });
+}
+
+function filterPlans() {
+  const q = document.getElementById('planSearch').value.toLowerCase();
+  const filtered = q ? PLANS.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.group.toLowerCase().includes(q) ||
+    p.persona.toLowerCase().includes(q) ||
+    p.desc.toLowerCase().includes(q)
+  ) : PLANS;
+  renderPlanList(filtered);
+  if (selectedPlan) {
+    const el = document.getElementById('plan_' + selectedPlan.id);
+    if (el) el.classList.add('active');
+  }
+}
+
+// ── SELECT PLAN ───────────────────────────────────────────────────────────────
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  selectedOutput = null;
+  document.querySelectorAll('.plan-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('plan_' + plan.id);
+  if (el) el.classList.add('active');
+  document.getElementById('emptyState').style.display = 'none';
+  const detail = document.getElementById('planDetail');
+  detail.style.display = 'block';
+
+  // Set content type dropdown to auto-detect
+  const typeMap = { linkedin_post:'linkedin_post', linkedin_thread:'linkedin_thread', article:'blog_article', whitepaper:'blog_article', tool:'one_pager', sales:'one_pager', pr:'press_release' };
+  document.getElementById('contentType').value = typeMap[plan.tag] || 'auto';
+
+  // Check if plan is a series (multiple posts)
+  const isSeries = plan.outputs.length > 2 && (plan.tag === 'linkedin_post' || plan.id === 'breach_postmortem');
+
+  const outputsHtml = plan.outputs.map((o, i) => `
+    <div class="output-item" id="output_${i}" onclick="selectOutput(${i}, '${o.replace(/'/g,"\\'")}')">
+      <div class="output-item-left">
+        <div class="output-name">${o}</div>
+      </div>
+      <div class="output-arrow">→</div>
+    </div>
+  `).join('');
+
+  detail.innerHTML = `
+    <div class="plan-detail">
+      <div class="plan-detail-eyebrow">${plan.group}</div>
+      <div class="plan-detail-title">${plan.name}</div>
+      <div class="plan-detail-meta">
+        <div class="meta-item"><strong>Type:</strong> ${plan.tag}</div>
+        <div class="meta-item"><strong>Target:</strong> ${plan.persona}</div>
+        <div class="meta-item"><strong>Outputs:</strong> ${plan.outputs.length}</div>
+      </div>
+      <div class="plan-detail-desc">${plan.desc}</div>
+      <div class="plan-detail-outputs">${outputsHtml}</div>
+    </div>
+  `;
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('genAllBtn').style.display = isSeries ? 'inline-block' : 'none';
+  document.getElementById('genAllBtn').disabled = false;
+}
+
+function selectOutput(index, outputName) {
+  selectedOutput = { index, name: outputName };
+  document.querySelectorAll('.output-item').forEach(el => el.classList.remove('selected'));
+  document.getElementById('output_' + index).classList.add('selected');
+  document.getElementById('genBtn').disabled = !apiKey;
+}
+
+function updateOutputOptions() { /* handled by selectOutput */ }
+
+// ── GENERATE ──────────────────────────────────────────────────────────────────
+
+function buildPrompt(plan, outputName, contentType, tone) {
+  const toneInstructions = {
+    founder: 'Write in first-person founder voice for LinkedIn. Personal, direct, specific. No marketing language. Short paragraphs with deliberate white space. No hashtags, no emoji, no "excited to share." Sound like a practitioner who has seen this problem.',
+    ft: 'Financial Times editorial tone. Authoritative, evidence-based, measured. Third person where appropriate. Lead with the strongest fact. No hyperbole.',
+    ciso: 'CISO briefing tone. Technical authority. Assumes the reader knows their stack. Lead with the gap, not the product. Specific, sourced, unapologetic.',
+    board: 'Board memo tone. Financial language, not security language. Short sentences. Risk and liability frame. Binary choices. No acronyms without explanation.',
+    ops: 'Plain operational language. No buzzwords. Speak like someone who has walked a contact centre floor or managed an MSP. Specific costs, specific scenarios, specific people.',
+  };
+
+  const typeInstructions = {
+    linkedin_post: 'Write a LinkedIn post. 250–400 words. Short paragraphs (2–3 sentences max). One-line paragraphs for emphasis. End with a question. No hashtags, no emoji. Include a first comment suggestion with sourced data.',
+    linkedin_thread: 'Write a LinkedIn thread of 5–8 posts. Each post 80–150 words. Number them. Build the argument sequentially. Final post ends with a CTA or question.',
+    blog_article: 'Write a blog article. 1,000–1,500 words. H2 headings for sections. Include: hook opening, problem statement, evidence/data, structural argument, MyCena solution, closing question or CTA. Every statistic must have a source in parentheses.',
+    email_sequence: 'Write a 3-email outreach sequence. Email 1: problem hook (150 words). Email 2: evidence and asset share (150 words). Email 3: soft CTA (100 words). Each email has a subject line.',
+    one_pager: 'Write a one-page document. Maximum 400 words. Sections: headline stat, problem statement (2–3 sentences), before/after comparison, binary decision, CTA. Designed to be read in 90 seconds.',
+    press_release: 'Write a press release. 400–500 words. Standard wire format: headline, dateline, opening paragraph (the news), context paragraph, quote from Julia O\'Toole, supporting detail, boilerplate, contact.',
+    sales_tool: 'Write a sales tool for internal use. Structured, scannable. Include objections and responses where relevant. Plain language. Usable on a call.',
+    auto: 'Choose the most appropriate format for this specific output type and plan context.',
+  };
+
+  return `You are writing content for MyCena Security Solutions — a patented credential control platform.
+
+MYCENA CORE POSITIONING:
+- Identity ≠ Access. The organisation generates, distributes encrypted, and revokes every credential. Users never see, hold, or share a credential.
+- Julia O'Toole quote: "In the physical world, no employer asks an employee to manufacture their own office key and safeguard it against all copies."
+- 81% of breaches use stolen credentials. MyCena closes the layer that causes this — before authentication, not after.
+- MyCena is NOT a password manager, PAM tool, SSO, or MFA. It closes the gap all of these leave open: the credential generation moment.
+- Deploys in 2 weeks. No infrastructure change. Works alongside existing IAM, PAM, SSO.
+
+EXECUTION PLAN: ${plan.name}
+PLAN DESCRIPTION: ${plan.desc}
+TARGET PERSONA: ${plan.persona}
+PLAN GROUP: ${plan.group}
+
+OUTPUT REQUESTED: ${outputName}
+
+TONE: ${toneInstructions[tone] || toneInstructions.founder}
+
+FORMAT: ${typeInstructions[contentType] || typeInstructions.auto}
+
+MANDATORY RULES:
+- Every statistic must have a source in parentheses, e.g. (Gartner, 2024) or (IBM Cost of a Data Breach Report 2024)
+- Never invent statistics. If you don't have a source, use directional language ("typically", "commonly") without a number.
+- No marketing buzzwords: "cutting-edge", "revolutionary", "game-changing", "excited to share", "I'm delighted"
+- Specific operational detail beats generic claims every time. "Workstation 7" beats "shared workstations."
+- The MyCena solution should be present but not the lead — solve the problem first, reveal the solution last.
+- Never mention competitors by name in LinkedIn posts or press releases. In whitepapers and battle cards, positioning is fine.
+- If writing for BPO: use agent turnover, shared workstations, client SLA penalties, audit trails, offboarding lag
+- If writing for MSP: use engineer departure, client environment revocation, portfolio-wide compliance, Allen Moffett quote where appropriate
+- If writing for board: use £/$M figures, liability, SEC/DORA/FCA regulatory requirements, director responsibility
+
+Write the ${outputName} now. Do not include meta-commentary, headers labelling it as "the output", or explanatory preamble. Begin the content directly.`;
+}
+
+async function generate() {
+  if (!apiKey) { openModal(); return; }
+  if (!selectedPlan || !selectedOutput) return;
+
+  const contentType = document.getElementById('contentType').value;
+  const tone = document.getElementById('toneSelect').value;
+  const prompt = buildPrompt(selectedPlan, selectedOutput.name, contentType, tone);
+
+  setGenerating(true);
+  try {
+    const content = await callAPI(prompt);
+    currentContent = content;
+    versions = [{ content, label: selectedOutput.name, ts: new Date().toISOString() }];
+    renderOutput(content);
+    document.getElementById('refineSection').style.display = 'block';
+    document.getElementById('saveRow').style.display = 'flex';
+    document.getElementById('outputStatus').textContent = 'Generated';
+  } catch (e) {
+    renderError(e.message);
+  }
+  setGenerating(false);
+}
+
+async function generateSeries() {
+  if (!apiKey) { openModal(); return; }
+  if (!selectedPlan) return;
+
+  const contentType = document.getElementById('contentType').value;
+  const tone = document.getElementById('toneSelect').value;
+  const outputs = selectedPlan.outputs;
+
+  setGenerating(true, 'Generating series...');
+  let allContent = '';
+  versions = [];
+
+  for (let i = 0; i < outputs.length; i++) {
+    document.getElementById('outputStatus').textContent = `Generating ${i + 1} of ${outputs.length}...`;
+    try {
+      const prompt = buildPrompt(selectedPlan, outputs[i], contentType, tone);
+      const content = await callAPI(prompt);
+      allContent += `\n\n────────────────────────────────────\n${outputs[i].toUpperCase()}\n────────────────────────────────────\n\n${content}`;
+      versions.push({ content, label: outputs[i], ts: new Date().toISOString() });
+      await new Promise(r => setTimeout(r, 8000)); // rate limit
+    } catch (e) {
+      allContent += `\n\n[Error generating: ${outputs[i]}]\n`;
+    }
+  }
+
+  currentContent = allContent.trim();
+  renderOutput(currentContent);
+  document.getElementById('refineSection').style.display = 'block';
+  document.getElementById('saveRow').style.display = 'flex';
+  document.getElementById('outputStatus').textContent = `Series complete — ${outputs.length} pieces`;
+  setGenerating(false);
+}
+
+async function refine() {
+  if (!currentContent || !apiKey) return;
+  const instruction = document.getElementById('refineInput').value.trim();
+  if (!instruction) return;
+  setGenerating(true, 'Refining...');
+  try {
+    const prompt = `You are refining MyCena content. Here is the current version:\n\n${currentContent}\n\nInstruction: ${instruction}\n\nRewrite the content applying this instruction. Return only the refined content — no commentary, no preamble.`;
+    const refined = await callAPI(prompt);
+    versions.push({ content: refined, label: `Refined: ${instruction.slice(0,40)}`, ts: new Date().toISOString() });
+    currentContent = refined;
+    renderOutput(refined);
+    document.getElementById('refineInput').value = '';
+  } catch (e) { renderError(e.message); }
+  setGenerating(false);
+}
+
+function quickRefine(instruction) {
+  document.getElementById('refineInput').value = instruction;
+  refine();
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+
+async function callAPI(prompt) {
+  const res = await fetch(PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${res.status}`);
+  }
+  const data = await res.json();
+  return data.content.map(b => b.text || '').join('');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+
+function setGenerating(on, label) {
+  const btn = document.getElementById('genBtn');
+  if (on) {
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    const scroll = document.getElementById('outputScroll');
+    scroll.innerHTML = `<div class="output-thinking"><div class="spinner"></div>${label || 'Writing content...'}</div>`;
+    document.getElementById('outputStatus').textContent = 'Generating';
+  } else {
+    btn.disabled = !selectedOutput;
+    btn.textContent = 'Generate →';
+  }
+}
+
+function renderOutput(content) {
+  if (currentTab === 'write') {
+    document.getElementById('outputScroll').innerHTML = `<div class="output-text">${escHtml(content)}</div>`;
+  }
+}
+
+function renderError(msg) {
+  document.getElementById('outputScroll').innerHTML = `<div style="color:var(--danger);font-size:0.82rem;padding:1rem">${escHtml(msg)}</div>`;
+  document.getElementById('outputStatus').textContent = 'Error';
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.out-btn[id^=tab]').forEach(b => b.classList.remove('active-tab'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active-tab');
+  if (tab === 'write' && currentContent) {
+    renderOutput(currentContent);
+  } else if (tab === 'versions') {
+    if (versions.length === 0) {
+      document.getElementById('outputScroll').innerHTML = '<div class="empty-state"><div class="empty-title">No versions yet</div></div>';
+    } else {
+      document.getElementById('outputScroll').innerHTML = versions.map((v, i) => `
+        <div style="padding:0.75rem;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadVersion(${i})">
+          <div style="font-size:0.78rem;font-weight:600;color:var(--text)">${escHtml(v.label)}</div>
+          <div style="font-size:0.68rem;color:var(--dim)">${new Date(v.ts).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+function loadVersion(i) {
+  currentContent = versions[i].content;
+  currentTab = 'write';
+  switchTab('write');
+}
+
+// ── COPY & DOWNLOAD ───────────────────────────────────────────────────────────
+
+function copyOutput() {
+  if (!currentContent) return;
+  navigator.clipboard.writeText(currentContent);
+  flashMsg('Copied');
+}
+
+function copyWordPress() {
+  if (!currentContent) return;
+  const html = `<article class="mycena-content">\n${currentContent.split('\n').filter(l => l.trim()).map(l => `<p>${escHtml(l)}</p>`).join('\n')}\n</article>`;
+  navigator.clipboard.writeText(html);
+  flashMsg('WordPress HTML copied');
+}
+
+function downloadTxt() {
+  if (!currentContent) return;
+  const name = selectedPlan ? selectedPlan.id + '_' + (selectedOutput?.index ?? 0) + '.txt' : 'content.txt';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([currentContent], { type: 'text/plain' }));
+  a.download = name;
+  a.click();
+}
+
+function flashMsg(msg) {
+  const el = document.getElementById('saveMsg');
+  el.textContent = msg;
+  setTimeout(() => el.textContent = '', 2500);
+}
+
+// ── SAVE & GITHUB ─────────────────────────────────────────────────────────────
+
+function saveToLibrary() {
+  if (!currentContent || !selectedPlan) return;
+  const key = 'mycena_lib_' + selectedPlan.id + '_' + Date.now();
+  const item = { plan: selectedPlan.name, output: selectedOutput?.name, content: currentContent, ts: new Date().toISOString() };
+  localStorage.setItem(key, JSON.stringify(item));
+  flashMsg('Saved to library');
+}
+
+async function commitToGitHub() {
+  if (!currentContent || !githubRepo || !githubToken) {
+    flashMsg('Set GitHub settings first');
+    openModal();
+    return;
+  }
+  const filename = `content/exec-plans/${selectedPlan?.id || 'content'}_${Date.now()}.md`;
+  const body = JSON.stringify({
+    message: `Add ${selectedPlan?.name || 'content'} — ${selectedOutput?.name || ''}`,
+    content: btoa(unescape(encodeURIComponent(currentContent))),
+    branch: 'main'
+  });
+  try {
+    const res = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${filename}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${githubToken}`, 'Content-Type': 'application/json' },
+      body
+    });
+    if (res.ok) flashMsg('Committed to GitHub');
+    else { const d = await res.json(); flashMsg('GitHub error: ' + (d.message || res.status)); }
+  } catch (e) { flashMsg('GitHub error: ' + e.message); }
+}
+
+// ── API MODAL ─────────────────────────────────────────────────────────────────
+
+function openModal() {
+  document.getElementById('apiModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('apiModal').classList.add('hidden');
+}
+
+function saveKeys() {
+  apiKey = document.getElementById('anthropicKey').value.trim();
+  githubRepo = document.getElementById('githubRepo').value.trim();
+  githubToken = document.getElementById('githubToken').value.trim();
+  if (apiKey) localStorage.setItem('mycena_anthropic_key', apiKey);
+  if (githubRepo) localStorage.setItem('mycena_github_repo', githubRepo);
+  if (githubToken) localStorage.setItem('mycena_github_token', githubToken);
+  updateApiStatus();
+  closeModal();
+  if (selectedOutput) document.getElementById('genBtn').disabled = !apiKey;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+init();
+</script>
+</body>
+</html>
