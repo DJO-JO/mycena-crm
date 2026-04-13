@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How M&S lost £300m to a credential it didn't control — MyCena</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#FFFFFF;
+  --iridium:#F5F5F3;
+  --navy:#002662;
+  --gold:#D8B26F;
+  --silver:#B2B4B3;
+  --white:#FFFFFF;
+  --text:#1a1a18;
+  --text-muted:#5a5a57;
+  --text-dim:#9a9a97;
+  --border:rgba(0,0,0,0.09);
+  --border-mid:rgba(0,0,0,0.16);
+  --heading:'Bai Jamjuree',sans-serif;
+  --body:'Manrope',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:#ffffff;color:var(--text);font-family:var(--body);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 2rem}
+.nav-inner{max-width:1280px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-text{font-family:var(--heading);font-size:1.1rem;font-weight:600;color:#151515;letter-spacing:0.08em}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-link{font-family:var(--body);font-size:0.82rem;font-weight:500;color:var(--text-muted);text-decoration:none;letter-spacing:0.03em;transition:color 0.2s}
+.nav-link:hover,.nav-link.active{color:#151515}
+.nav-cta{font-family:var(--heading);font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#ffffff;background:#151515;padding:8px 20px;border-radius:2px;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--navy);color:#ffffff}
+
+/* ARTICLE HEADER */
+.article-header{padding:100px 2rem 0;max-width:900px;margin:0 auto}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:0.72rem;color:var(--text-dim);margin-bottom:2rem}
+.breadcrumb a{color:var(--text-dim);text-decoration:none;transition:color 0.2s}
+.breadcrumb a:hover{color:var(--navy)}
+.breadcrumb-sep{color:var(--text-dim);opacity:0.4}
+
+.article-meta{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;flex-wrap:wrap}
+.badge{font-family:var(--body);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:1px}
+.badge-article{color:var(--silver);border:1px solid rgba(178,180,179,0.3)}
+.badge-sector{color:var(--text-dim);border:1px solid var(--border)}
+.article-date{font-size:0.78rem;color:var(--text-dim)}
+.article-read-time{font-size:0.78rem;color:var(--text-dim)}
+.meta-dot{width:3px;height:3px;border-radius:50%;background:var(--text-dim)}
+
+.article-title{font-family:var(--heading);font-size:clamp(1.9rem,4vw,2.9rem);font-weight:600;color:#151515;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.25rem}
+
+.article-standfirst{font-family:var(--body);font-size:1.15rem;font-weight:300;font-style:italic;color:var(--text-muted);line-height:1.65;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+
+/* HERO IMAGE */
+.hero-img-wrap{max-width:1100px;margin:0 auto 0;padding:0 2rem}
+.hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;filter:grayscale(15%)}
+.hero-img-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(160deg,#e8e8e6 0%,#d8d8d5 60%,#e0e0dd 100%);display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+.hero-caption{max-width:900px;margin:0.75rem auto 0;padding:0 2rem;font-size:0.75rem;color:var(--text-dim);font-style:italic}
+
+/* ARTICLE BODY */
+.article-wrap{display:grid;grid-template-columns:1fr 260px;gap:4rem;max-width:1100px;margin:0 auto;padding:3rem 2rem 5rem}
+
+.article-body{min-width:0}
+.article-body p{margin-bottom:1.3rem;color:#2a2a28;font-weight:300;line-height:1.8}
+.article-body h2{font-family:var(--heading);font-size:1.45rem;font-weight:600;color:#151515;line-height:1.2;letter-spacing:-0.01em;margin:2.5rem 0 1rem}
+.article-body h3{font-family:var(--heading);font-size:1rem;font-weight:600;color:var(--silver);letter-spacing:0.05em;text-transform:uppercase;margin:2rem 0 0.75rem}
+.article-body strong{font-weight:600;color:#151515}
+
+/* PULL QUOTE */
+.pull-quote{margin:2.5rem 0;padding:1.5rem 2rem;border-left:3px solid var(--navy);background:rgba(0,38,98,0.05)}
+.pull-quote p{font-family:var(--heading);font-size:1.25rem;font-weight:400;font-style:italic;color:var(--navy);line-height:1.45;margin:0}
+.pull-quote cite{display:block;font-family:var(--body);font-size:0.78rem;font-weight:500;font-style:normal;color:var(--text-dim);margin-top:0.75rem;letter-spacing:0.02em}
+
+/* STAT CALLOUT */
+.stat-callout{margin:2rem 0;padding:1.75rem;background:#f5f5f3;border:1px solid rgba(0,0,0,0.09);display:flex;align-items:center;gap:1.5rem}
+.stat-num{font-family:var(--heading);font-size:2.5rem;font-weight:600;color:var(--navy);white-space:nowrap;flex-shrink:0}
+.stat-desc{font-size:0.88rem;font-weight:300;color:var(--text-muted);line-height:1.55}
+.stat-source{font-size:0.72rem;color:var(--text-dim);margin-top:4px}
+
+/* SIDEBAR */
+.article-sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-section{margin-bottom:2.5rem}
+.sidebar-label{font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
+.sidebar-toc{list-style:none;display:flex;flex-direction:column;gap:2px}
+.sidebar-toc li a{font-size:0.8rem;color:var(--text-dim);text-decoration:none;display:block;padding:5px 0;border-left:2px solid transparent;padding-left:10px;transition:all 0.15s;line-height:1.4}
+.sidebar-toc li a:hover{color:var(--text-muted);border-left-color:var(--navy)}
+.sidebar-toc li a.active{color:var(--gold);border-left-color:var(--navy)}
+
+.sidebar-cta{background:#f5f5f3;padding:1.5rem;border:1px solid rgba(0,0,0,0.09)}
+.sidebar-cta-eyebrow{font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--navy);margin-bottom:0.5rem}
+.sidebar-cta-title{font-family:var(--heading);font-size:1rem;font-weight:600;color:#151515;line-height:1.3;margin-bottom:0.75rem}
+.sidebar-cta-text{font-size:0.78rem;font-weight:300;color:var(--text-muted);line-height:1.55;margin-bottom:1rem}
+.sidebar-cta-btn{display:block;font-family:var(--heading);font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#ffffff;background:#151515;text-decoration:none;text-align:center;padding:10px 16px;border-radius:2px;transition:background 0.2s}
+.sidebar-cta-btn:hover{background:var(--gold);color:#151515}
+
+.sidebar-share{display:flex;gap:8px}
+.share-btn{font-size:0.72rem;font-weight:500;color:var(--text-dim);background:none;border:1px solid var(--border);padding:6px 12px;border-radius:2px;cursor:pointer;transition:all 0.15s;text-decoration:none}
+.share-btn:hover{border-color:var(--border-mid);color:var(--text-muted)}
+
+/* SEO */
+.seo-section{background:var(--iridium);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 2rem;max-width:1100px;margin:0 auto 0;display:none}
+
+/* RELATED */
+.related-wrap{max-width:1100px;margin:0 auto;padding:0 2rem 5rem}
+.related-label{font-family:var(--heading);font-size:1rem;font-weight:600;color:var(--white);letter-spacing:-0.005em;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(0,0,0,0.09)}
+.related-card{background:#ffffff;padding:1.5rem;text-decoration:none;transition:background 0.2s;display:block;position:relative}
+.related-card:hover{background:#f8f8f6}
+.related-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background 0.25s}
+.related-card:hover::before{background:var(--navy)}
+.related-card-meta{display:flex;gap:8px;margin-bottom:0.75rem;flex-wrap:wrap}
+.related-card-title{font-family:var(--heading);font-size:1rem;font-weight:600;color:#151515;line-height:1.3;margin-bottom:0.5rem}
+.related-card-excerpt{font-size:0.8rem;font-weight:300;color:var(--text-muted);line-height:1.55;margin-bottom:1rem}
+.related-card-link{font-size:0.75rem;color:var(--navy);font-weight:500}
+
+/* CTA STRIP */
+.cta-strip{background:#f5f5f3;border-top:1px solid rgba(255,255,255,0.06);padding:5rem 2rem}
+.cta-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.cta-eyebrow{font-size:0.68rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--navy);margin-bottom:0.75rem}
+.cta-title{font-family:var(--heading);font-size:1.8rem;font-weight:600;color:#151515;line-height:1.15;letter-spacing:-0.01em;max-width:480px}
+.cta-btn{font-family:var(--heading);font-size:0.8rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;background:#151515;padding:14px 32px;border-radius:2px;text-decoration:none;white-space:nowrap;transition:background 0.2s}
+.cta-btn:hover{background:var(--navy);color:#ffffff}
+
+footer{background:#f5f5f3;border-top:1px solid rgba(0,0,0,0.09);padding:3rem 2rem}
+.footer-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:var(--heading);font-size:0.9rem;font-weight:600;letter-spacing:0.1em;color:#3A3A38}
+.footer-copy{font-size:0.72rem;color:var(--text-dim)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="mycena-insights-index.html" class="nav-logo">
+      <span class="nav-logo-text">MYCENA</span>
+    </a>
+    <div class="nav-links">
+      <a href="#" class="nav-link">Credential Control</a>
+      <a href="#" class="nav-link">Solutions</a>
+      <a href="#" class="nav-link">For the Board</a>
+      <a href="mycena-insights-index.html" class="nav-link active">Insights</a>
+      <a href="#" class="nav-link">Pricing</a>
+      <a href="#" class="nav-cta">Book a Briefing</a>
+    </div>
+  </div>
+</nav>
+
+<div class="article-header">
+  <div class="breadcrumb">
+    <a href="mycena-insights-index.html">Insights</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="#">Financial Services</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Breach case study</span>
+  </div>
+
+  <div class="article-meta">
+    <span class="badge badge-article">Article</span>
+    <span class="badge badge-sector">Financial Services</span>
+    <div class="meta-dot"></div>
+    <span class="article-date">April 2025</span>
+    <div class="meta-dot"></div>
+    <span class="article-read-time">8 min read</span>
+  </div>
+
+  <h1 class="article-title">How M&S lost £300m to a credential it didn't control</h1>
+
+  <p class="article-standfirst">In April 2025, Marks & Spencer's entire online operation was shut down for weeks. The attacker didn't break in. They logged in — with a credential that belonged to a third party, that M&S had no visibility of, and could not revoke. This is what credential control failure looks like at scale.</p>
+</div>
+
+<div class="hero-img-wrap">
+  <div class="hero-img-placeholder">
+    <div style="text-align:center;opacity:0.3">
+      <div style="font-family:'Bai Jamjuree',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:white;">Hero image — 1200 × 630</div>
+    </div>
+  </div>
+  <div class="hero-caption">Replace with the generated hero image from the image agent.</div>
+</div>
+
+<div class="article-wrap">
+  <article class="article-body">
+
+    <p>On 25 April 2025, Marks & Spencer's website went dark. Over the following weeks, the UK's third-largest retailer watched its online sales — roughly £3.8 billion annually — grind to a halt. The cause was ransomware. The entry point was a credential.</p>
+
+    <p>Not a sophisticated zero-day exploit. Not a nation-state attack on critical infrastructure. A credential. One set of login details, held by a third party, that M&S had no way to see, no way to monitor, and no way to revoke — until it was too late.</p>
+
+    <div class="stat-callout">
+      <div class="stat-num">£300m</div>
+      <div>
+        <div class="stat-desc">Estimated financial impact of the M&S breach, including lost online sales, remediation costs, reputational damage, and share price decline.</div>
+        <div class="stat-source">(Reuters, May 2025)</div>
+      </div>
+    </div>
+
+    <h2 id="what-happened">What happened</h2>
+
+    <p>The attack has been attributed to Scattered Spider, a loosely affiliated group known for social engineering and credential-based intrusion rather than technical exploits. According to reporting, the entry point was credentials belonging to a third-party IT provider — one of hundreds of external organisations that hold access to M&S systems as a matter of routine business operation.</p>
+
+    <p>The attacker used those credentials to authenticate normally. They didn't trigger anomaly detection because there was no anomaly — from the system's perspective, a legitimate user was logging in. The ransomware was deployed well after initial access, once the attacker had mapped the environment.</p>
+
+    <div class="pull-quote">
+      <p>"In the physical world, no employer asks an employee to manufacture their own office key. So why do we ask them to do exactly that in the digital world — every day, for every system?"</p>
+      <cite>— Julia O'Toole, Co-CEO, MyCena</cite>
+    </div>
+
+    <h2 id="why-existing-tools-failed">Why existing tools failed</h2>
+
+    <p>M&S, like every major retailer, had invested in cybersecurity. They had endpoint protection, multi-factor authentication for many systems, and a security operations centre. None of it prevented the breach — because none of it addressed the structural problem: <strong>the credential was outside M&S's control.</strong></p>
+
+    <p>MFA protects a login event. It does not govern who holds the underlying credential, whether that person should still have access, or whether the credential has been shared, sold, or compromised. When the attacker possessed valid credentials and, presumably, a valid MFA token obtained through social engineering, MFA provided no barrier.</p>
+
+    <p>PAM tools vault privileged credentials — but the credential in this case was a standard access credential held by a third-party IT provider, not a privileged account in a managed vault. PAM's perimeter did not extend to it.</p>
+
+    <h2 id="the-credential-control-gap">The credential control gap</h2>
+
+    <p>Every major breach of the past decade follows the same structural pattern. An attacker obtains a credential. The credential is valid. The credential cannot be revoked quickly enough — either because the organisation doesn't know it's been compromised, or because the credential was held by a third party outside the organisation's governance perimeter.</p>
+
+    <div class="stat-callout">
+      <div class="stat-num">86%</div>
+      <div>
+        <div class="stat-desc">of web application breaches involve stolen or misused credentials, making credential theft the dominant attack vector for the fifth consecutive year.</div>
+        <div class="stat-source">(Verizon DBIR 2024)</div>
+      </div>
+    </div>
+
+    <p>The solution is not more tools layered on top of the existing credential model. The solution is changing who controls the credential in the first place.</p>
+
+    <h2 id="the-structural-fix">The structural fix</h2>
+
+    <p>MyCena's Credential Control approach separates identity from access. The organisation — not the user, not the third-party provider — generates, distributes encrypted, and revokes every credential. Users and contractors never see or hold their credentials. They authenticate with one click from their device. The credential is injected at the point of authentication.</p>
+
+    <p>In an M&S scenario, the third-party IT provider would have had a credential they could not see, could not share, and could not hand over under social engineering pressure. The moment the relationship changed — or the moment M&S identified suspicious activity — revocation would have taken one command, not days of credential-hunting across dozens of systems.</p>
+
+    <h2 id="the-implication-for-financial-services">The implication for financial services</h2>
+
+    <p>M&S is a retailer, but the attack pattern is identical to what financial services organisations face — and the stakes are higher. Under DORA, financial entities bear direct responsibility for the access governance of their third-party service providers. Under PCI-DSS, every credential touching cardholder data must be governed and auditable. Under the FCA's operational resilience requirements, the ability to recover from a credential compromise within impact tolerances is now a regulatory expectation.</p>
+
+    <p>The M&S breach is the clearest recent demonstration that credential control failure is not a theoretical risk. It is a £300 million operational event — and it will happen again, to a financial services firm, with regulatory consequences that dwarf the operational ones.</p>
+
+    <p>The question for every CISO and board reading this is not whether credential control is important. It is whether they can demonstrate, right now, who holds every credential that accesses their systems — and how quickly they could revoke all of them.</p>
+
+  </article>
+
+  <aside class="article-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">In this article</div>
+      <ul class="sidebar-toc">
+        <li><a href="#what-happened">What happened</a></li>
+        <li><a href="#why-existing-tools-failed">Why existing tools failed</a></li>
+        <li><a href="#the-credential-control-gap">The credential control gap</a></li>
+        <li><a href="#the-structural-fix">The structural fix</a></li>
+        <li><a href="#the-implication-for-financial-services">Implication for financial services</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Share</div>
+      <div class="sidebar-share">
+        <a href="#" class="share-btn">LinkedIn</a>
+        <a href="#" class="share-btn">X</a>
+        <button class="share-btn" onclick="navigator.clipboard.writeText(location.href);this.textContent='Copied';setTimeout(()=>this.textContent='Copy link',2000)">Copy link</button>
+      </div>
+    </div>
+
+    <div class="sidebar-cta">
+      <div class="sidebar-cta-eyebrow">Remove this risk</div>
+      <div class="sidebar-cta-title">See how Credential Control closes the gap M&S exposed.</div>
+      <div class="sidebar-cta-text">Book a board-ready briefing — 45 minutes, no sales pitch, specific to your sector.</div>
+      <a href="#" class="sidebar-cta-btn">Book a Briefing</a>
+    </div>
+  </aside>
+</div>
+
+<div class="related-wrap">
+  <div class="related-label">Related insights</div>
+  <div class="related-grid">
+    <a href="#" class="related-card">
+      <div class="related-card-meta">
+        <span class="badge badge-article">Article</span>
+        <span class="badge badge-sector">Financial Services</span>
+      </div>
+      <div class="related-card-title">What DORA actually requires on credential access — and why most firms fail it</div>
+      <div class="related-card-excerpt">DORA doesn't mention passwords. But Articles 9 and 10 set requirements on access control and third-party governance that most firms cannot evidence.</div>
+      <div class="related-card-link">Read article →</div>
+    </a>
+    <a href="#" class="related-card">
+      <div class="related-card-meta">
+        <span class="badge badge-article">Article</span>
+        <span class="badge badge-sector">Financial Services</span>
+      </div>
+      <div class="related-card-title">The BPO credential problem every financial services firm is carrying</div>
+      <div class="related-card-excerpt">Your BPO processes claims, handles client calls, and accesses core banking systems — with credentials they control. That is your liability.</div>
+      <div class="related-card-link">Read article →</div>
+    </a>
+    <a href="#" class="related-card">
+      <div class="related-card-meta">
+        <span class="badge badge-whitepaper" style="color:var(--gold);border:1px solid rgba(216,178,111,0.3)">Whitepaper</span>
+        <span class="badge badge-sector">Financial Services</span>
+      </div>
+      <div class="related-card-title">Financial Services Credential Risk Report 2025</div>
+      <div class="related-card-excerpt">DORA, PCI-DSS, FCA expectations — and the credential gap none of them close structurally. 32 pages.</div>
+      <div class="related-card-link">Download report →</div>
+    </a>
+  </div>
+</div>
+
+<div class="cta-strip">
+  <div class="cta-inner">
+    <div>
+      <div class="cta-eyebrow">Take the next step</div>
+      <div class="cta-title">See how Credential Control removes this risk structurally.</div>
+    </div>
+    <a href="#" class="cta-btn">Book a Board-Ready Briefing</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">MYCENA</div>
+    <div class="footer-copy">© 2025 MyCena. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+// Active TOC on scroll
+const headings = document.querySelectorAll('h2[id]');
+const tocLinks = document.querySelectorAll('.sidebar-toc a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  headings.forEach(h => { if (window.scrollY >= h.offsetTop - 100) current = h.id; });
+  tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+});
+</script>
+</body>
+</html>
